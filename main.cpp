@@ -24,6 +24,9 @@ BITMAP* bullet_image;
 BITMAP* helicopter_image;
 BITMAP* helicopter_hurt;
 
+// Sounds
+SAMPLE* fire;
+
 // Close button handler
 bool close_button_pressed;
 
@@ -165,6 +168,7 @@ void create_bullet( int newX, int newY, bool newOwner, float newAngle, float new
   newBullet.vector_y = -newSpeed*sin( newAngle);
   newBullet.owner = newOwner;
   bullets.push_back( newBullet);
+  play_sample( fire, 255, 122, random(800,1200), 0);
   bullet_delay=0;
 }
 
@@ -223,8 +227,8 @@ void update(){
 
   // Reset timers
   if( player_fire_rate_timer < 1){
-    player_fire_rate=5;
-    player_fire_delay_rate=1;
+    player_fire_rate=20;
+    player_fire_delay_rate=0;
   }
 
   // Set shooting angle
@@ -315,8 +319,8 @@ void draw(){
     if(bullets.at(i).on_screen){
       if(bullets.at(i).owner){
         rectfill( buffer, bullets.at(i).x, bullets.at(i).y, bullets.at(i).x + 5, bullets.at(i).y + 5, makecol(0,0,0));
-        rectfill( buffer, bullets.at(i).x + 1, bullets.at(i).y + 1, bullets.at(i).x + 4, bullets.at(i).y + 4, makecol(0,0,0));
-        rectfill( buffer, bullets.at(i).x + 2, bullets.at(i).y + 2, bullets.at(i).x + 3, bullets.at(i).y + 3, makecol(0,0,0));
+        rectfill( buffer, bullets.at(i).x + 1, bullets.at(i).y + 1, bullets.at(i).x + 4, bullets.at(i).y + 4, makecol(255,0,0));
+        rectfill( buffer, bullets.at(i).x + 2, bullets.at(i).y + 2, bullets.at(i).x + 3, bullets.at(i).y + 3, makecol(0,255,0));
       }
       else{
         rectfill( buffer, bullets.at(i).x, bullets.at(i).y, bullets.at(i).x + 5, bullets.at(i).y + 5, makecol(255,0,0));
@@ -360,29 +364,30 @@ void setup(){
   set_close_button_callback( close_button_handler);
 
   // Load images
-  if (!(player = load_bitmap( "player.png", NULL)))
-    abort_on_error( "Cannot find image player.png\nPlease check your files and try again");
+  if (!(player = load_bitmap( "images/player.png", NULL)))
+    abort_on_error( "Cannot find image images/player.png\nPlease check your files and try again");
 
-  if (!(player_hurt = load_bitmap( "player_hurt.png", NULL)))
-    abort_on_error( "Cannot find image player_hurt.png\nPlease check your files and try again");
+  if (!(player_hurt = load_bitmap( "images/player_hurt.png", NULL)))
+    abort_on_error( "Cannot find image images/player_hurt.png\nPlease check your files and try again");
 
-  if (!(player_top = load_bitmap( "player_top.png", NULL)))
-    abort_on_error( "Cannot find image player_top.png\nPlease check your files and try again");
+  if (!(player_top = load_bitmap( "images/player_top.png", NULL)))
+    abort_on_error( "Cannot find image images/player_top.png\nPlease check your files and try again");
 
-  if (!(background = load_bitmap( "background.png", NULL)))
-    abort_on_error( "Cannot find image background.png\nPlease check your files and try again");
+  if (!(background = load_bitmap( "images/background.png", NULL)))
+    abort_on_error( "Cannot find image images/background.png\nPlease check your files and try again");
 
-  if (!(cursor = load_bitmap( "cursor.png", NULL)))
-    abort_on_error( "Cannot find image cursor.png\nPlease check your files and try again");\
+  if (!(cursor = load_bitmap( "images/cursor.png", NULL)))
+    abort_on_error( "Cannot find image images/cursor.png\nPlease check your files and try again");\
 
-  if (!(bullet_image = load_bitmap( "bullet_image.png", NULL)))
-    abort_on_error( "Cannot find image bullet_image.png\nPlease check your files and try again");
+  if (!(helicopter_image = load_bitmap( "images/helicopter.png", NULL)))
+    abort_on_error( "Cannot find image images/helicopter.png\nPlease check your files and try again");
 
-  if (!(helicopter_image = load_bitmap( "helicopter.png", NULL)))
-    abort_on_error( "Cannot find image helicopter.png\nPlease check your files and try again");
+  if (!(helicopter_hurt = load_bitmap( "images/helicopter_hurt.png", NULL)))
+    abort_on_error( "Cannot find image images/helicopter_hurt.png\nPlease check your files and try again");
 
-  if (!(helicopter_hurt = load_bitmap( "helicopter_hurt.png", NULL)))
-    abort_on_error( "Cannot find image helicopter_hurt.png\nPlease check your files and try again");
+  // Load sounds
+  if (!(fire = load_sample( "sfx/fire.wav")))
+    abort_on_error( "Cannot find image sfx/fire.wav\nPlease check your files and try again");
 }
 
 int main(){
