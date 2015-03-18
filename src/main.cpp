@@ -23,9 +23,6 @@ BITMAP* player_top;
 BITMAP* player_hurt;
 BITMAP* background;
 BITMAP* cursor;
-BITMAP* bullet_image;
-BITMAP* helicopter_image;
-BITMAP* helicopter_hurt;
 
 // Sounds
 SAMPLE* fire;
@@ -51,8 +48,6 @@ int player_health = 100;
 int player_fire_rate;
 int player_fire_delay_rate;
 int player_fire_rate_timer;
-int player_laser_timer;
-bool player_is_lasering;
 float player_rotation_radians;
 float player_rotation_allegro;
 float player_vector_x;
@@ -67,26 +62,9 @@ int helicopter_killcount;
 float mouse_angle_radians;
 float mouse_angle_allegro;
 
-// Ray Tracer
-struct raytracer{
-  float x;
-  float y;
-  float vector_x;
-  float vector_y;
-  bool on_screen;
-
-}raytracer[10];
-
+// Objects
 vector<bullet> bullets;
 vector<barrier> barriers;
-
-// Boxes
-struct boxes{
-  int x;
-  int y;
-  int type;
-  bool on_screen;
-}box[10];
 
 // FPS Tickers
 void ticker(){
@@ -104,50 +82,6 @@ void close_button_handler( void){
   close_button_pressed = TRUE;
 }
 END_OF_FUNCTION( close_button_handler)
-
-//Raytracer
-void raytrace(){
-  player_is_lasering = true;
-  int i = 1;
-  raytracer[i].x = player_x;
-  raytracer[i].y = player_y;
-  raytracer[i].vector_x = -1 * cos( mouse_angle_radians);
-  raytracer[i].vector_y = -1 * sin( mouse_angle_radians);
-  while(raytracer[i].x < 800 && raytracer[i].y < 600 && raytracer[i].x > 0 && raytracer[i].y > 0){
-    raytracer[i].x += raytracer[i].vector_x;
-    raytracer[i].y += raytracer[i].vector_y;
-    for( int j = 0; j < 10; j++){
-      /*if(collision(helicopter[j].x,helicopter[j].x+200,raytracer[i].x,raytracer[i].x,helicopter[j].y,helicopter[j].y+40,raytracer[i].y,raytracer[i].y)){
-        if(helicopter[j].on_screen){
-          helicopter[j].health-=0.05;
-          helicopter[j].hurt_timer=3;
-        }
-     }*/
-    }
-  }
-}
-
-//Bullet factory
-void create_bullet( int newX, int newY, bool newOwner, float newAngle, float newSpeed, SAMPLE* newSound){
-  bullet newBullet( newX, newY, newAngle, newSpeed, newOwner, newSound);
-  bullets.push_back( newBullet);
-  bullet_delay = 0;
-}
-
-//Box factory
-void create_box( int newX, int newY, int newType){
-  bool box_made = false;
-  for( int i = 0; i < 100; i++){
-    if( !box[i].on_screen && !box_made){
-      box_made = true;
-      box[i].on_screen = true;
-      box[i].x = newX;
-      box[i].y = newY;
-      box[i].type = newType;
-    }
-  }
-  bullet_delay = 0;
-}
 
 // Game update
 void update(){
@@ -173,7 +107,6 @@ void update(){
   // Change timers
   player_hurt_timer--;
   player_fire_rate_timer--;
-  player_laser_timer--;
   bullet_delay++;
 
   // Reset timers
@@ -188,65 +121,26 @@ void update(){
 
   // Shoot
   if(( key[KEY_SPACE] || mouse_b & 2) && bullet_delay > player_fire_delay_rate ){
-    if( player_laser_timer < 1){
-      create_bullet( player_x + 15, player_y + 20, PLAYER, mouse_angle_radians, player_fire_rate);
-    }
-    else{
-      raytrace();
-    }
+    bullet newBullet( player_x + 15, player_y + 20, mouse_angle_radians, player_fire_rate, PLAYER, fire);
+    bullets.push_back( newBullet);
+    bullet_delay = 0;
   }
 
   // Update bullets
   for( unsigned int i = 0; i < bullets.size(); i++){
-    bullets.at(i).x += bullets.at(i).vector_x;
-    bullets.at(i).y += bullets.at(i).vector_y;
-    if(collisionAny( player_x, player_x + 50, bullets.at(i).x, bullets.at(i).x+5, player_y, player_y+50, bullets.at(i).y, bullets.at(i).y+5) && !bullets.at(i).owner){
-      player_hurt_timer = 3;
+    bullets.at(i).update();
+    if(bullets.at(i).getErase())
       bullets.erase(bullets.begin() + i);
-      player_health -= 5;
-    }
-    if( bullets.at(i).x > 800 || bullets.at(i).x < 0){
-      bullets.at(i).vector_x = -bullets.at(i).vector_x;
-    }
-    if( bullets.at(i).y > 600 || bullets.at(i).y < 0){
-      bullets.at(i).vector_y = -bullets.at(i).vector_y;
-    }
-    if( key[KEY_C]){
-      bullets.clear();
-    }
+  }
+
+  // Erase bullets
+  if( key[KEY_C]){
+    bullets.clear();
   }
 
   // Update barriers
   for( unsigned int i = 0; i < barriers.size(); i++){
     barriers.at(i).update();
-  }
-
-  // Update boxes
-  for(int i=0; i<10; i++){
-    if(box[i].on_screen){
-      if(box[i].y<550){
-        box[i].y+=5;
-      }
-      if(collisionAny(player_x,player_x+50,box[i].x,box[i].x+75,player_y,player_y+50,box[i].y,box[i].y+50)){
-        box[i].on_screen=false;
-        if(box[i].type==2){
-          player_laser_timer=120;
-        }
-        if(box[i].type==1){
-          if(player_health<90){
-            player_health+=10;
-          }
-          else{
-            player_health=100;
-          }
-        }
-        if(box[i].type==0){
-          player_fire_rate=20;
-          player_fire_delay_rate=3;
-          player_fire_rate_timer=600;
-        }
-      }
-    }
   }
 }
 
@@ -277,19 +171,10 @@ void draw(){
 
   // Draw bullets
   for( unsigned int i=0; i < bullets.size(); i++){
-    if(bullets.at(i).on_screen){
-      if(bullets.at(i).owner){
-        rectfill( buffer, bullets.at(i).x, bullets.at(i).y, bullets.at(i).x + 5, bullets.at(i).y + 5, makecol(0,0,0));
-        rectfill( buffer, bullets.at(i).x + 1, bullets.at(i).y + 1, bullets.at(i).x + 4, bullets.at(i).y + 4, makecol(255,0,0));
-        rectfill( buffer, bullets.at(i).x + 2, bullets.at(i).y + 2, bullets.at(i).x + 3, bullets.at(i).y + 3, makecol(0,255,0));
-      }
-      else{
-        rectfill( buffer, bullets.at(i).x, bullets.at(i).y, bullets.at(i).x + 5, bullets.at(i).y + 5, makecol(255,0,0));
-        rectfill( buffer, bullets.at(i).x + 1, bullets.at(i).y + 1, bullets.at(i).x + 4, bullets.at(i).y + 4, makecol(255,0,0));
-        rectfill( buffer, bullets.at(i).x + 2, bullets.at(i).y + 2, bullets.at(i).x + 3, bullets.at(i).y + 3, makecol(255,0,0));
-      }
-    }
+    bullets.at(i).draw( buffer);
   }
+
+  // Debug
   textprintf_ex(buffer,font,20,20,makecol(0,0,0),-1,"Helicopter Kill Count: %f", player_rotation_allegro);
   textprintf_ex(buffer,font,20,60,makecol(0,0,0),-1,"player_vector_x: %f", player_vector_x);
   textprintf_ex(buffer,font,20,100,makecol(0,0,0),-1,"player_vector_y: %f", player_vector_y);
@@ -339,12 +224,6 @@ void setup(){
 
   if (!(cursor = load_bitmap( "images/cursor.png", NULL)))
     abort_on_error( "Cannot find image images/cursor.png\nPlease check your files and try again");\
-
-  if (!(helicopter_image = load_bitmap( "images/helicopter.png", NULL)))
-    abort_on_error( "Cannot find image images/helicopter.png\nPlease check your files and try again");
-
-  if (!(helicopter_hurt = load_bitmap( "images/helicopter_hurt.png", NULL)))
-    abort_on_error( "Cannot find image images/helicopter_hurt.png\nPlease check your files and try again");
 
   // Load sounds
   if (!(fire = load_sample( "sfx/fire.wav")))

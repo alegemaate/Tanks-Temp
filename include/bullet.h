@@ -1,7 +1,7 @@
 #ifndef BULLET_H
 #define BULLET_H
 
-#include <math.h>
+#include "tools.h"
 
 class bullet
 {
@@ -9,16 +9,19 @@ class bullet
     bullet( float newX, float newY, float newAngle, float newSpeed, bool newOwner, SAMPLE* newSound);
     ~bullet();
 
+    bool getErase();
+    void update();
+    void draw( BITMAP* tempImage);
+  protected:
+  private:
     float x;
     float y;
     float vector_x;
     float vector_y;
     bool on_screen;
     bool owner;
+    bool pendingErase;
     SAMPLE* shotSound;
-
-  protected:
-  private:
 };
 
 #endif // BULLET_H
