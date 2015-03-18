@@ -1,11 +1,11 @@
 #include <allegro.h>
 #include <alpng.h>
 #include <time.h>
-#include <cmath>
 #include <vector>
 
 #include "../include/barrier.h"
 #include "../include/tools.h"
+#include "../include/bullet.h"
 
 #define PLAYER TRUE
 #define HELICOPTER FALSE
@@ -77,16 +77,6 @@ struct raytracer{
 
 }raytracer[10];
 
-// Bullets
-struct bullet{
-  float x;
-  float y;
-  float vector_x;
-  float vector_y;
-  bool on_screen;
-  bool owner;
-};
-
 vector<bullet> bullets;
 vector<barrier> barriers;
 
@@ -115,14 +105,6 @@ void close_button_handler( void){
 }
 END_OF_FUNCTION( close_button_handler)
 
-//Collision between 2 boxes
-bool collision( float xMin1, float xMax1, float xMin2, float xMax2, float yMin1, float yMax1, float yMin2, float yMax2){
-  if ( xMin1 < xMax2 && yMin1 < yMax2 && xMin2 < xMax1 && yMin2 < yMax1){
-    return true;
-  }
-  return false;
-}
-
 //Raytracer
 void raytrace(){
   player_is_lasering = true;
@@ -146,16 +128,10 @@ void raytrace(){
 }
 
 //Bullet factory
-void create_bullet( int newX, int newY, bool newOwner, float newAngle, float newSpeed){
-  bullet newBullet;
-  newBullet.x = newX;
-  newBullet.y = newY;
-  newBullet.vector_x = -newSpeed*cos( newAngle);
-  newBullet.vector_y = -newSpeed*sin( newAngle);
-  newBullet.owner = newOwner;
+void create_bullet( int newX, int newY, bool newOwner, float newAngle, float newSpeed, SAMPLE* newSound){
+  bullet newBullet( newX, newY, newAngle, newSpeed, newOwner, newSound);
   bullets.push_back( newBullet);
-  play_sample( fire, 255, 122, random(800,1200), 0);
-  bullet_delay=0;
+  bullet_delay = 0;
 }
 
 //Box factory
@@ -171,17 +147,6 @@ void create_box( int newX, int newY, int newType){
     }
   }
   bullet_delay = 0;
-}
-
-//Finds angle of point 2 relative to point 1
-float find_angle( int x_1, int y_1, int x_2, int y_2){
-  float tan_1 = 0;
-  float tan_2 = 0;
-  if( x_1 - x_2 != 90 && y_1 - y_2 != 90 && x_1 - x_2 != 270 && y_1 - y_2 != 270){
-    tan_1 = y_1 - y_2;
-    tan_2 = x_1 - x_2;
-  }
-  return atan2(tan_1,tan_2);
 }
 
 // Game update
@@ -235,7 +200,7 @@ void update(){
   for( unsigned int i = 0; i < bullets.size(); i++){
     bullets.at(i).x += bullets.at(i).vector_x;
     bullets.at(i).y += bullets.at(i).vector_y;
-    if(collision( player_x, player_x + 50, bullets.at(i).x, bullets.at(i).x+5, player_y, player_y+50, bullets.at(i).y, bullets.at(i).y+5) && !bullets.at(i).owner){
+    if(collisionAny( player_x, player_x + 50, bullets.at(i).x, bullets.at(i).x+5, player_y, player_y+50, bullets.at(i).y, bullets.at(i).y+5) && !bullets.at(i).owner){
       player_hurt_timer = 3;
       bullets.erase(bullets.begin() + i);
       player_health -= 5;
@@ -262,7 +227,7 @@ void update(){
       if(box[i].y<550){
         box[i].y+=5;
       }
-      if(collision(player_x,player_x+50,box[i].x,box[i].x+75,player_y,player_y+50,box[i].y,box[i].y+50)){
+      if(collisionAny(player_x,player_x+50,box[i].x,box[i].x+75,player_y,player_y+50,box[i].y,box[i].y+50)){
         box[i].on_screen=false;
         if(box[i].type==2){
           player_laser_timer=120;
@@ -290,7 +255,7 @@ void draw(){
   draw_sprite( buffer, background, 0, 0);
 
   // Draw barriers
-  for( int i = 0; i < barriers.size(); i++){
+  for( unsigned int i = 0; i < barriers.size(); i++){
     barriers.at(i).draw( buffer);
   }
 

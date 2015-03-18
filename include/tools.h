@@ -7,6 +7,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <cmath>
 
 using namespace std;
 
@@ -16,6 +17,9 @@ extern bool collisionBottom(int yMin1, int yMax1, int yMin2, int yMax2);
 extern bool collisionTop(int yMin1, int yMax1, int yMin2, int yMax2);
 extern bool collisionRight(int xMin1, int xMax1, int xMin2, int xMax2);
 extern bool collisionLeft(int xMin1, int xMax1, int xMin2, int xMax2);
+
+//Finds angle of point 2 relative to point 1
+extern float find_angle( int x_1, int y_1, int x_2, int y_2);
 
 // Mouse position including resolution difference
 extern int mouseX();

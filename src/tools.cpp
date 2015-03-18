@@ -67,6 +67,17 @@ string convertBoolToString(bool boolean){
   return ss.str();
 }
 
+//Finds angle of point 2 relative to point 1
+float find_angle( int x_1, int y_1, int x_2, int y_2){
+  float tan_1 = 0;
+  float tan_2 = 0;
+  if( x_1 - x_2 != 90 && y_1 - y_2 != 90 && x_1 - x_2 != 270 && y_1 - y_2 != 270){
+    tan_1 = y_1 - y_2;
+    tan_2 = x_1 - x_2;
+  }
+  return atan2(tan_1,tan_2);
+}
+
 // Fade in
 void highcolor_fade_in(BITMAP* bmp_orig, int speed){
   BITMAP* bmp_buff = create_bitmap(SCREEN_W,SCREEN_H);
