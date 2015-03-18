@@ -4,6 +4,9 @@
 #include <cmath>
 #include <vector>
 
+#include "../include/barrier.h"
+#include "../include/tools.h"
+
 #define PLAYER TRUE
 #define HELICOPTER FALSE
 
@@ -85,6 +88,7 @@ struct bullet{
 };
 
 vector<bullet> bullets;
+vector<barrier> barriers;
 
 // Boxes
 struct boxes{
@@ -111,30 +115,12 @@ void close_button_handler( void){
 }
 END_OF_FUNCTION( close_button_handler)
 
-// Random number generator. Use int random(highest,lowest);
-int random( int newLowest, int newHighest){
-  int lowest = newLowest, highest = newHighest;
-  int range = ( highest - lowest) + 1;
-  int randomNumber = lowest + int( range * rand() / (RAND_MAX + 1.0));
-  return randomNumber;
-}
-
 //Collision between 2 boxes
 bool collision( float xMin1, float xMax1, float xMin2, float xMax2, float yMin1, float yMax1, float yMin2, float yMax2){
   if ( xMin1 < xMax2 && yMin1 < yMax2 && xMin2 < xMax1 && yMin2 < yMax1){
     return true;
   }
   return false;
-}
-
-//A function to streamline error reporting in file loading
-void abort_on_error( const char *message){
-  set_window_title( "Error!");
-  if ( screen != NULL){
-    set_gfx_mode( GFX_TEXT, 0, 0, 0, 0);
-  }
-  allegro_message( "%s.\n %s\n", message, allegro_error);
-  exit( -1);
 }
 
 //Raytracer
@@ -246,7 +232,7 @@ void update(){
   }
 
   // Update bullets
-  for(int i = 0; i < bullets.size(); i++){
+  for( unsigned int i = 0; i < bullets.size(); i++){
     bullets.at(i).x += bullets.at(i).vector_x;
     bullets.at(i).y += bullets.at(i).vector_y;
     if(collision( player_x, player_x + 50, bullets.at(i).x, bullets.at(i).x+5, player_y, player_y+50, bullets.at(i).y, bullets.at(i).y+5) && !bullets.at(i).owner){
@@ -263,6 +249,11 @@ void update(){
     if( key[KEY_C]){
       bullets.clear();
     }
+  }
+
+  // Update barriers
+  for( unsigned int i = 0; i < barriers.size(); i++){
+    barriers.at(i).update();
   }
 
   // Update boxes
@@ -298,6 +289,11 @@ void draw(){
   // Draw background
   draw_sprite( buffer, background, 0, 0);
 
+  // Draw barriers
+  for( int i = 0; i < barriers.size(); i++){
+    barriers.at(i).draw( buffer);
+  }
+
   // Hurt image for player
   if( player_hurt_timer<1){
     rotate_sprite( buffer, player, player_x, player_y, itofix(player_rotation_allegro));
@@ -315,7 +311,7 @@ void draw(){
   rectfill(buffer,552,12,552+(player_health*2),28,makecol(0,255,0));
 
   // Draw bullets
-  for(int i=0; i < bullets.size(); i++){
+  for( unsigned int i=0; i < bullets.size(); i++){
     if(bullets.at(i).on_screen){
       if(bullets.at(i).owner){
         rectfill( buffer, bullets.at(i).x, bullets.at(i).y, bullets.at(i).x + 5, bullets.at(i).y + 5, makecol(0,0,0));
@@ -388,6 +384,12 @@ void setup(){
   // Load sounds
   if (!(fire = load_sample( "sfx/fire.wav")))
     abort_on_error( "Cannot find image sfx/fire.wav\nPlease check your files and try again");
+
+  // Create barriers
+  for( int i = 0; i < 10; i++){
+    barrier newBarrier( random(0, SCREEN_W), random( 0, SCREEN_H));
+    barriers.push_back( newBarrier);
+  }
 }
 
 int main(){
