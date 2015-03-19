@@ -8,25 +8,25 @@ bool collisionAny(int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int yMa
   return false;
 }
 bool collisionBottom(int yMin1, int yMax1, int yMin2, int yMax2){
-  if(yMin1 < yMax2 && yMax1 > yMax2){
+  if( yMax1 > yMax2 && yMin1 < yMax2){
     return true;
   }
   return false;
 }
 bool collisionTop(int yMin1, int yMax1, int yMin2, int yMax2){
-  if(yMin2 < yMax1 && yMin1 < yMin2){
-    return true;
-  }
-  return false;
-}
-bool collisionRight(int xMin1, int xMax1, int xMin2, int xMax2){
-  if(xMin2 < xMax1 && xMin1 < xMin2){
+  if( yMax1 > yMin2 && yMin1 < yMin2){
     return true;
   }
   return false;
 }
 bool collisionLeft(int xMin1, int xMax1, int xMin2, int xMax2){
-  if(xMin1 < xMax2 && xMax1 > xMax2){
+  if( xMax1 > xMin2 && xMin1 < xMin2){
+    return true;
+  }
+  return false;
+}
+bool collisionRight(int xMin1, int xMax1, int xMin2, int xMax2){
+  if( xMax1 > xMax2 && xMin1 < xMax2){
     return true;
   }
   return false;

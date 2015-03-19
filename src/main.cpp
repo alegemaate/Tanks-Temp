@@ -32,7 +32,7 @@ bool close_button_pressed;
 
 // FPS System
 volatile int ticks = 0;
-const int updates_per_second = 60;
+const int updates_per_second = 120;
 volatile int game_time = 0;
 
 // FPS Variables
@@ -111,8 +111,8 @@ void update(){
 
   // Reset timers
   if( player_fire_rate_timer < 1){
-    player_fire_rate=20;
-    player_fire_delay_rate=0;
+    player_fire_rate = 3;
+    player_fire_delay_rate = 10;
   }
 
   // Set shooting angle
@@ -121,7 +121,7 @@ void update(){
 
   // Shoot
   if(( key[KEY_SPACE] || mouse_b & 2) && bullet_delay > player_fire_delay_rate ){
-    bullet newBullet( player_x + 15, player_y + 20, mouse_angle_radians, player_fire_rate, PLAYER, fire);
+    bullet newBullet( player_x + 15, player_y + 20, mouse_angle_radians, player_fire_rate, PLAYER, 1, fire);
     bullets.push_back( newBullet);
     bullet_delay = 0;
   }
@@ -140,7 +140,7 @@ void update(){
 
   // Update barriers
   for( unsigned int i = 0; i < barriers.size(); i++){
-    barriers.at(i).update();
+    barriers.at(i).update( &bullets);
   }
 }
 
