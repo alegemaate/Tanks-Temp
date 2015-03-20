@@ -21,11 +21,12 @@ class bullet
     float getYVelocity();
     float getXVelocity();
 
-    void bounceCounter();
+    void bounceCounter( int newDirection);
     void reverseDirection( string newDirection);
   protected:
   private:
     int health;
+    int incidenceDirection;
 
     float x;
     float y;

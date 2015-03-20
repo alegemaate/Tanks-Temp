@@ -27,9 +27,15 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="include/barrier.h" />
+		<Unit filename="include/bullet.h" />
+		<Unit filename="include/particle.h" />
+		<Unit filename="include/tank.h" />
 		<Unit filename="include/tools.h" />
 		<Unit filename="src/barrier.cpp" />
+		<Unit filename="src/bullet.cpp" />
 		<Unit filename="src/main.cpp" />
+		<Unit filename="src/particle.cpp" />
+		<Unit filename="src/tank.cpp" />
 		<Unit filename="src/tools.cpp" />
 		<Extensions>
 			<code_completion />

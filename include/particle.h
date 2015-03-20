@@ -6,12 +6,14 @@
 #define PIXEL 2
 #define RANDOM 3
 
+#define EXPLODE 4
+
 #include <allegro.h>
 #include "tools.h"
 
 class particle{
   public:
-    particle(int newX, int newY, int newColor, int newXMin, int newXMax, int newYMin, int newYMax, int newSize, int newType, int newLife);
+    particle(int newX, int newY, int newColor, int newXMin, int newXMax, int newYMin, int newYMax, int newSize, int newType, int newLife, int newBehavior);
     ~particle();
 
     void logic();
@@ -19,23 +21,22 @@ class particle{
 
     bool getDead();
   private:
-    int xMax;
-    int xMin;
-    int yMin;
-    int yMax;
-
     int particleColor;
     int particleRed;
     int particleGreen;
     int particleBlue;
+
     int particleType;
     int particleSize;
     int particleLife;
+    int particleBehaviour;
 
     bool dead;
 
     float x;
     float y;
+    float x_velocity;
+    float y_velocity;
 };
 
 #endif

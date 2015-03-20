@@ -1,7 +1,7 @@
 #include "../include/particle.h"
 
 // Constructor
-particle::particle(int newX, int newY, int newColor, int newXMin, int newXMax, int newYMin, int newYMax, int newSize, int newType, int newLife){
+particle::particle(int newX, int newY, int newColor, int newXMin, int newXMax, int newYMin, int newYMax, int newSize, int newType, int newLife, int newBehaviour){
   x = newX;
   y = newY;
 
@@ -11,16 +11,20 @@ particle::particle(int newX, int newY, int newColor, int newXMin, int newXMax, i
   particleBlue = getb(particleColor);
 
   particleSize = newSize;
-
-  xMin = newXMin;
-  xMax = newXMax;
-  yMin = newYMin;
-  yMax = newYMax;
-
   particleType = newType;
+  particleBehaviour = newBehaviour;
 
   dead = false;
   particleLife = newLife;
+
+  x_velocity = random( newXMin, newXMax);
+  y_velocity = random( newYMin, newYMax);
+
+  // No unmoving
+  if( x_velocity == 0)
+    x_velocity = 1;
+  if( y_velocity == 0)
+    y_velocity = 1;
 }
 
 // Deconstructor
@@ -30,20 +34,14 @@ particle::~particle(){
 
 // Logic
 void particle::logic(){
-  x += random( xMin, xMax);
-  y += random( yMin, yMax);
-
-  if(x < 0){
-    x = 0;
+  // Behaviour
+  if( particleBehaviour == EXPLODE){
+    x += x_velocity;
+    y += y_velocity;
   }
-  if(x > 800){
-    x = 800;
-  }
-  if(y < 0){
-    y = 0;
-  }
-  if(y > 600){
-    y = 600;
+  else{
+    x += random( -x_velocity, x_velocity);
+    y += random( -y_velocity, y_velocity);
   }
 
   // Die

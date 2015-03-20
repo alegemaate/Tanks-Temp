@@ -38,7 +38,7 @@ bool fexists(const char *filename){
   return ifile;
 }
 
-//Random number generator. Use int random(lowest,highest);
+// Random number generator. Use int random(lowest,highest);
 int random(int newLowest, int newHighest){
   int lowest = newLowest, highest = newHighest;
   int range = (highest - lowest) + 1;
@@ -46,7 +46,15 @@ int random(int newLowest, int newHighest){
   return randomNumber;
 }
 
-//Convert int to string
+// Random float
+float randomf(float newLowest, float newHighest){
+  float lowest = newLowest, highest = newHighest;
+  float range = (highest - lowest) + 1;
+  float randomNumber = lowest + float( range * rand()/(RAND_MAX + 1.0));
+  return randomNumber;
+}
+
+// Convert int to string
 string convertIntToString(int number){
   stringstream ss;
   ss << number;
@@ -68,14 +76,13 @@ string convertBoolToString(bool boolean){
 }
 
 //Finds angle of point 2 relative to point 1
-float find_angle( int x_1, int y_1, int x_2, int y_2){
-  float tan_1 = 0;
-  float tan_2 = 0;
-  if( x_1 - x_2 != 90 && y_1 - y_2 != 90 && x_1 - x_2 != 270 && y_1 - y_2 != 270){
-    tan_1 = y_1 - y_2;
-    tan_2 = x_1 - x_2;
-  }
-  return atan2(tan_1,tan_2);
+float find_angle( float x_1, float y_1, float x_2, float y_2){
+  return atan2(y_1 - y_2, x_1 - x_2);
+}
+
+//Finds distance between 2 points
+float find_distance( float x_1, float y_1, float x_2, float y_2){
+  return hypot(x_1 - x_2, y_1 - y_2);
 }
 
 // Fade in

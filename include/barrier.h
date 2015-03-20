@@ -10,7 +10,7 @@ using namespace std;
 
 class barrier{
   public:
-    barrier( int newX, int newY);
+    barrier( int newX, int newY, BITMAP* newImage);
     ~barrier();
 
     void update( vector<bullet>* newBullets);
@@ -18,6 +18,11 @@ class barrier{
   private:
     int x;
     int y;
+
+    int width;
+    int height;
+
+    BITMAP* image;
 };
 
 #endif // BARRIER_H

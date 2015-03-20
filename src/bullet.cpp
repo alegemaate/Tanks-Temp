@@ -43,8 +43,9 @@ float bullet::getY(){
 }
 
 // Add to the bounce count
-void bullet::bounceCounter(){
+void bullet::bounceCounter( int newDirection){
   health--;
+  incidenceDirection = newDirection;
 }
 
 // Return vectors
@@ -65,25 +66,47 @@ void bullet::update(){
       pendingErase = true;
       player_health -= 5;
     }*/
-    if( x > 800 || x < 0){
+    if( x > 800){
       vector_x = -vector_x;
-      bounceCounter();
+      bounceCounter( LEFT);
     }
-    if( y > 600 || y < 0){
+    if( x < 0){
+      vector_x = -vector_x;
+      bounceCounter( RIGHT);
+    }
+    if( y > 600){
       vector_y = -vector_y;
-      bounceCounter();
+      bounceCounter( TOP);
+    }
+    if( y < 0){
+      vector_y = -vector_y;
+      bounceCounter( BOTTOM);
     }
 
     if( health <= 0){
       exploded = true;
       // Make explosion
-      for( int i = 0; i < 20; i ++){
-        particle newParticle(x, y, makecol(255,0,0), -20, 20, -20, 20, 1, SQUARE, 10);
-        explosionEffect.push_back(newParticle);
+      for( int i = 0; i < 100; i ++){
+        if( incidenceDirection == BOTTOM){
+          particle newParticle(x, y, makecol(255,random(0,255),0), -5, 5, 0, 3, 1, CIRCLE, 10, EXPLODE);
+          explosionEffect.push_back(newParticle);
+        }
+        else if( incidenceDirection == TOP){
+          particle newParticle(x, y, makecol(255,random(0,255),0), -5, 5, -3, 0, 1, CIRCLE, 10, EXPLODE);
+          explosionEffect.push_back(newParticle);
+        }
+        else if( incidenceDirection == LEFT){
+          particle newParticle(x, y, makecol(255,random(0,255),0), -3, 0, -5, 5, 1, CIRCLE, 10, EXPLODE);
+          explosionEffect.push_back(newParticle);
+        }
+        else if( incidenceDirection == RIGHT){
+          particle newParticle(x, y, makecol(255,random(0,255),0), 0, 3, -5, 5, 1, CIRCLE, 10, EXPLODE);
+          explosionEffect.push_back(newParticle);
+        }
       }
     }
   }
-  if( exploded){
+  else{
     // Update particles
     for( unsigned int i = 0; i < explosionEffect.size(); i++){
       explosionEffect.at(i).logic();

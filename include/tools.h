@@ -9,6 +9,11 @@
 #include <fstream>
 #include <cmath>
 
+#define TOP 0
+#define BOTTOM 1
+#define LEFT 2
+#define RIGHT 3
+
 using namespace std;
 
 //Collision
@@ -19,7 +24,8 @@ extern bool collisionRight(int xMin1, int xMax1, int xMin2, int xMax2);
 extern bool collisionLeft(int xMin1, int xMax1, int xMin2, int xMax2);
 
 //Finds angle of point 2 relative to point 1
-extern float find_angle( int x_1, int y_1, int x_2, int y_2);
+extern float find_angle( float x_1, float y_1, float x_2, float y_2);
+extern float find_distance( float x_1, float y_1, float x_2, float y_2);
 
 // Mouse position including resolution difference
 extern int mouseX();
@@ -30,6 +36,7 @@ extern bool fexists(const char *filename);
 
 //Random number generator
 extern int random(int newLowest, int newHighest);
+extern float randomf(float newLowest, float newHighest);
 
 //Convert int to string
 extern string convertIntToString(int number);

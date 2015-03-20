@@ -5,142 +5,94 @@
 
 #include "../include/barrier.h"
 #include "../include/tools.h"
-#include "../include/bullet.h"
-
-#define PLAYER TRUE
-#define HELICOPTER FALSE
-
-#define LEFT 0
-#define RIGHT 1
-#define HOVER 2
+#include "../include/tank.h"
 
 using namespace std;
 
 // Images
-BITMAP* buffer;
-BITMAP* player;
-BITMAP* player_top;
-BITMAP* player_hurt;
-BITMAP* background;
-BITMAP* cursor;
+BITMAP *buffer;
+BITMAP *background;
+BITMAP *cursor;
+BITMAP *blocks[3];
 
-// Sounds
-SAMPLE* fire;
 
-// Close button handler
-bool close_button_pressed;
+// Objects
+vector<barrier> barriers;
+vector<ai_tank> enemy_tanks;
+vector<player_tank> player_tanks;
 
-// FPS System
+// FPS Tickers
 volatile int ticks = 0;
-const int updates_per_second = 120;
-volatile int game_time = 0;
-
-// FPS Variables
 int fps;
 int frames_done;
 int old_time;
+const int updates_per_second = 120;
+int frames_array[10];
+int frame_index = 0;
 
-// Player variables
-float player_x = 400;
-float player_y = 300;
-int player_hurt_timer;
-int player_health = 100;
-int player_fire_rate;
-int player_fire_delay_rate;
-int player_fire_rate_timer;
-float player_rotation_radians;
-float player_rotation_allegro;
-float player_vector_x;
-float player_vector_y;
-float player_speed;
-
-// Other variables
-int bullet_delay;
-int helicopter_killcount;
-
-// Mouse angle handlers
-float mouse_angle_radians;
-float mouse_angle_allegro;
-
-// Objects
-vector<bullet> bullets;
-vector<barrier> barriers;
-
-// FPS Tickers
-void ticker(){
-  ticks++;
+void ticker()
+{
+	ticks++;
 }
-END_OF_FUNCTION( ticker)
+END_OF_FUNCTION(ticker)
 
-void game_time_ticker(){
-  game_time++;
+volatile int game_time = 0;
+void game_time_ticker()
+{
+	game_time++;
 }
-END_OF_FUNCTION( ticker)
+END_OF_FUNCTION(game_time_ticker)
 
-// Close button function
+
+// Close button handler
+bool close_button_pressed;
 void close_button_handler( void){
   close_button_pressed = TRUE;
 }
 END_OF_FUNCTION( close_button_handler)
 
+
 // Game update
 void update(){
   // Move
-  if( mouse_b & 1){
-    player_rotation_radians = find_angle( player_x + 15, player_y + 20, mouse_x, mouse_y);
-    player_speed = 1;
+  for( unsigned int i = 0; i < enemy_tanks.size(); i++){
+    // Update barriers
+    for( unsigned int t = 0; t < barriers.size(); t++)
+      barriers.at(t).update( enemy_tanks.at(i).getBullets());
+
+    // Update tanks
+    enemy_tanks.at(i).update();
+    // Delete tank
+    if(enemy_tanks.at(i).getErase())
+      enemy_tanks.erase(enemy_tanks.begin() + i);
   }
-  else{
-    player_speed = 0;
-  }
+  for( unsigned int i = 0; i < player_tanks.size(); i++){
+    // Update barriers
+    for( unsigned int t = 0; t < barriers.size(); t++)
+      barriers.at(t).update( player_tanks.at(i).getBullets());
 
-  player_vector_x = -player_speed * cos( player_rotation_radians);
-  player_vector_y = -player_speed * sin( player_rotation_radians);
-  player_rotation_allegro = player_rotation_radians * 40.5845104792;
-  player_x += player_vector_x;
-  player_y += player_vector_y;
-
-  // End game when dead
-  if( player_health < 1)
-    close_button_pressed=true;
-
-  // Change timers
-  player_hurt_timer--;
-  player_fire_rate_timer--;
-  bullet_delay++;
-
-  // Reset timers
-  if( player_fire_rate_timer < 1){
-    player_fire_rate = 3;
-    player_fire_delay_rate = 10;
+    // Update tanks
+    player_tanks.at(i).update();
+    // Delete tank
+    if(player_tanks.at(i).getErase())
+      player_tanks.erase(player_tanks.begin() + i);
   }
 
-  // Set shooting angle
-  mouse_angle_radians = find_angle( player_x + 15, player_y + 20, mouse_x, mouse_y);
-  mouse_angle_allegro = mouse_angle_radians * 40.5845104792;
+  // Spawn tank
+  if( key[KEY_Z]){
+    BITMAP *tank_base_red, *tank_turret_red, *tank_hurt;
+    if (!(tank_base_red = load_bitmap( "images/tank_base_red.png", NULL)))
+      abort_on_error( "Cannot find image images/tank_base_red.png\nPlease check your files and try again");
 
-  // Shoot
-  if(( key[KEY_SPACE] || mouse_b & 2) && bullet_delay > player_fire_delay_rate ){
-    bullet newBullet( player_x + 15, player_y + 20, mouse_angle_radians, player_fire_rate, PLAYER, 1, fire);
-    bullets.push_back( newBullet);
-    bullet_delay = 0;
-  }
+    if (!(tank_turret_red = load_bitmap( "images/tank_turret_red.png", NULL)))
+      abort_on_error( "Cannot find image images/tank_turret_red.png\nPlease check your files and try again");
 
-  // Update bullets
-  for( unsigned int i = 0; i < bullets.size(); i++){
-    bullets.at(i).update();
-    if(bullets.at(i).getErase())
-      bullets.erase(bullets.begin() + i);
-  }
+    if (!(tank_hurt = load_bitmap( "images/tank_hurt.png", NULL)))
+      abort_on_error( "Cannot find image images/tank_hurt.png\nPlease check your files and try again");
 
-  // Erase bullets
-  if( key[KEY_C]){
-    bullets.clear();
-  }
-
-  // Update barriers
-  for( unsigned int i = 0; i < barriers.size(); i++){
-    barriers.at(i).update( &bullets);
+    ai_tank newPlayer( random(0, SCREEN_W), random(0, SCREEN_H), 3, random(50,150), random(1,4), random(50,300), random(1,10)/10, tank_base_red, tank_turret_red, tank_hurt);
+    enemy_tanks.push_back( newPlayer);
+    while(key[KEY_Z]){}
   }
 }
 
@@ -149,43 +101,20 @@ void draw(){
   draw_sprite( buffer, background, 0, 0);
 
   // Draw barriers
-  for( unsigned int i = 0; i < barriers.size(); i++){
+  for( unsigned int i = 0; i < barriers.size(); i++)
     barriers.at(i).draw( buffer);
-  }
 
-  // Hurt image for player
-  if( player_hurt_timer<1){
-    rotate_sprite( buffer, player, player_x, player_y, itofix(player_rotation_allegro));
-  }
-  else{
-    rotate_sprite( buffer, player_hurt, player_x, player_y, itofix(player_rotation_allegro));
-  }
-
-  // Turret
-  rotate_sprite( buffer, player_top, player_x, player_y, itofix(mouse_angle_allegro));
-
-  // Health Bar
-  rectfill(buffer,550,10,754,30,makecol(0,0,0));
-  rectfill(buffer,552,12,752,28,makecol(255,0,0));
-  rectfill(buffer,552,12,552+(player_health*2),28,makecol(0,255,0));
-
-  // Draw bullets
-  for( unsigned int i=0; i < bullets.size(); i++){
-    bullets.at(i).draw( buffer);
-  }
-
-  // Debug
-  textprintf_ex(buffer,font,20,20,makecol(0,0,0),-1,"Helicopter Kill Count: %f", player_rotation_allegro);
-  textprintf_ex(buffer,font,20,60,makecol(0,0,0),-1,"player_vector_x: %f", player_vector_x);
-  textprintf_ex(buffer,font,20,100,makecol(0,0,0),-1,"player_vector_y: %f", player_vector_y);
-  textprintf_ex(buffer,font,20,120,makecol(0,0,0),-1,"x: %f", player_x);
-  textprintf_ex(buffer,font,20,140,makecol(0,0,0),-1,"y: %f", player_y);
+  // Draw tanks
+  for( unsigned int i = 0; i < enemy_tanks.size(); i++)
+    enemy_tanks.at(i).draw( buffer);
+  for( unsigned int i = 0; i < player_tanks.size(); i++)
+    player_tanks.at(i).draw( buffer);
 
   // Cursor
-  draw_sprite(buffer,cursor,mouse_x-10,mouse_y-10);
+  draw_sprite( buffer, cursor, mouse_x - 10, mouse_y - 10);
 
   // Buffer to screen
-  draw_sprite(screen,buffer,0,0);
+  draw_sprite( screen, buffer, 0, 0);
 }
 
 // Setup game
@@ -210,30 +139,59 @@ void setup(){
   set_close_button_callback( close_button_handler);
 
   // Load images
-  if (!(player = load_bitmap( "images/player.png", NULL)))
-    abort_on_error( "Cannot find image images/player.png\nPlease check your files and try again");
-
-  if (!(player_hurt = load_bitmap( "images/player_hurt.png", NULL)))
-    abort_on_error( "Cannot find image images/player_hurt.png\nPlease check your files and try again");
-
-  if (!(player_top = load_bitmap( "images/player_top.png", NULL)))
-    abort_on_error( "Cannot find image images/player_top.png\nPlease check your files and try again");
-
   if (!(background = load_bitmap( "images/background.png", NULL)))
     abort_on_error( "Cannot find image images/background.png\nPlease check your files and try again");
 
   if (!(cursor = load_bitmap( "images/cursor.png", NULL)))
     abort_on_error( "Cannot find image images/cursor.png\nPlease check your files and try again");\
 
-  // Load sounds
-  if (!(fire = load_sample( "sfx/fire.wav")))
-    abort_on_error( "Cannot find image sfx/fire.wav\nPlease check your files and try again");
+  if (!(blocks[0] = load_bitmap( "images/block_box_1.png", NULL)))
+    abort_on_error( "Cannot find image images/block_box_1.png\nPlease check your files and try again");
+
+  if (!(blocks[1] = load_bitmap( "images/block_stone_1.png", NULL)))
+    abort_on_error( "Cannot find image images/block_stone_1.png\nPlease check your files and try again");
+
+  if (!(blocks[2] = load_bitmap( "images/block_stone_2.png", NULL)))
+    abort_on_error( "Cannot find image images/block_stone_2.png\nPlease check your files and try again");
 
   // Create barriers
   for( int i = 0; i < 10; i++){
-    barrier newBarrier( random(0, SCREEN_W), random( 0, SCREEN_H));
+    barrier newBarrier( random(0, SCREEN_W), random( 0, SCREEN_H), blocks[random(0,2)]);
     barriers.push_back( newBarrier);
   }
+
+  // Temp images
+  BITMAP *tank_base_green, *tank_turret_green, *tank_base_red, *tank_turret_red, *tank_hurt;
+  if (!(tank_base_green = load_bitmap( "images/tank_base_green.png", NULL)))
+    abort_on_error( "Cannot find image images/tank_base_green.png\nPlease check your files and try again");
+
+  if (!(tank_turret_green = load_bitmap( "images/tank_turret_green.png", NULL)))
+    abort_on_error( "Cannot find image images/tank_turret_green.png\nPlease check your files and try again");
+
+  if (!(tank_base_red = load_bitmap( "images/tank_base_red.png", NULL)))
+    abort_on_error( "Cannot find image images/tank_base_red.png\nPlease check your files and try again");
+
+  if (!(tank_turret_red = load_bitmap( "images/tank_turret_red.png", NULL)))
+    abort_on_error( "Cannot find image images/tank_turret_red.png\nPlease check your files and try again");
+
+  if (!(tank_hurt = load_bitmap( "images/tank_hurt.png", NULL)))
+    abort_on_error( "Cannot find image images/tank_hurt.png\nPlease check your files and try again");
+
+  // Player
+  player_tank newPlayer( 50, 50, 3, 100, 4, 0, 1, tank_base_green, tank_turret_green, tank_hurt);
+  player_tanks.push_back( newPlayer);
+
+  ai_tank newPlayer2( 400, 400, 3, 0, 2, 10, 1, tank_base_red, tank_turret_red, tank_hurt);
+  enemy_tanks.push_back( newPlayer2);
+
+  ai_tank newPlayer3( 200, 200, 3, 100, 3, 20, 1, tank_base_red, tank_turret_red, tank_hurt);
+  enemy_tanks.push_back( newPlayer3);
+
+  ai_tank newPlayer4( 500, 300, 3, 100, 3, 100, 1, tank_base_red, tank_turret_red, tank_hurt);
+  enemy_tanks.push_back( newPlayer4);
+
+  for(int i = 0; i < 10; i++)
+    frames_array[i] = 0;
 }
 
 int main(){
@@ -270,12 +228,16 @@ int main(){
         break;
       }
     }
-    if( game_time - old_time >= 10){
-      fps = frames_done;
-      frames_done = 0;
-      old_time = game_time;
-    }
+    if(game_time >= old_time + 1){//i.e. a 0.1 second has passed since we last counted the frames{
+			fps -= frames_array[frame_index];//decrement the fps by the frames done a second ago
+			frames_array[frame_index] = frames_done;//store the number of frames done this 0.1 second
+			fps += frames_done;//increment the fps by the newly done frames
+			frame_index = (frame_index + 1) % 10;//increment the frame index and snap it to 10
+			frames_done = 0;
+			old_time += 1;
+		}
     draw();
+    frames_done++;
   }
 	return 0;
 }
