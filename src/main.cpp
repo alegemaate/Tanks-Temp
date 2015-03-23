@@ -52,16 +52,49 @@ void close_button_handler( void){
 END_OF_FUNCTION( close_button_handler)
 
 
+// Calibrate joystick
+void calibrateJoystick(){
+  for( int i = 0; i < num_joysticks; i ++){
+    while (joy[i].flags & JOYFLAG_CALIBRATE) {
+      AL_CONST char *msg = calibrate_joystick_name(i);
+
+      if ((readkey()&0xFF) == 27)
+        exit(0);
+
+      if (calibrate_joystick(i) != 0) {
+         set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
+         allegro_message("Error calibrating joystick!\n");
+         exit(1);
+      }
+    }
+    if (!(joy[i].stick[0].flags & JOYFLAG_ANALOGUE))
+      allegro_message("This game only supports analogue joysticks, please unplug and try again. \n");
+  }
+
+  save_joystick_data("joy_config.dat");
+}
+
 // Game update
 void update(){
+  // Get joystick input
+  poll_joystick();
+
   // Move
   for( unsigned int i = 0; i < enemy_tanks.size(); i++){
     // Update barriers
     for( unsigned int t = 0; t < barriers.size(); t++)
       barriers.at(t).update( enemy_tanks.at(i).getBullets());
 
+    // Update bullets
+    for( unsigned int t = 0; t < player_tanks.size(); t++)
+      player_tanks.at(t).checkCollision( enemy_tanks.at(i).getBullets());
+
+    // Collision with barrier
+    enemy_tanks.at(i).checkCollision( &barriers);
+
     // Update tanks
     enemy_tanks.at(i).update();
+
     // Delete tank
     if(enemy_tanks.at(i).getErase())
       enemy_tanks.erase(enemy_tanks.begin() + i);
@@ -71,28 +104,33 @@ void update(){
     for( unsigned int t = 0; t < barriers.size(); t++)
       barriers.at(t).update( player_tanks.at(i).getBullets());
 
+    // Update bullets
+    for( unsigned int t = 0; t < enemy_tanks.size(); t++)
+      enemy_tanks.at(t).checkCollision( player_tanks.at(i).getBullets());
+
+    // Collision with barrier
+    player_tanks.at(i).checkCollision( &barriers);
+
     // Update tanks
     player_tanks.at(i).update();
+
     // Delete tank
     if(player_tanks.at(i).getErase())
       player_tanks.erase(player_tanks.begin() + i);
   }
 
   // Spawn tank
-  if( key[KEY_Z]){
-    BITMAP *tank_base_red, *tank_turret_red, *tank_hurt;
-    if (!(tank_base_red = load_bitmap( "images/tank_base_red.png", NULL)))
-      abort_on_error( "Cannot find image images/tank_base_red.png\nPlease check your files and try again");
-
-    if (!(tank_turret_red = load_bitmap( "images/tank_turret_red.png", NULL)))
-      abort_on_error( "Cannot find image images/tank_turret_red.png\nPlease check your files and try again");
-
-    if (!(tank_hurt = load_bitmap( "images/tank_hurt.png", NULL)))
-      abort_on_error( "Cannot find image images/tank_hurt.png\nPlease check your files and try again");
-
-    ai_tank newPlayer( random(0, SCREEN_W), random(0, SCREEN_H), 3, random(50,150), random(1,4), random(50,300), random(1,10)/10, tank_base_red, tank_turret_red, tank_hurt);
+  if( key[KEY_Z] || joy[0].button[3].b){
+    ai_tank newPlayer( random(0, SCREEN_W), random(0, SCREEN_H), 3, random(50,150), random(1,4), random(50,300), random(1,10)/10,
+                      load_bitmap( "images/tank_base_red.png", NULL), load_bitmap( "images/tank_turret_red.png", NULL), load_bitmap( "images/tank_hurt.png", NULL));
     enemy_tanks.push_back( newPlayer);
-    while(key[KEY_Z]){}
+    rest( 500);
+  }
+  if( key[KEY_X] || joy[0].button[2].b){
+    player_tank newPlayer( random(0, SCREEN_W), random(0, SCREEN_H), 3, random(50,150), random(1,4), random(50,300), random(1,10)/10,
+                      load_bitmap( "images/tank_base_green.png", NULL), load_bitmap( "images/tank_turret_green.png", NULL), load_bitmap( "images/tank_hurt.png", NULL));
+    player_tanks.push_back( newPlayer);
+    rest( 500);
   }
 }
 
@@ -119,6 +157,27 @@ void draw(){
 
 // Setup game
 void setup(){
+  // Init Allegro
+  allegro_init();
+  alpng_init();
+  install_timer();
+  install_keyboard();
+  install_mouse();
+  set_color_depth(32);
+
+  // Setup screen
+  set_gfx_mode( GFX_AUTODETECT_WINDOWED, 800, 600, 0, 0);
+  install_sound( DIGI_AUTODETECT, MIDI_AUTODETECT, ".");
+
+  // Setup joystick
+  //if( !load_joystick_data("joy_config.dat")){
+    install_joystick(JOY_TYPE_AUTODETECT);
+    calibrateJoystick();
+  //}
+
+  // Window Title
+  set_window_title( "Tanks!");
+
   // Create buffer
   buffer = create_bitmap( 800, 600);
 
@@ -160,61 +219,20 @@ void setup(){
     barriers.push_back( newBarrier);
   }
 
-  // Temp images
-  BITMAP *tank_base_green, *tank_turret_green, *tank_base_red, *tank_turret_red, *tank_hurt;
-  if (!(tank_base_green = load_bitmap( "images/tank_base_green.png", NULL)))
-    abort_on_error( "Cannot find image images/tank_base_green.png\nPlease check your files and try again");
-
-  if (!(tank_turret_green = load_bitmap( "images/tank_turret_green.png", NULL)))
-    abort_on_error( "Cannot find image images/tank_turret_green.png\nPlease check your files and try again");
-
-  if (!(tank_base_red = load_bitmap( "images/tank_base_red.png", NULL)))
-    abort_on_error( "Cannot find image images/tank_base_red.png\nPlease check your files and try again");
-
-  if (!(tank_turret_red = load_bitmap( "images/tank_turret_red.png", NULL)))
-    abort_on_error( "Cannot find image images/tank_turret_red.png\nPlease check your files and try again");
-
-  if (!(tank_hurt = load_bitmap( "images/tank_hurt.png", NULL)))
-    abort_on_error( "Cannot find image images/tank_hurt.png\nPlease check your files and try again");
-
   // Player
-  player_tank newPlayer( 50, 50, 3, 100, 4, 0, 1, tank_base_green, tank_turret_green, tank_hurt);
+  player_tank newPlayer( 50, 50, 3, 100, 4, 20, 1, load_bitmap( "images/tank_base_green.png", NULL), load_bitmap( "images/tank_turret_green.png", NULL), load_bitmap( "images/tank_hurt.png", NULL));
   player_tanks.push_back( newPlayer);
-
-  ai_tank newPlayer2( 400, 400, 3, 0, 2, 10, 1, tank_base_red, tank_turret_red, tank_hurt);
-  enemy_tanks.push_back( newPlayer2);
-
-  ai_tank newPlayer3( 200, 200, 3, 100, 3, 20, 1, tank_base_red, tank_turret_red, tank_hurt);
-  enemy_tanks.push_back( newPlayer3);
-
-  ai_tank newPlayer4( 500, 300, 3, 100, 3, 100, 1, tank_base_red, tank_turret_red, tank_hurt);
-  enemy_tanks.push_back( newPlayer4);
 
   for(int i = 0; i < 10; i++)
     frames_array[i] = 0;
 }
 
 int main(){
-  // Init Allegro
-  allegro_init();
-  alpng_init();
-  install_timer();
-  install_keyboard();
-  install_mouse();
-  set_color_depth(32);
-
-  // Setup screen
-  set_gfx_mode( GFX_AUTODETECT_WINDOWED, 800, 600, 0, 0);
-  install_sound( DIGI_AUTODETECT, MIDI_AUTODETECT, ".");
-
-  // Window Title
-  set_window_title( "Tanks!");
-
   // Setup
   setup();
 
   // FPS Counter
-  while( !key[KEY_ESC] && !close_button_pressed){
+  while( !key[KEY_ESC] && !close_button_pressed && !joy[0].button[7].b){
     while( ticks == 0){
       rest( 1);
     }

@@ -4,6 +4,7 @@
 #include <allegro.h>
 #include "../include/particle.h"
 #include "../include/bullet.h"
+#include "../include/barrier.h"
 
 class tank{
   public:
@@ -15,6 +16,9 @@ class tank{
 
     void update();
     void draw( BITMAP* tempImage);
+
+    void checkCollision( vector<bullet>* newBullets);
+    void checkCollision( vector<barrier>* newBarriers);
   protected:
     float x;
     float y;
@@ -36,6 +40,7 @@ class tank{
 
     bool dead;
     bool pendingErase;
+    bool canMove;
 
     vector<bullet> bullets;
     vector<particle> explosionEffect;
@@ -43,6 +48,8 @@ class tank{
     BITMAP *image_base;
     BITMAP *image_hurt;
     BITMAP *image_top;
+
+    SAMPLE *sample_shot;
 
     // Update
     void drive( float newRotation);

@@ -20,15 +20,31 @@ tank::tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed
   image_hurt = newHurtImage;
   image_top = newTurretImage;
 
+  if (image_base -> w < 1)
+    abort_on_error( "Cannot find tank base\nPlease check your files and try again");
+  if (image_hurt -> w < 1)
+    abort_on_error( "Cannot find tank hurt\nPlease check your files and try again");
+  if (image_top -> w < 1)
+    abort_on_error( "Cannot find tank turret\nPlease check your files and try again");
+
   dead = false;
   pendingErase = false;
+
+  sample_shot = load_sample( "sfx/fire.wav");
+
+  rotation_radians_body = 0;
+  rotation_allegro_body = 0;
+  rotation_radians_turret = 0;
+  rotation_allegro_turret = 0;
 }
 
 // Check dead
 bool tank::isDead(){
   // Just died
-  if( !dead && (health < 1))
-    explode( x + 25, y + 25, 20, 2000, 200);
+  if( !dead && (health < 1)){
+    explode( x + 25, y + 25, 10, 200, 20);
+    play_sample( sample_shot, 255, 127, 500, 0);
+  }
 
   // Set dead
   dead = (health < 1);
@@ -54,12 +70,40 @@ vector<bullet>* tank::getBullets(){
   return &bullets;
 }
 
+// Check collision
+void tank::checkCollision( vector<bullet>* newBullets){
+  for( unsigned int i = 0; i < newBullets -> size(); i++){
+    if( collisionAny( x, x + 50, newBullets -> at(i).getX(), newBullets -> at(i).getX() + newBullets -> at(i).getXVelocity(), y, y + 50, newBullets -> at(i).getY(), newBullets -> at(i).getY() + newBullets -> at(i).getYVelocity())){
+      health -= 10;
+      newBullets -> at(i).bounceCounter( TANK);
+    }
+  }
+}
+void tank::checkCollision( vector<barrier>* newBarriers){
+  float guess_vector_x = -speed * cos( rotation_radians_body);
+  float guess_vector_y = -speed * sin( rotation_radians_body);
+  for( unsigned int i = 0; i < newBarriers -> size(); i++){
+    if( collisionAny( x + guess_vector_x, x + 50 + guess_vector_x,
+                     newBarriers -> at(i).getX(), newBarriers -> at(i).getX() + newBarriers -> at(i).getWidth(),
+                     y + guess_vector_y, y + 50 + guess_vector_y,
+                     newBarriers -> at(i).getY(), newBarriers -> at(i).getY() + newBarriers -> at(i).getHeight())){
+      canMove = false;
+      break;
+    }
+    else{
+      canMove = true;
+    }
+  }
+}
+
 // Move around
 void tank::drive( float newRotation){
-  vector_x = -speed * cos( newRotation);
-  vector_y = -speed * sin( newRotation);
-  x += vector_x;
-  y += vector_y;
+  if( canMove){
+    vector_x = -speed * cos( newRotation);
+    vector_y = -speed * sin( newRotation);
+    x += vector_x;
+    y += vector_y;
+  }
 }
 
 // Update timers
@@ -79,7 +123,7 @@ void tank::update_bullets(){
   }
 
   // Erase bullets
-  if( key[KEY_C]){
+  if( key[KEY_C] || joy[0].button[4].b){
     bullets.clear();
   }
 }
@@ -87,11 +131,7 @@ void tank::update_bullets(){
 // Shoot
 void tank::shoot( float newRotation, float newX, float newY){
   if( bullet_delay > fire_delay_rate ){
-    // Load sounds
-    SAMPLE* fire;
-    if (!(fire = load_sample( "sfx/fire.wav")))
-      abort_on_error( "Cannot find image sfx/fire.wav\nPlease check your files and try again");
-    bullet newBullet( newX, newY, newRotation, fire_speed, true, 4, fire);
+    bullet newBullet( newX, newY, newRotation, fire_speed, true, 4, sample_shot);
     bullets.push_back( newBullet);
     bullet_delay = 0;
   }
@@ -130,7 +170,7 @@ void tank::drawHealthBar( BITMAP* tempImage, int newX, int newY, int newWidth, i
   // Health Bar
   rectfill(tempImage,newX,newY,newX + newWidth,newY + newHeight,makecol(0,0,0));
   rectfill(tempImage,newX+2,newY+2,newX + newWidth - 2,newY + newHeight-2,makecol(255,0,0));
-  rectfill(tempImage,newX+2,newY+2,newX + ((health/initialHealth) * newWidth) - 2,newY + newHeight-2,makecol(0,255,0));
+  rectfill(tempImage,newX+2,newY+2,newX + (((float)health/(float)initialHealth) * newWidth) - 2,newY + newHeight-2,makecol(0,255,0));
 }
 
 // Draw
@@ -153,6 +193,8 @@ void tank::draw( BITMAP* tempImage){
       explosionEffect.at(i).draw(tempImage);
     }
   }
+  // Debug
+  //textprintf_ex( tempImage, font, x, y, makecol(0,0,0), makecol(255,255,255), "Rot:%f", rotation_radians_turret);
 }
 
 
@@ -170,15 +212,20 @@ void player_tank::update(){
   if( !isDead()){
     // Shoot
     rotation_radians_turret = find_angle( x + 25, y + 25, mouse_x, mouse_y);
+    if( joy[0].stick[0].axis[0].pos != 0 || joy[0].stick[0].axis[1].pos != 0)
+      rotation_radians_turret = find_angle( x + 25, y + 25, (joy[0].stick[0].axis[0].pos) + (x + 25), (joy[0].stick[0].axis[1].pos) + (y + 25));
     rotation_allegro_turret = rotation_radians_turret * 40.5845104792;
 
-    if( key[KEY_SPACE] || mouse_b & 1){
+    if( key[KEY_SPACE] || mouse_b & 1 || joy[0].button[1].b){
       shoot( rotation_radians_turret, x + 23, y + 23);
     }
 
     // Drive
-    if( mouse_b & 2){
-      rotation_radians_body = find_angle( x + 25, y + 25, mouse_x, mouse_y);
+    if( mouse_b & 2 || joy[0].button[0].b){
+      if( mouse_b & 2)
+        rotation_radians_body = find_angle( x + 25, y + 25, mouse_x, mouse_y);
+      if( joy[0].button[0].b)
+        rotation_radians_body = find_angle( x + 25, y + 25, (joy[0].stick[0].axis[0].pos) + (x + 25), (joy[0].stick[0].axis[1].pos) + (y + 25));
       rotation_allegro_body = rotation_radians_body * 40.5845104792;
       drive( rotation_radians_body);
       speed = 1;
@@ -220,7 +267,7 @@ ai_tank::ai_tank( int newX, int newY, int newHurtTime, int newHealth, int newFir
 void ai_tank::update(){
   if( !isDead()){
     // Rotate turret
-    rotation_radians_turret += float(random(-1,1)/10);
+    rotation_radians_turret += randomf(-0.1,0.1);
     rotation_allegro_turret = rotation_radians_turret * 40.5845104792;
 
     // Shoot

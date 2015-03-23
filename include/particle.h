@@ -13,7 +13,7 @@
 
 class particle{
   public:
-    particle(int newX, int newY, int newColor, int newXMin, int newXMax, int newYMin, int newYMax, int newSize, int newType, int newLife, int newBehavior);
+    particle(int newX, int newY, int newColor, float newXMin, float newXMax, float newYMin, float newYMax, int newSize, int newType, int newLife, int newBehavior);
     ~particle();
 
     void logic();

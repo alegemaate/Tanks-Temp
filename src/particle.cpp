@@ -1,7 +1,7 @@
 #include "../include/particle.h"
 
 // Constructor
-particle::particle(int newX, int newY, int newColor, int newXMin, int newXMax, int newYMin, int newYMax, int newSize, int newType, int newLife, int newBehaviour){
+particle::particle(int newX, int newY, int newColor, float newXMin, float newXMax, float newYMin, float newYMax, int newSize, int newType, int newLife, int newBehaviour){
   x = newX;
   y = newY;
 
@@ -14,17 +14,18 @@ particle::particle(int newX, int newY, int newColor, int newXMin, int newXMax, i
   particleType = newType;
   particleBehaviour = newBehaviour;
 
-  dead = false;
   particleLife = newLife;
 
-  x_velocity = random( newXMin, newXMax);
-  y_velocity = random( newYMin, newYMax);
+  x_velocity = randomf( newXMin, newXMax);
+  y_velocity = randomf( newYMin, newXMax);
 
   // No unmoving
   if( x_velocity == 0)
-    x_velocity = 1;
+    x_velocity = 0.1;
   if( y_velocity == 0)
-    y_velocity = 1;
+    y_velocity = 0.1;
+
+  dead = false;
 }
 
 // Deconstructor
@@ -38,10 +39,12 @@ void particle::logic(){
   if( particleBehaviour == EXPLODE){
     x += x_velocity;
     y += y_velocity;
+    x_velocity -= x_velocity/10;
+    y_velocity -= y_velocity/10;
   }
   else{
-    x += random( -x_velocity, x_velocity);
-    y += random( -y_velocity, y_velocity);
+    x += randomf( -x_velocity, x_velocity);
+    y += randomf( -y_velocity, y_velocity);
   }
 
   // Die

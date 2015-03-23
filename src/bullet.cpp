@@ -8,7 +8,7 @@ bullet::bullet( float newX, float newY, float newAngle, float newSpeed, bool new
   vector_y = -newSpeed*sin( newAngle);
   owner = newOwner;
   shotSound = newSound;
-  play_sample( shotSound, 255, 122, random(800,1200), 0);
+  play_sample( shotSound, 255, 127, random(800,1200), 0);
   pendingErase = false;
   health = newHealth;
   exploded = false;
@@ -46,6 +46,8 @@ float bullet::getY(){
 void bullet::bounceCounter( int newDirection){
   health--;
   incidenceDirection = newDirection;
+  if( newDirection == TANK)
+    health = 0;
 }
 
 // Return vectors
