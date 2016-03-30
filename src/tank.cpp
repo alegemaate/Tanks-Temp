@@ -82,26 +82,34 @@ void tank::checkCollision( vector<bullet>* newBullets){
 void tank::checkCollision( vector<barrier>* newBarriers){
   float guess_vector_x = -speed * cos( rotation_radians_body);
   float guess_vector_y = -speed * sin( rotation_radians_body);
+
+  canMoveX = true;
+  canMoveY = true;
+
   for( unsigned int i = 0; i < newBarriers -> size(); i++){
     if( collisionAny( x + guess_vector_x, x + 50 + guess_vector_x,
                      newBarriers -> at(i).getX(), newBarriers -> at(i).getX() + newBarriers -> at(i).getWidth(),
+                     y, y + 50,
+                     newBarriers -> at(i).getY(), newBarriers -> at(i).getY() + newBarriers -> at(i).getHeight())){
+      canMoveX = false;
+    }
+    if( collisionAny( x, x + 50,
+                     newBarriers -> at(i).getX(), newBarriers -> at(i).getX() + newBarriers -> at(i).getWidth(),
                      y + guess_vector_y, y + 50 + guess_vector_y,
                      newBarriers -> at(i).getY(), newBarriers -> at(i).getY() + newBarriers -> at(i).getHeight())){
-      canMove = false;
-      break;
-    }
-    else{
-      canMove = true;
+      canMoveY = false;
     }
   }
 }
 
 // Move around
 void tank::drive( float newRotation){
-  if( canMove){
+  if( canMoveX){
     vector_x = -speed * cos( newRotation);
-    vector_y = -speed * sin( newRotation);
     x += vector_x;
+  }
+  if( canMoveY){
+    vector_y = -speed * sin( newRotation);
     y += vector_y;
   }
 }
@@ -131,7 +139,7 @@ void tank::update_bullets(){
 // Shoot
 void tank::shoot( float newRotation, float newX, float newY){
   if( bullet_delay > fire_delay_rate ){
-    bullet newBullet( newX, newY, newRotation, fire_speed, true, 4, sample_shot);
+    bullet newBullet( newX, newY, newRotation, fire_speed, true, 1, sample_shot);
     bullets.push_back( newBullet);
     bullet_delay = 0;
   }
@@ -195,6 +203,11 @@ void tank::draw( BITMAP* tempImage){
   }
   // Debug
   //textprintf_ex( tempImage, font, x, y, makecol(0,0,0), makecol(255,255,255), "Rot:%f", rotation_radians_turret);
+}
+
+// Put decals
+void tank::putDecal( BITMAP* tempImage){
+  rectfill( tempImage, x, y, x + 10, y + 10, makecol(0,0,0));
 }
 
 
@@ -266,12 +279,23 @@ ai_tank::ai_tank( int newX, int newY, int newHurtTime, int newHealth, int newFir
 // Update
 void ai_tank::update(){
   if( !isDead()){
-    // Rotate turret
-    rotation_radians_turret += randomf(-0.1,0.1);
+    // Rotate turret (at random enemy)
+    int random_enemy_x, random_enemy_y;
+
+    if( otherTanks -> size() > 0){
+      random_enemy_x = otherTanks -> at(0).getX();
+      random_enemy_y = otherTanks -> at(0).getY();
+    }
+    else{
+      random_enemy_x = destination_x;
+      random_enemy_y = destination_y;
+    }
+
+    rotation_radians_turret = find_angle( x + 25, y + 25, random_enemy_x, random_enemy_y);//randomf(-0.1,0.1);
     rotation_allegro_turret = rotation_radians_turret * 40.5845104792;
 
     // Shoot
-    if( random(0,100) == 0){
+    if( random(0,10) == 0){
       shoot( rotation_radians_turret, x + 23, y + 23);
     }
 
@@ -310,8 +334,13 @@ void ai_tank::update(){
 
 // Ai point choosing
 void ai_tank::update_target(){
-  if( find_distance(x + 25, y + 25, destination_x, destination_y) < 10){
+  if( find_distance(x + 25, y + 25, destination_x, destination_y) < 10 || (canMoveX == false && canMoveY == false)){
     destination_x = random( 0, 800);
     destination_y = random( 0, 600);
   }
+}
+
+// Feed AI player positions
+void ai_tank::process_enemies( vector<player_tank>* tempOtherTanks){
+  otherTanks = tempOtherTanks;
 }

@@ -11,6 +11,7 @@ using namespace std;
 
 // Images
 BITMAP *buffer;
+BITMAP *decal_buffer;
 BITMAP *background;
 BITMAP *cursor;
 BITMAP *blocks[3];
@@ -29,6 +30,8 @@ int old_time;
 const int updates_per_second = 120;
 int frames_array[10];
 int frame_index = 0;
+
+int currentRound = 0;
 
 void ticker()
 {
@@ -119,18 +122,34 @@ void update(){
       player_tanks.erase(player_tanks.begin() + i);
   }
 
-  // Spawn tank
-  if( key[KEY_Z] || joy[0].button[3].b){
-    ai_tank newPlayer( random(0, SCREEN_W), random(0, SCREEN_H), 3, random(50,150), random(1,4), random(50,300), random(1,10)/10,
-                      load_bitmap( "images/tank_base_red.png", NULL), load_bitmap( "images/tank_turret_red.png", NULL), load_bitmap( "images/tank_hurt.png", NULL));
-    enemy_tanks.push_back( newPlayer);
-    rest( 500);
+  // Remove broken barriers
+  for( unsigned int i = 0; i < barriers.size(); i++){
+    if( barriers.at(i).getDead()){
+      barriers.erase( barriers.begin() + i);
+    }
   }
-  if( key[KEY_X] || joy[0].button[2].b){
-    player_tank newPlayer( random(0, SCREEN_W), random(0, SCREEN_H), 3, random(50,150), random(1,4), random(50,300), random(1,10)/10,
-                      load_bitmap( "images/tank_base_green.png", NULL), load_bitmap( "images/tank_turret_green.png", NULL), load_bitmap( "images/tank_hurt.png", NULL));
+
+  // GAME!
+
+  // Next round
+  if( enemy_tanks.size() == 0){
+    currentRound += 1;
+
+    for( int i = 0; i < currentRound; i ++){
+      ai_tank newPlayer( random(0, SCREEN_W), random(0, SCREEN_H), 3, random(50,150), random(1,4), random(50,300), random(1,10)/10,
+                        load_bitmap( "images/tank_base_red.png", NULL), load_bitmap( "images/tank_turret_red.png", NULL), load_bitmap( "images/tank_hurt.png", NULL));
+      newPlayer.process_enemies( &player_tanks);
+      enemy_tanks.push_back( newPlayer);
+    }
+  }
+  // U died
+  else if( player_tanks.size() == 0){
+    enemy_tanks.clear();
+    currentRound = 0;
+
+    // The new you!
+    player_tank newPlayer( 50, 50, 3, 100, 4, 20, 1, load_bitmap( "images/tank_base_green.png", NULL), load_bitmap( "images/tank_turret_green.png", NULL), load_bitmap( "images/tank_hurt.png", NULL));
     player_tanks.push_back( newPlayer);
-    rest( 500);
   }
 }
 
@@ -138,15 +157,21 @@ void draw(){
   // Draw background
   draw_sprite( buffer, background, 0, 0);
 
+  // Decal to buffer
+  draw_sprite( buffer, decal_buffer, 0, 0);
+
   // Draw barriers
   for( unsigned int i = 0; i < barriers.size(); i++)
     barriers.at(i).draw( buffer);
 
   // Draw tanks
-  for( unsigned int i = 0; i < enemy_tanks.size(); i++)
+  for( unsigned int i = 0; i < enemy_tanks.size(); i++){
     enemy_tanks.at(i).draw( buffer);
-  for( unsigned int i = 0; i < player_tanks.size(); i++)
+  }
+  for( unsigned int i = 0; i < player_tanks.size(); i++){
     player_tanks.at(i).draw( buffer);
+    player_tanks.at(i).putDecal( decal_buffer);
+  }
 
   // Cursor
   draw_sprite( buffer, cursor, mouse_x - 10, mouse_y - 10);
@@ -180,6 +205,8 @@ void setup(){
 
   // Create buffer
   buffer = create_bitmap( 800, 600);
+  decal_buffer = create_bitmap( 800, 600);
+  rectfill( decal_buffer, 0, 0, 800, 600, makecol( 255, 0, 255));
 
   // Create random number generator
   srand( time( NULL));

@@ -16,6 +16,10 @@ class tank{
 
     void update();
     void draw( BITMAP* tempImage);
+    void putDecal( BITMAP* tempImage);
+
+    int getX(){ return x; }
+    int getY(){ return y; }
 
     void checkCollision( vector<bullet>* newBullets);
     void checkCollision( vector<barrier>* newBarriers);
@@ -40,7 +44,9 @@ class tank{
 
     bool dead;
     bool pendingErase;
-    bool canMove;
+
+    bool canMoveX;
+    bool canMoveY;
 
     vector<bullet> bullets;
     vector<particle> explosionEffect;
@@ -77,10 +83,12 @@ class ai_tank: public tank{
   public:
     ai_tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage);
     void update();
+    void process_enemies( vector<player_tank>* tempOtherTanks);
   protected:
     float destination_x;
     float destination_y;
 
+    vector<player_tank>* otherTanks;
     void update_target();
 };
 

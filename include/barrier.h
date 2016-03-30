@@ -21,6 +21,8 @@ class barrier{
 
     int getWidth();
     int getHeight();
+
+    bool getDead();
   private:
     int x;
     int y;
@@ -28,11 +30,14 @@ class barrier{
     int width;
     int height;
 
+    int health;
+
     vector<particle> explosionEffect;
 
     void explode( int newX, int newY, int newVelocity, int newAmount, int newLife);
 
     BITMAP* image;
+    SAMPLE *sample_explode;
 };
 
 #endif // BARRIER_H

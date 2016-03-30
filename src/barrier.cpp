@@ -7,6 +7,10 @@ barrier::barrier( int newX, int newY, BITMAP* newImage){
 
   this -> width = image -> w;
   this -> height = image -> h;
+
+  this -> health = random( 10, 50);
+
+  sample_explode = load_sample( "sfx/explode.wav");
 }
 
 barrier::~barrier(){
@@ -15,25 +19,27 @@ barrier::~barrier(){
 
 // Update
 void barrier::update( vector<bullet>* newBullets){
-  for( unsigned int i = 0; i < newBullets -> size(); i++){
-    if( collisionAny( x, x + width, newBullets -> at(i).getX(), newBullets -> at(i).getX() + 5, y, y + height, newBullets -> at(i).getY(), newBullets -> at(i).getY() + 5)){
-      if( collisionBottom( newBullets -> at(i).getY() + newBullets -> at(i).getYVelocity(), newBullets -> at(i).getY() + 5, y, y + height)){
-        newBullets -> at(i).reverseDirection("y");
-        newBullets -> at(i).bounceCounter( BOTTOM);
+  if( health != 0){
+    for( unsigned int i = 0; i < newBullets -> size(); i++){
+      if( collisionAny( x, x + width, newBullets -> at(i).getX(), newBullets -> at(i).getX() + 5, y, y + height, newBullets -> at(i).getY(), newBullets -> at(i).getY() + 5)){
+        if( collisionBottom( newBullets -> at(i).getY() + newBullets -> at(i).getYVelocity(), newBullets -> at(i).getY() + 5, y, y + height)){
+          newBullets -> at(i).reverseDirection("y");
+          newBullets -> at(i).bounceCounter( BOTTOM);
+        }
+        if( collisionTop( newBullets -> at(i).getY(), newBullets -> at(i).getY() + 5 + newBullets -> at(i).getYVelocity(), y, y + height)){
+          newBullets -> at(i).reverseDirection("y");
+          newBullets -> at(i).bounceCounter( TOP);
+        }
+        if( collisionLeft( newBullets -> at(i).getX(), newBullets -> at(i).getX() + 5 + newBullets -> at(i).getXVelocity(), x, x + width)){
+          newBullets -> at(i).reverseDirection("x");
+          newBullets -> at(i).bounceCounter( LEFT);
+        }
+        if( collisionRight( newBullets -> at(i).getX() + newBullets -> at(i).getXVelocity(), newBullets -> at(i).getX() + 5, x, x + width)){
+          newBullets -> at(i).reverseDirection("x");
+          newBullets -> at(i).bounceCounter( RIGHT);
+        }
+        explode( x + width/2, y + height/2, 10, 200, 20);
       }
-      if( collisionTop( newBullets -> at(i).getY(), newBullets -> at(i).getY() + 5 + newBullets -> at(i).getYVelocity(), y, y + height)){
-        newBullets -> at(i).reverseDirection("y");
-        newBullets -> at(i).bounceCounter( TOP);
-      }
-      if( collisionLeft( newBullets -> at(i).getX(), newBullets -> at(i).getX() + 5 + newBullets -> at(i).getXVelocity(), x, x + width)){
-        newBullets -> at(i).reverseDirection("x");
-        newBullets -> at(i).bounceCounter( LEFT);
-      }
-      if( collisionRight( newBullets -> at(i).getX() + newBullets -> at(i).getXVelocity(), newBullets -> at(i).getX() + 5, x, x + width)){
-        newBullets -> at(i).reverseDirection("x");
-        newBullets -> at(i).bounceCounter( RIGHT);
-      }
-      explode( x + width/2, y + height/2, 10, 200, 20);
     }
   }
 
@@ -48,7 +54,8 @@ void barrier::update( vector<bullet>* newBullets){
 
 // Draw image
 void barrier::draw( BITMAP* tempImage){
-  draw_sprite( tempImage, image, this -> x, this -> y);
+  if( health != 0)
+    draw_sprite( tempImage, image, this -> x, this -> y);
 
   for( unsigned int i = 0; i < explosionEffect.size(); i++)
     explosionEffect.at(i).draw(tempImage);
@@ -74,6 +81,15 @@ int barrier::getHeight(){
   return height;
 }
 
+// Check if needs cleanup
+bool barrier::getDead(){
+  if( health == 0){
+    play_sample( sample_explode, 255, 127, 1000, 0);
+    return true;
+  }
+  return false;
+}
+
 // Explode
 void barrier::explode( int newX, int newY, int newVelocity, int newAmount, int newLife){
   for( int i = 0; i < newAmount; i ++){
@@ -93,4 +109,8 @@ void barrier::explode( int newX, int newY, int newVelocity, int newAmount, int n
     particle newParticle(newX, newY, new_colour, -newVelocity, newVelocity, -newVelocity, newVelocity, 1, CIRCLE, newLife, EXPLODE);
     explosionEffect.push_back(newParticle);
   }
+
+  // Destory
+  if( health > 0)
+    health--;
 }
