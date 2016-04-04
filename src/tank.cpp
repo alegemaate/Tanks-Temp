@@ -145,7 +145,10 @@ void tank::update_bullets(){
 // Shoot
 void tank::shoot( float newRotation, float newX, float newY){
   if( bullet_delay > fire_delay_rate ){
-    bullet newBullet( newX, newY, newRotation, fire_speed, true, 1, sample_shot);
+    bool magicMODE = false;
+    if(key[KEY_LSHIFT])
+      magicMODE = true;
+    bullet newBullet( newX, newY, newRotation, fire_speed, true, 1 + (magicMODE * 10), sample_shot);
     bullets.push_back( newBullet);
     bullet_delay = 0;
   }
