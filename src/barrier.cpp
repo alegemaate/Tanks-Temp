@@ -38,7 +38,7 @@ void barrier::update( vector<bullet>* newBullets){
           newBullets -> at(i).reverseDirection("x");
           newBullets -> at(i).bounceCounter( RIGHT);
         }
-        explode( x + width/2, y + height/2, 10, 200, 20);
+        explode( x + width/2, y + height/2, 6, 100, 30);
       }
     }
   }
@@ -83,8 +83,7 @@ int barrier::getHeight(){
 
 // Check if needs cleanup
 bool barrier::getDead(){
-  if( health == 0){
-    play_sample( sample_explode, 255, 127, 1000, 0);
+  if( health == 0 && explosionEffect.size() == 0){
     return true;
   }
   return false;
@@ -92,25 +91,31 @@ bool barrier::getDead(){
 
 // Explode
 void barrier::explode( int newX, int newY, int newVelocity, int newAmount, int newLife){
-  /*for( int i = 0; i < newAmount; i ++){
-    int new_colour = 0;
-
-    // Make sure not transparent ( they show as white)
-    do{
-      // position of colour
-      int random_y = random(0, height);
-      int random_x = random(0, width);
-
-      // New colour
-      new_colour = getpixel( image, random_y, random_x);
-    }while( getr(new_colour) == 255 && getg(new_colour) == 255 && getb(new_colour) == 255);
-
-    // Make particle
-    particle newParticle(newX, newY, new_colour, -newVelocity, newVelocity, -newVelocity, newVelocity, 1, CIRCLE, newLife, EXPLODE);
-    explosionEffect.push_back(newParticle);
-  }*/
-
   // Destory
-  if( health > 0)
+  if( health > 0){
     health--;
+
+    // Explode
+    if( health == 0) {
+      play_sample( sample_explode, 255, 127, 1000, 0);
+
+      for( int i = 0; i < newAmount; i ++){
+        int new_colour = 0;
+
+        // Make sure not transparent ( they show as white)
+        do{
+          // position of colour
+          int random_y = random(0, height);
+          int random_x = random(0, width);
+
+          // New colour
+          new_colour = getpixel( image, random_y, random_x);
+        }while( getr(new_colour) == 255 && getg(new_colour) == 255 && getb(new_colour) == 255);
+
+        // Make particle
+        particle newParticle(newX, newY, new_colour, -newVelocity, newVelocity, -newVelocity, newVelocity, 1, CIRCLE, newLife, EXPLODE);
+        explosionEffect.push_back(newParticle);
+      }
+    }
+  }
 }

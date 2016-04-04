@@ -195,12 +195,12 @@ void draw(){
   // Draw tanks
   for( unsigned int i = 0; i < enemy_tanks.size(); i++){
     enemy_tanks.at(i).draw( buffer);
-    if( random( 1, 30))
+    if( random( 1, 3) == 1)
       enemy_tanks.at(i).putDecal( decal_buffer);
   }
   for( unsigned int i = 0; i < player_tanks.size(); i++){
     player_tanks.at(i).draw( buffer);
-    if( random( 1, 30))
+    if( random( 1, 3) == 1)
       player_tanks.at(i).putDecal( decal_buffer);
   }
 
