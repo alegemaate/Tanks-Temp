@@ -200,7 +200,8 @@ void tank::draw( BITMAP* tempImage){
     drawTankTurret( tempImage);
 
     // Health bar
-    drawHealthBar( tempImage, x - 20, y - 20, 90, 10);
+    if( health < initialHealth)
+      drawHealthBar( tempImage, x - 5, y - 10, 50, 6);
   }
   else{
     for( unsigned int i = 0; i < explosionEffect.size(); i++){
