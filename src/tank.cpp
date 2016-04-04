@@ -247,7 +247,8 @@ void player_tank::update(){
         rotation_radians_body = find_angle( x + width/2, y + height/2, (joy[0].stick[0].axis[0].pos) + (x + width/2), (joy[0].stick[0].axis[1].pos) + (y + height/2));
       rotation_allegro_body = rotation_radians_body * 40.5845104792;
       drive( rotation_radians_body);
-      speed = 1;
+      if( speed < 1)
+        speed = 1;
     }
     else{
       speed = 0;

@@ -154,7 +154,7 @@ void update(){
 
     for( int i = 0; i < currentRound; i ++){
       // choose a start location ID
-      int randomStartLocation = random( 0, startLocations.size());
+      int randomStartLocation = random( 0, startLocations.size() - 1);
 
       ai_tank newPlayer( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
                         random(50,150), random(1,4), random(50,300), random(1,10)/10,
