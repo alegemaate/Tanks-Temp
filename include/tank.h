@@ -75,7 +75,7 @@ class tank{
     void drawBullets( BITMAP* tempImage);
     void drawTankBase( BITMAP* tempImage);
     void drawTankTurret( BITMAP* tempImage);
-    void drawHealthBar( BITMAP* tempImage, int newX, int newY, int newWidth, int newHeight);
+    void drawHealthBar( BITMAP* tempImage, int newX, int newY, int newWidth, int newHeight, int newBorderWidth);
 };
 
 class player_tank: public tank{

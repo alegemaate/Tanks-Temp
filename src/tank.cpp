@@ -93,15 +93,15 @@ void tank::checkCollision( vector<barrier>* newBarriers){
   canMoveY = true;
 
   for( unsigned int i = 0; i < newBarriers -> size(); i++){
-    if( collisionAny( x + guess_vector_x, x + width - 1 + guess_vector_x,
+    if( collisionAny( x + 2 + guess_vector_x, x + width - 2 + guess_vector_x,
                      newBarriers -> at(i).getX(), newBarriers -> at(i).getX() + newBarriers -> at(i).getWidth(),
-                     y, y + height - 1,
+                     y + 2, y + height - 2,
                      newBarriers -> at(i).getY(), newBarriers -> at(i).getY() + newBarriers -> at(i).getHeight())){
       canMoveX = false;
     }
-    if( collisionAny( x, x + width - 1,
+    if( collisionAny( x + 2, x + width - 2,
                      newBarriers -> at(i).getX(), newBarriers -> at(i).getX() + newBarriers -> at(i).getWidth(),
-                     y + guess_vector_y, y + height - 1 + guess_vector_y,
+                     y + 2 + guess_vector_y, y + height - 2 + guess_vector_y,
                      newBarriers -> at(i).getY(), newBarriers -> at(i).getY() + newBarriers -> at(i).getHeight())){
       canMoveY = false;
     }
@@ -180,11 +180,13 @@ void tank::drawTankTurret( BITMAP* tempImage){
 }
 
 // Draw health
-void tank::drawHealthBar( BITMAP* tempImage, int newX, int newY, int newWidth, int newHeight){
+void tank::drawHealthBar( BITMAP* tempImage, int newX, int newY, int newWidth, int newHeight, int newBorderWidth){
   // Health Bar
-  rectfill(tempImage,newX,newY,newX + newWidth,newY + newHeight,makecol(0,0,0));
-  rectfill(tempImage,newX+2,newY+2,newX + newWidth - 2,newY + newHeight-2,makecol(255,0,0));
-  rectfill(tempImage,newX+2,newY+2,newX + (((float)health/(float)initialHealth) * newWidth) - 2,newY + newHeight-2,makecol(0,255,0));
+  rectfill( tempImage, newX, newY, newX + newWidth, newY + newHeight, makecol(0,0,0));
+  rectfill( tempImage, newX + newBorderWidth, newY + newBorderWidth,
+           newX + newWidth - newBorderWidth, newY + newHeight - newBorderWidth, makecol(255,0,0));
+  rectfill( tempImage, newX + newBorderWidth ,newY + newBorderWidth,
+           newX + (((float)health/(float)initialHealth) * newWidth) - newBorderWidth, newY + newHeight - newBorderWidth,makecol(0,255,0));
 }
 
 // Draw
@@ -201,7 +203,7 @@ void tank::draw( BITMAP* tempImage){
 
     // Health bar
     if( health < initialHealth)
-      drawHealthBar( tempImage, x - 5, y - 10, 50, 6);
+      drawHealthBar( tempImage, x - 5, y - 10, 50, 6, 1);
   }
   else{
     for( unsigned int i = 0; i < explosionEffect.size(); i++){
