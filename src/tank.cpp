@@ -238,18 +238,43 @@ void player_tank::update(){
       rotation_radians_turret = find_angle( x + width/2 - 2, y + height/2 - 2, (joy[0].stick[0].axis[0].pos) + (x + 25), (joy[0].stick[0].axis[1].pos) + (y + 25));
     rotation_allegro_turret = rotation_radians_turret * 40.5845104792;
 
+
     if( key[KEY_SPACE] || mouse_b & 1 || joy[0].button[1].b){
       shoot( rotation_radians_turret, x + width/2 - 2, y + height/2 - 2);
     }
 
-    // Drive
-    if( mouse_b & 2 || joy[0].button[0].b){
-      if( mouse_b & 2)
-        rotation_radians_body = find_angle( x + width/2, y + height/2, mouse_x, mouse_y);
-      if( joy[0].button[0].b)
-        rotation_radians_body = find_angle( x + width/2, y + height/2, (joy[0].stick[0].axis[0].pos) + (x + width/2), (joy[0].stick[0].axis[1].pos) + (y + height/2));
+    // Rotate with keys
+    if( key[KEY_A] || key[KEY_LEFT]){
+      rotation_radians_body -= 0.03;
       rotation_allegro_body = rotation_radians_body * 40.5845104792;
-      drive( rotation_radians_body);
+    }
+    if( key[KEY_D] || key[KEY_RIGHT]){
+      rotation_radians_body += 0.03;
+      rotation_allegro_body = rotation_radians_body * 40.5845104792;
+    }
+
+    // Drive
+    if( mouse_b & 2 || joy[0].button[0].b || key[KEY_W] || key[KEY_UP]){
+      if( mouse_b & 2){
+        rotation_radians_body = find_angle( x + width/2, y + height/2, mouse_x, mouse_y);
+        rotation_allegro_body = rotation_radians_body * 40.5845104792;
+        drive( rotation_radians_body);
+      }
+      else if( joy[0].button[0].b){
+        rotation_radians_body = find_angle( x + width/2, y + height/2, (joy[0].stick[0].axis[0].pos) + (x + width/2), (joy[0].stick[0].axis[1].pos) + (y + height/2));
+        rotation_allegro_body = rotation_radians_body * 40.5845104792;
+        drive( rotation_radians_body);
+      }
+      else if( key[KEY_W]){
+        rotation_allegro_body = rotation_radians_body * 40.5845104792;
+        drive( rotation_radians_body);
+      }
+      else if( key[KEY_UP]){
+        rotation_allegro_body = rotation_radians_body * 40.5845104792;
+        drive( rotation_radians_body);
+      }
+
+
       if( speed < 1)
         speed = 1;
     }

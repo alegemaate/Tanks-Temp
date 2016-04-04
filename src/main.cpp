@@ -230,10 +230,10 @@ void setup(){
   install_sound( DIGI_AUTODETECT, MIDI_AUTODETECT, ".");
 
   // Setup joystick
-  //if( !load_joystick_data("joy_config.dat")){
+  if( !load_joystick_data("joy_config.dat")){
     install_joystick(JOY_TYPE_AUTODETECT);
     calibrateJoystick();
-  //}
+  }
 
   // Window Title
   set_window_title( "Tanks!");
