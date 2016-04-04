@@ -145,9 +145,8 @@ void tank::update_bullets(){
 // Shoot
 void tank::shoot( float newRotation, float newX, float newY){
   if( bullet_delay > fire_delay_rate ){
-    bool magicMODE = false;
-    if(key[KEY_LSHIFT])
-      magicMODE = true;
+    bool magicMODE = key[KEY_LSHIFT];
+
     bullet newBullet( newX, newY, newRotation, fire_speed, true, 1 + (magicMODE * 10), sample_shot);
     bullets.push_back( newBullet);
     bullet_delay = 0;
@@ -304,6 +303,11 @@ void player_tank::update(){
   update_bullets();
 }
 
+// Feed AI player positions
+void tank::process_enemies( vector<tank*>* tempOtherTanks){
+  otherTanks = tempOtherTanks;
+}
+
 /*****************
     AI Tank
 *****************/
@@ -321,8 +325,8 @@ void ai_tank::update(){
     int random_enemy_x, random_enemy_y;
 
     if( otherTanks -> size() > 0){
-      random_enemy_x = otherTanks -> at(0).getX() + otherTanks -> at(0).getWidth()/2;
-      random_enemy_y = otherTanks -> at(0).getY() + otherTanks -> at(0).getHeight()/2;
+      random_enemy_x = otherTanks -> at(0) -> getX() + otherTanks -> at(0) -> getWidth()/2;
+      random_enemy_y = otherTanks -> at(0) -> getY() + otherTanks -> at(0) -> getHeight()/2;
     }
     else{
       random_enemy_x = destination_x;
@@ -376,9 +380,4 @@ void ai_tank::update_target(){
     destination_x = random( 0, 800);
     destination_y = random( 0, 600);
   }
-}
-
-// Feed AI player positions
-void ai_tank::process_enemies( vector<player_tank>* tempOtherTanks){
-  otherTanks = tempOtherTanks;
 }

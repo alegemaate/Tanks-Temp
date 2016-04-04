@@ -10,22 +10,24 @@ class tank{
   public:
     explicit tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
 
-    bool getErase();
+    virtual bool getErase();
 
-    vector<bullet>* getBullets();
+    virtual vector<bullet>* getBullets();
 
-    void update();
-    void draw( BITMAP* tempImage);
-    void putDecal( BITMAP* tempImage);
+    virtual void update();
+    virtual void draw( BITMAP* tempImage);
+    virtual void putDecal( BITMAP* tempImage);
 
-    int getX(){ return x; }
-    int getY(){ return y; }
+    virtual int getX(){ return x; }
+    virtual int getY(){ return y; }
 
-    int getHeight(){ return width; }
-    int getWidth(){ return height; }
+    virtual int getHeight(){ return width; }
+    virtual int getWidth(){ return height; }
 
-    void checkCollision( vector<bullet>* newBullets);
-    void checkCollision( vector<barrier>* newBarriers);
+    virtual void checkCollision( vector<bullet>* newBullets);
+    virtual void checkCollision( vector<barrier>* newBarriers);
+
+    virtual void process_enemies( vector<tank*> *tempOtherTanks);
   protected:
     float x;
     float y;
@@ -55,6 +57,7 @@ class tank{
 
     vector<bullet> bullets;
     vector<particle> explosionEffect;
+    vector<tank*> *otherTanks;
 
     BITMAP *image_base;
     BITMAP *image_hurt;
@@ -64,37 +67,35 @@ class tank{
     SAMPLE *sample_shot;
 
     // Update
-    void drive( float newRotation);
-    void shoot( float newRotation, float newX, float newY);
-    void update_bullets();
-    void update_timers();
-    void explode( int newX, int newY, int newVelocity, int newAmount, int newLife);
-    bool isDead();
+    virtual void drive( float newRotation);
+    virtual void shoot( float newRotation, float newX, float newY);
+    virtual void update_bullets();
+    virtual void update_timers();
+    virtual void explode( int newX, int newY, int newVelocity, int newAmount, int newLife);
+    virtual bool isDead();
 
     // Draw
-    void drawBullets( BITMAP* tempImage);
-    void drawTankBase( BITMAP* tempImage);
-    void drawTankTurret( BITMAP* tempImage);
-    void drawHealthBar( BITMAP* tempImage, int newX, int newY, int newWidth, int newHeight, int newBorderWidth);
+    virtual void drawBullets( BITMAP* tempImage);
+    virtual void drawTankBase( BITMAP* tempImage);
+    virtual void drawTankTurret( BITMAP* tempImage);
+    virtual void drawHealthBar( BITMAP* tempImage, int newX, int newY, int newWidth, int newHeight, int newBorderWidth);
 };
 
 class player_tank: public tank{
   public:
     player_tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
-    void update();
+    virtual void update();
   protected:
 };
 
 class ai_tank: public tank{
   public:
     ai_tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
-    void update();
-    void process_enemies( vector<player_tank>* tempOtherTanks);
-  protected:
+    virtual void update();
+  private:
     float destination_x;
     float destination_y;
 
-    vector<player_tank>* otherTanks;
     void update_target();
 };
 

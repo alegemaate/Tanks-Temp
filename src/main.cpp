@@ -19,8 +19,8 @@ BITMAP *blocks[3];
 
 // Objects
 vector<barrier> barriers;
-vector<ai_tank> enemy_tanks;
-vector<player_tank> player_tanks;
+vector<tank*> enemy_tanks;
+vector<tank*> player_tanks;
 
 // Map stuff
 const int map_width = 800/40;
@@ -103,39 +103,39 @@ void update(){
   for( unsigned int i = 0; i < enemy_tanks.size(); i++){
     // Update barriers
     for( unsigned int t = 0; t < barriers.size(); t++)
-      barriers.at(t).update( enemy_tanks.at(i).getBullets());
+      barriers.at(t).update( enemy_tanks.at(i) -> getBullets());
 
     // Update bullets
     for( unsigned int t = 0; t < player_tanks.size(); t++)
-      player_tanks.at(t).checkCollision( enemy_tanks.at(i).getBullets());
+      player_tanks.at(t) -> checkCollision( enemy_tanks.at(i) -> getBullets());
 
     // Collision with barrier
-    enemy_tanks.at(i).checkCollision( &barriers);
+    enemy_tanks.at(i) -> checkCollision( &barriers);
 
     // Update tanks
-    enemy_tanks.at(i).update();
+    enemy_tanks.at(i) -> update();
 
     // Delete tank
-    if(enemy_tanks.at(i).getErase())
+    if(enemy_tanks.at(i) -> getErase())
       enemy_tanks.erase(enemy_tanks.begin() + i);
   }
   for( unsigned int i = 0; i < player_tanks.size(); i++){
     // Update barriers
     for( unsigned int t = 0; t < barriers.size(); t++)
-      barriers.at(t).update( player_tanks.at(i).getBullets());
+      barriers.at(t).update( player_tanks.at(i) -> getBullets());
 
     // Update bullets
     for( unsigned int t = 0; t < enemy_tanks.size(); t++)
-      enemy_tanks.at(t).checkCollision( player_tanks.at(i).getBullets());
+      enemy_tanks.at(t) -> checkCollision( player_tanks.at(i) -> getBullets());
 
     // Collision with barrier
-    player_tanks.at(i).checkCollision( &barriers);
+    player_tanks.at(i) -> checkCollision( &barriers);
 
     // Update tanks
-    player_tanks.at(i).update();
+    player_tanks.at(i) -> update();
 
     // Delete tank
-    if(player_tanks.at(i).getErase())
+    if(player_tanks.at(i) -> getErase())
       player_tanks.erase(player_tanks.begin() + i);
   }
 
@@ -156,13 +156,13 @@ void update(){
       // choose a start location ID
       int randomStartLocation = random( 0, startLocations.size() - 1);
 
-      ai_tank newPlayer( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
+      ai_tank *newPlayer = new ai_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
                         random(50,150), random(1,4), random(50,300), random(1,10)/10,
                         load_bitmap( "images/tank_base_red.png", NULL),
                         load_bitmap( "images/tank_turret_red.png", NULL),
                         load_bitmap( "images/tank_dead.png", NULL),
                         load_bitmap( "images/tank_treads.png", NULL));
-      newPlayer.process_enemies( &player_tanks);
+      newPlayer -> process_enemies( &player_tanks);
       enemy_tanks.push_back( newPlayer);
     }
   }
@@ -175,12 +175,13 @@ void update(){
     // The new you!
     int randomStartLocation = random( 0, startLocations.size());
 
-    player_tank newPlayer( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
+    ai_tank *newPlayer = new ai_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
                           100, 4, 20, 1,
                           load_bitmap( "images/tank_base_green.png", NULL),
                           load_bitmap( "images/tank_turret_green.png", NULL),
                           load_bitmap( "images/tank_dead.png", NULL),
                           load_bitmap( "images/tank_treads.png", NULL));
+    newPlayer -> process_enemies( &enemy_tanks);
     player_tanks.push_back( newPlayer);
   }
 }
@@ -194,14 +195,14 @@ void draw(){
 
   // Draw tanks
   for( unsigned int i = 0; i < enemy_tanks.size(); i++){
-    enemy_tanks.at(i).draw( buffer);
+    enemy_tanks.at(i) -> draw( buffer);
     if( random( 1, 3) == 1)
-      enemy_tanks.at(i).putDecal( decal_buffer);
+      enemy_tanks.at(i) -> putDecal( decal_buffer);
   }
   for( unsigned int i = 0; i < player_tanks.size(); i++){
-    player_tanks.at(i).draw( buffer);
+    player_tanks.at(i) -> draw( buffer);
     if( random( 1, 3) == 1)
-      player_tanks.at(i).putDecal( decal_buffer);
+      player_tanks.at(i) -> putDecal( decal_buffer);
   }
 
   // Draw barriers
@@ -305,8 +306,8 @@ void setup(){
   // Pass 3 (Filling)
   for( int i = 0; i < map_width; i++){
     for( int t = 0; t < map_height; t++){
-      if( map_temp[i - 1][t] == 1 && map_temp[i + 1][t] == 1 ||
-          map_temp[i][t - 1] == 1 && map_temp[i][t + 1] == 1){
+      if( (map_temp[i - 1][t] == 1 && map_temp[i + 1][t] == 1) ||
+          (map_temp[i][t - 1] == 1 && map_temp[i][t + 1] == 1)){
         map_temp[i][t] = 1;
       }
     }
