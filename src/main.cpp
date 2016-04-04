@@ -22,6 +22,11 @@ vector<barrier> barriers;
 vector<ai_tank> enemy_tanks;
 vector<player_tank> player_tanks;
 
+// Map stuff
+const int map_width = 800/40;
+const int map_height = 600/40;
+int map_temp[map_width][map_height];
+
 // FPS Tickers
 volatile int ticks = 0;
 int fps;
@@ -59,7 +64,7 @@ END_OF_FUNCTION( close_button_handler)
 void calibrateJoystick(){
   for( int i = 0; i < num_joysticks; i ++){
     while (joy[i].flags & JOYFLAG_CALIBRATE) {
-      AL_CONST char *msg = calibrate_joystick_name(i);
+      //AL_CONST char *msg = calibrate_joystick_name(i);
 
       if ((readkey()&0xFF) == 27)
         exit(0);
@@ -76,6 +81,18 @@ void calibrateJoystick(){
 
   save_joystick_data("joy_config.dat");
 }
+
+// Coordinate system
+struct coordinate{
+  int x;
+  int y;
+
+  coordinate(){
+    x = 0;
+    y = 0;
+  }
+};
+vector<coordinate> startLocations;
 
 // Game update
 void update(){
@@ -136,8 +153,15 @@ void update(){
     currentRound += 1;
 
     for( int i = 0; i < currentRound; i ++){
-      ai_tank newPlayer( random(0, SCREEN_W), random(0, SCREEN_H), 3, random(50,150), random(1,4), random(50,300), random(1,10)/10,
-                        load_bitmap( "images/tank_base_red.png", NULL), load_bitmap( "images/tank_turret_red.png", NULL), load_bitmap( "images/tank_hurt.png", NULL));
+      // choose a start location ID
+      int randomStartLocation = random( 0, startLocations.size());
+
+      ai_tank newPlayer( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
+                        random(50,150), random(1,4), random(50,300), random(1,10)/10,
+                        load_bitmap( "images/tank_base_red.png", NULL),
+                        load_bitmap( "images/tank_turret_red.png", NULL),
+                        load_bitmap( "images/tank_dead.png", NULL),
+                        load_bitmap( "images/tank_treads.png", NULL));
       newPlayer.process_enemies( &player_tanks);
       enemy_tanks.push_back( newPlayer);
     }
@@ -145,10 +169,18 @@ void update(){
   // U died
   else if( player_tanks.size() == 0){
     enemy_tanks.clear();
+    player_tanks.clear();
     currentRound = 0;
 
     // The new you!
-    player_tank newPlayer( 50, 50, 3, 100, 4, 20, 1, load_bitmap( "images/tank_base_green.png", NULL), load_bitmap( "images/tank_turret_green.png", NULL), load_bitmap( "images/tank_hurt.png", NULL));
+    int randomStartLocation = random( 0, startLocations.size());
+
+    player_tank newPlayer( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
+                          100, 4, 20, 1,
+                          load_bitmap( "images/tank_base_green.png", NULL),
+                          load_bitmap( "images/tank_turret_green.png", NULL),
+                          load_bitmap( "images/tank_dead.png", NULL),
+                          load_bitmap( "images/tank_treads.png", NULL));
     player_tanks.push_back( newPlayer);
   }
 }
@@ -160,18 +192,21 @@ void draw(){
   // Decal to buffer
   draw_sprite( buffer, decal_buffer, 0, 0);
 
-  // Draw barriers
-  for( unsigned int i = 0; i < barriers.size(); i++)
-    barriers.at(i).draw( buffer);
-
   // Draw tanks
   for( unsigned int i = 0; i < enemy_tanks.size(); i++){
     enemy_tanks.at(i).draw( buffer);
+    if( random( 1, 30))
+      enemy_tanks.at(i).putDecal( decal_buffer);
   }
   for( unsigned int i = 0; i < player_tanks.size(); i++){
     player_tanks.at(i).draw( buffer);
-    player_tanks.at(i).putDecal( decal_buffer);
+    if( random( 1, 30))
+      player_tanks.at(i).putDecal( decal_buffer);
   }
+
+  // Draw barriers
+  for( unsigned int i = 0; i < barriers.size(); i++)
+    barriers.at(i).draw( buffer);
 
   // Cursor
   draw_sprite( buffer, cursor, mouse_x - 10, mouse_y - 10);
@@ -237,19 +272,90 @@ void setup(){
   if (!(blocks[1] = load_bitmap( "images/block_stone_1.png", NULL)))
     abort_on_error( "Cannot find image images/block_stone_1.png\nPlease check your files and try again");
 
-  if (!(blocks[2] = load_bitmap( "images/block_stone_2.png", NULL)))
-    abort_on_error( "Cannot find image images/block_stone_2.png\nPlease check your files and try again");
+  if (!(blocks[2] = load_bitmap( "images/block_box_1.png", NULL)))
+    abort_on_error( "Cannot find image images/block_box_1.png\nPlease check your files and try again");
 
-  // Create barriers
-  for( int i = 0; i < 10; i++){
-    barrier newBarrier( random(0, SCREEN_W), random( 0, SCREEN_H), blocks[random(0,2)]);
-    barriers.push_back( newBarrier);
+  // Make a map
+  // Erase map
+  for( int i = 0; i < map_width; i++){
+    for( int t = 0; t < map_height; t++){
+      map_temp[i][t] = 0;
+    }
+  }
+  // Pass 1 (Edges)
+  for( int i = 0; i < map_width; i++){
+    for( int t = 0; t < map_height; t++){
+      if( i == 0 || t == 0 || i == map_width - 1 || t == map_height - 1){
+        map_temp[i][t] = 1;
+      }
+    }
+  }
+  // Pass 2 (Well Placed blocks)
+  for( int i = 0; i < map_width; i++){
+    for( int t = 0; t < map_height; t++){
+      if( map_temp[i - 1][t] == 0 && map_temp[i + 1][t] == 0 &&
+               map_temp[i - 1][t + 1] == 0 && map_temp[i + 1][t + 1] == 0 &&
+               map_temp[i - 1][t - 1] == 0 && map_temp[i + 1][t - 1] == 0 &&
+               map_temp[i][t - 1] == 0 && map_temp[i][t + 1] == 0 &&
+               random( 0, 2) == 1){
+        map_temp[i][t] = 1;
+      }
+    }
+  }
+  // Pass 3 (Filling)
+  for( int i = 0; i < map_width; i++){
+    for( int t = 0; t < map_height; t++){
+      if( map_temp[i - 1][t] == 1 && map_temp[i + 1][t] == 1 ||
+          map_temp[i][t - 1] == 1 && map_temp[i][t + 1] == 1){
+        map_temp[i][t] = 1;
+      }
+    }
+  }
+  // Pass 4 (Filling Unaccessable areas)
+  for( int i = 0; i < map_width; i++){
+    for( int t = 0; t < map_height; t++){
+      if( map_temp[i - 1][t] == 1 && map_temp[i + 1][t] == 1 &&
+          map_temp[i][t - 1] == 1 && map_temp[i][t + 1] == 1){
+        map_temp[i][t] = 1;
+      }
+    }
+  }
+  // Pass 5 (Boxes!)
+  for( int i = 0; i < map_width; i++){
+    for( int t = 0; t < map_height; t++){
+      if( map_temp[i][t] == 0 && random( 1, 20) == 1){
+        map_temp[i][t] = 2;
+      }
+    }
+  }
+  // Find start locations
+  for( int i = 0; i < map_width; i++){
+    for( int t = 0; t < map_height; t++){
+      if( map_temp[i][t] == 0){
+        coordinate newStartLocation;
+        newStartLocation.x = i * 40;
+        newStartLocation.y = t * 40;
+        startLocations.push_back( newStartLocation);
+      }
+    }
   }
 
-  // Player
-  player_tank newPlayer( 50, 50, 3, 100, 4, 20, 1, load_bitmap( "images/tank_base_green.png", NULL), load_bitmap( "images/tank_turret_green.png", NULL), load_bitmap( "images/tank_hurt.png", NULL));
-  player_tanks.push_back( newPlayer);
+  // Create barriers (where needed)
+  for( int i = 0; i < map_width; i++){
+    for( int t = 0; t < map_height; t++){
+      if( map_temp[i][t] != 0){
+        barrier newBarrier( i * 40, t * 40, blocks[map_temp[i][t]], -1);
 
+        // Destroyable
+        if( map_temp[i][t] == 2)
+          newBarrier.setHealth(3);
+
+        barriers.push_back( newBarrier);
+      }
+    }
+  }
+
+  // FPS STUFF
   for(int i = 0; i < 10; i++)
     frames_array[i] = 0;
 }
@@ -273,11 +379,11 @@ int main(){
         break;
       }
     }
-    if(game_time >= old_time + 1){//i.e. a 0.1 second has passed since we last counted the frames{
-			fps -= frames_array[frame_index];//decrement the fps by the frames done a second ago
-			frames_array[frame_index] = frames_done;//store the number of frames done this 0.1 second
-			fps += frames_done;//increment the fps by the newly done frames
-			frame_index = (frame_index + 1) % 10;//increment the frame index and snap it to 10
+    if(game_time >= old_time + 1){// i.e. a 0.1 second has passed since we last counted the frames{
+			fps -= frames_array[frame_index];// decrement the fps by the frames done a second ago
+			frames_array[frame_index] = frames_done;// store the number of frames done this 0.1 second
+			fps += frames_done;// increment the fps by the newly done frames
+			frame_index = (frame_index + 1) % 10;// increment the frame index and snap it to 10
 			frames_done = 0;
 			old_time += 1;
 		}

@@ -8,7 +8,7 @@
 
 class tank{
   public:
-    explicit tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage);
+    explicit tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
 
     bool getErase();
 
@@ -21,11 +21,16 @@ class tank{
     int getX(){ return x; }
     int getY(){ return y; }
 
+    int getHeight(){ return width; }
+    int getWidth(){ return height; }
+
     void checkCollision( vector<bullet>* newBullets);
     void checkCollision( vector<barrier>* newBarriers);
   protected:
     float x;
     float y;
+
+    int width, height;
 
     int hurt_timer;
     int health;
@@ -54,6 +59,7 @@ class tank{
     BITMAP *image_base;
     BITMAP *image_hurt;
     BITMAP *image_top;
+    BITMAP *image_treads;
 
     SAMPLE *sample_shot;
 
@@ -74,14 +80,14 @@ class tank{
 
 class player_tank: public tank{
   public:
-    player_tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage);
+    player_tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
     void update();
   protected:
 };
 
 class ai_tank: public tank{
   public:
-    ai_tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage);
+    ai_tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
     void update();
     void process_enemies( vector<player_tank>* tempOtherTanks);
   protected:

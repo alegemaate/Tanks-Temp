@@ -1,6 +1,6 @@
 #include "../include/barrier.h"
 
-barrier::barrier( int newX, int newY, BITMAP* newImage){
+barrier::barrier( int newX, int newY, BITMAP* newImage, int newHealth){
   this -> x = newX;
   this -> y = newY;
   image = newImage;
@@ -8,7 +8,7 @@ barrier::barrier( int newX, int newY, BITMAP* newImage){
   this -> width = image -> w;
   this -> height = image -> h;
 
-  this -> health = random( 10, 50);
+  this -> health = newHealth;
 
   sample_explode = load_sample( "sfx/explode.wav");
 }
@@ -92,7 +92,7 @@ bool barrier::getDead(){
 
 // Explode
 void barrier::explode( int newX, int newY, int newVelocity, int newAmount, int newLife){
-  for( int i = 0; i < newAmount; i ++){
+  /*for( int i = 0; i < newAmount; i ++){
     int new_colour = 0;
 
     // Make sure not transparent ( they show as white)
@@ -108,7 +108,7 @@ void barrier::explode( int newX, int newY, int newVelocity, int newAmount, int n
     // Make particle
     particle newParticle(newX, newY, new_colour, -newVelocity, newVelocity, -newVelocity, newVelocity, 1, CIRCLE, newLife, EXPLODE);
     explosionEffect.push_back(newParticle);
-  }
+  }*/
 
   // Destory
   if( health > 0)

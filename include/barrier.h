@@ -10,7 +10,7 @@ using namespace std;
 
 class barrier{
   public:
-    barrier( int newX, int newY, BITMAP* newImage);
+    barrier( int newX, int newY, BITMAP* newImage, int newHealth);
     ~barrier();
 
     void update( vector<bullet>* newBullets);
@@ -21,6 +21,8 @@ class barrier{
 
     int getWidth();
     int getHeight();
+
+    void setHealth( int newHealth){ health = newHealth; }
 
     bool getDead();
   private:

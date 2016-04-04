@@ -3,7 +3,7 @@
 /*****************
   General Tank
 *****************/
-tank::tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage)
+tank::tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage)
 {
   x = newX;
   y = newY;
@@ -19,6 +19,10 @@ tank::tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed
   image_base = newBaseImage;
   image_hurt = newHurtImage;
   image_top = newTurretImage;
+  image_treads = newTreadsImage;
+
+  width = image_base -> w;
+  height = image_base -> h;
 
   if (image_base -> w < 1)
     abort_on_error( "Cannot find tank base\nPlease check your files and try again");
@@ -26,6 +30,8 @@ tank::tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed
     abort_on_error( "Cannot find tank hurt\nPlease check your files and try again");
   if (image_top -> w < 1)
     abort_on_error( "Cannot find tank turret\nPlease check your files and try again");
+  if (image_treads -> w < 1)
+    abort_on_error( "Cannot find tank treads\nPlease check your files and try again");
 
   dead = false;
   pendingErase = false;
@@ -87,15 +93,15 @@ void tank::checkCollision( vector<barrier>* newBarriers){
   canMoveY = true;
 
   for( unsigned int i = 0; i < newBarriers -> size(); i++){
-    if( collisionAny( x + guess_vector_x, x + 50 + guess_vector_x,
+    if( collisionAny( x + guess_vector_x, x + width - 1 + guess_vector_x,
                      newBarriers -> at(i).getX(), newBarriers -> at(i).getX() + newBarriers -> at(i).getWidth(),
-                     y, y + 50,
+                     y, y + height - 1,
                      newBarriers -> at(i).getY(), newBarriers -> at(i).getY() + newBarriers -> at(i).getHeight())){
       canMoveX = false;
     }
-    if( collisionAny( x, x + 50,
+    if( collisionAny( x, x + width - 1,
                      newBarriers -> at(i).getX(), newBarriers -> at(i).getX() + newBarriers -> at(i).getWidth(),
-                     y + guess_vector_y, y + 50 + guess_vector_y,
+                     y + guess_vector_y, y + height - 1 + guess_vector_y,
                      newBarriers -> at(i).getY(), newBarriers -> at(i).getY() + newBarriers -> at(i).getHeight())){
       canMoveY = false;
     }
@@ -159,11 +165,11 @@ void tank::drawBullets( BITMAP* tempImage){
 // Draw tank
 void tank::drawTankBase( BITMAP* tempImage){
   // Hurt image for player
-  if( hurt_timer < 1){
-    rotate_sprite( tempImage, image_base, x, y, itofix(rotation_allegro_body));
+  if( health <= 0){
+    rotate_sprite( tempImage, image_hurt, x, y, itofix(rotation_allegro_body));
   }
   else{
-    rotate_sprite( tempImage, image_hurt, x, y, itofix(rotation_allegro_body));
+    rotate_sprite( tempImage, image_base, x, y, itofix(rotation_allegro_body));
   }
 }
 
@@ -207,7 +213,7 @@ void tank::draw( BITMAP* tempImage){
 
 // Put decals
 void tank::putDecal( BITMAP* tempImage){
-  rectfill( tempImage, x, y, x + 10, y + 10, makecol(0,0,0));
+  rotate_sprite( tempImage, image_treads, x + width/2, y, itofix(rotation_allegro_turret));
 }
 
 
@@ -215,8 +221,8 @@ void tank::putDecal( BITMAP* tempImage){
    Player Tank
 *****************/
 // Init
-player_tank::player_tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage) :
-      tank( newX, newY, newHurtTime, newHealth, newFireSpeed, newFireDelay, newSpeed, newBaseImage, newTurretImage, newHurtImage){
+player_tank::player_tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage) :
+      tank( newX, newY, newHurtTime, newHealth, newFireSpeed, newFireDelay, newSpeed, newBaseImage, newTurretImage, newHurtImage, newTreadsImage){
 
 }
 
@@ -226,19 +232,19 @@ void player_tank::update(){
     // Shoot
     rotation_radians_turret = find_angle( x + 25, y + 25, mouse_x, mouse_y);
     if( joy[0].stick[0].axis[0].pos != 0 || joy[0].stick[0].axis[1].pos != 0)
-      rotation_radians_turret = find_angle( x + 25, y + 25, (joy[0].stick[0].axis[0].pos) + (x + 25), (joy[0].stick[0].axis[1].pos) + (y + 25));
+      rotation_radians_turret = find_angle( x + width/2 - 2, y + height/2 - 2, (joy[0].stick[0].axis[0].pos) + (x + 25), (joy[0].stick[0].axis[1].pos) + (y + 25));
     rotation_allegro_turret = rotation_radians_turret * 40.5845104792;
 
     if( key[KEY_SPACE] || mouse_b & 1 || joy[0].button[1].b){
-      shoot( rotation_radians_turret, x + 23, y + 23);
+      shoot( rotation_radians_turret, x + width/2 - 2, y + height/2 - 2);
     }
 
     // Drive
     if( mouse_b & 2 || joy[0].button[0].b){
       if( mouse_b & 2)
-        rotation_radians_body = find_angle( x + 25, y + 25, mouse_x, mouse_y);
+        rotation_radians_body = find_angle( x + width/2, y + height/2, mouse_x, mouse_y);
       if( joy[0].button[0].b)
-        rotation_radians_body = find_angle( x + 25, y + 25, (joy[0].stick[0].axis[0].pos) + (x + 25), (joy[0].stick[0].axis[1].pos) + (y + 25));
+        rotation_radians_body = find_angle( x + width/2, y + height/2, (joy[0].stick[0].axis[0].pos) + (x + width/2), (joy[0].stick[0].axis[1].pos) + (y + height/2));
       rotation_allegro_body = rotation_radians_body * 40.5845104792;
       drive( rotation_radians_body);
       speed = 1;
@@ -270,8 +276,8 @@ void player_tank::update(){
     AI Tank
 *****************/
 // Init
-ai_tank::ai_tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage) :
-      tank( newX, newY, newHurtTime, newHealth, newFireSpeed, newFireDelay, newSpeed, newBaseImage, newTurretImage, newHurtImage){
+ai_tank::ai_tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage) :
+      tank( newX, newY, newHurtTime, newHealth, newFireSpeed, newFireDelay, newSpeed, newBaseImage, newTurretImage, newHurtImage, newTreadsImage){
   destination_x = x;
   destination_y = y;
 }
@@ -283,8 +289,8 @@ void ai_tank::update(){
     int random_enemy_x, random_enemy_y;
 
     if( otherTanks -> size() > 0){
-      random_enemy_x = otherTanks -> at(0).getX();
-      random_enemy_y = otherTanks -> at(0).getY();
+      random_enemy_x = otherTanks -> at(0).getX() + otherTanks -> at(0).getWidth()/2;
+      random_enemy_y = otherTanks -> at(0).getY() + otherTanks -> at(0).getHeight()/2;
     }
     else{
       random_enemy_x = destination_x;
