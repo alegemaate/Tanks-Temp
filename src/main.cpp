@@ -175,11 +175,22 @@ void update(){
     // The new you!
     int randomStartLocation = random( 0, startLocations.size());
 
-    for( int i = 0; i < 5; i ++){
-      ai_tank *newPlayer = new ai_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
+    player_tank *newPlayer = new player_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
                             100, 4, 20, 1,
                             load_bitmap( "images/tank_base_green.png", NULL),
                             load_bitmap( "images/tank_turret_green.png", NULL),
+                            load_bitmap( "images/tank_dead.png", NULL),
+                            load_bitmap( "images/tank_treads.png", NULL));
+
+    newPlayer -> process_enemies( &enemy_tanks);
+    player_tanks.push_back( newPlayer);
+
+    // Friends?
+    for( int i = 0; i < 5; i ++){
+      ai_tank *newPlayer = new ai_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
+                            100, 4, 20, 1,
+                            load_bitmap( "images/tank_base_blue.png", NULL),
+                            load_bitmap( "images/tank_turret_blue.png", NULL),
                             load_bitmap( "images/tank_dead.png", NULL),
                             load_bitmap( "images/tank_treads.png", NULL));
 
