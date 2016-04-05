@@ -321,19 +321,32 @@ ai_tank::ai_tank( int newX, int newY, int newHurtTime, int newHealth, int newFir
 // Update
 void ai_tank::update(){
   if( !isDead()){
-    // Rotate turret (at random enemy)
-    int random_enemy_x, random_enemy_y;
+    // Rotate turret (at closest enemy)
+    int best_enemy_x = destination_x;
+    int best_enemy_y = destination_y;
+    int target_enemy_index = 0;
 
+    // Find nearest enemy and assign to target_enemy_index
     if( otherTanks -> size() > 0){
-      random_enemy_x = otherTanks -> at(0) -> getX() + otherTanks -> at(0) -> getWidth()/2;
-      random_enemy_y = otherTanks -> at(0) -> getY() + otherTanks -> at(0) -> getHeight()/2;
-    }
-    else{
-      random_enemy_x = destination_x;
-      random_enemy_y = destination_y;
+      int temp_enemy_x, temp_enemy_y;
+
+      for( int i = 0; i < otherTanks -> size(); i++){
+        temp_enemy_x = otherTanks -> at(i) -> getX() + otherTanks -> at(i) -> getWidth()/2;
+        temp_enemy_y = otherTanks -> at(i) -> getY() + otherTanks -> at(i) -> getHeight()/2;
+
+        best_enemy_x = otherTanks -> at(target_enemy_index) -> getX() + otherTanks -> at(target_enemy_index) -> getWidth()/2;
+        best_enemy_y = otherTanks -> at(target_enemy_index) -> getY() + otherTanks -> at(target_enemy_index) -> getHeight()/2;
+
+        if( find_distance( x, y, temp_enemy_x, temp_enemy_y) <
+            find_distance( x, y, best_enemy_x, best_enemy_y)){
+          target_enemy_index = i;
+          best_enemy_x = otherTanks -> at(target_enemy_index) -> getX() + otherTanks -> at(target_enemy_index) -> getWidth()/2;
+          best_enemy_y = otherTanks -> at(target_enemy_index) -> getY() + otherTanks -> at(target_enemy_index) -> getHeight()/2;
+        }
+      }
     }
 
-    rotation_radians_turret = find_angle( x + 25, y + 25, random_enemy_x, random_enemy_y);//randomf(-0.1,0.1);
+    rotation_radians_turret = find_angle( x + 25, y + 25, best_enemy_x, best_enemy_y);//randomf(-0.1,0.1);
     rotation_allegro_turret = rotation_radians_turret * 40.5845104792;
 
     // Shoot
