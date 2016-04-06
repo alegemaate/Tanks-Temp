@@ -44,6 +44,12 @@ tank::tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed
   rotation_allegro_turret = 0;
 }
 
+// Delete
+tank::~tank(){
+  destroy_sample(sample_shot);
+  //delete sample_shot;
+}
+
 // Check dead
 bool tank::isDead(){
   // Just died

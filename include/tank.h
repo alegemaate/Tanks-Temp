@@ -9,6 +9,7 @@
 class tank{
   public:
     explicit tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
+    virtual ~tank();
 
     virtual bool getErase();
 

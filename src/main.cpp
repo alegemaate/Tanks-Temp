@@ -118,8 +118,10 @@ void update(){
     enemy_tanks.at(i) -> update();
 
     // Delete tank
-    if(enemy_tanks.at(i) -> getErase())
+    if(enemy_tanks.at(i) -> getErase()){
+      delete enemy_tanks[i];
       enemy_tanks.erase(enemy_tanks.begin() + i);
+    }
   }
   for( unsigned int i = 0; i < player_tanks.size(); i++){
     // Update barriers
@@ -138,6 +140,7 @@ void update(){
 
     // Delete tank
     if(player_tanks.at(i) -> getErase()){
+      delete player_tanks[i];
       player_tanks.erase(player_tanks.begin() + i);
     }
   }

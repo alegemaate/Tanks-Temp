@@ -14,7 +14,7 @@ barrier::barrier( int newX, int newY, BITMAP* newImage, int newHealth){
 }
 
 barrier::~barrier(){
-
+  //destroy_sample( sample_explode);
 }
 
 // Update
