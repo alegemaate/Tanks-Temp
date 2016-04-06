@@ -16,6 +16,8 @@ BITMAP *background;
 BITMAP *cursor;
 BITMAP *blocks[3];
 
+BITMAP *tank_images[10];
+
 
 // Objects
 vector<barrier> barriers;
@@ -135,8 +137,9 @@ void update(){
     player_tanks.at(i) -> update();
 
     // Delete tank
-    if(player_tanks.at(i) -> getErase())
+    if(player_tanks.at(i) -> getErase()){
       player_tanks.erase(player_tanks.begin() + i);
+    }
   }
 
   // Remove broken barriers
@@ -158,10 +161,7 @@ void update(){
 
       ai_tank *newPlayer = new ai_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
                         random(50,150), random(1,4), random(50,300), random(1,10)/10,
-                        load_bitmap( "images/tank_base_red.png", NULL),
-                        load_bitmap( "images/tank_turret_red.png", NULL),
-                        load_bitmap( "images/tank_dead.png", NULL),
-                        load_bitmap( "images/tank_treads.png", NULL));
+                        tank_images[5], tank_images[4], tank_images[1], tank_images[0]);
       newPlayer -> process_enemies( &player_tanks);
       enemy_tanks.push_back( newPlayer);
     }
@@ -177,10 +177,7 @@ void update(){
 
     player_tank *newPlayer = new player_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
                             100, 4, 20, 1,
-                            load_bitmap( "images/tank_base_green.png", NULL),
-                            load_bitmap( "images/tank_turret_green.png", NULL),
-                            load_bitmap( "images/tank_dead.png", NULL),
-                            load_bitmap( "images/tank_treads.png", NULL));
+                            tank_images[3], tank_images[2], tank_images[1], tank_images[0]);
 
     newPlayer -> process_enemies( &enemy_tanks);
     player_tanks.push_back( newPlayer);
@@ -189,10 +186,7 @@ void update(){
     for( int i = 0; i < 5; i ++){
       ai_tank *newPlayer = new ai_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
                             100, 4, 20, 1,
-                            load_bitmap( "images/tank_base_blue.png", NULL),
-                            load_bitmap( "images/tank_turret_blue.png", NULL),
-                            load_bitmap( "images/tank_dead.png", NULL),
-                            load_bitmap( "images/tank_treads.png", NULL));
+                            tank_images[7], tank_images[6], tank_images[1], tank_images[0]);
 
       newPlayer -> process_enemies( &enemy_tanks);
       player_tanks.push_back( newPlayer);
@@ -289,6 +283,31 @@ void setup(){
 
   if (!(blocks[2] = load_bitmap( "images/block_box_1.png", NULL)))
     abort_on_error( "Cannot find image images/block_box_1.png\nPlease check your files and try again");
+
+
+  if (!(tank_images[0] = load_bitmap( "images/tank_treads.png", NULL)))
+    abort_on_error( "Cannot find image images/tank_treads.png\nPlease check your files and try again");
+
+  if (!(tank_images[1] = load_bitmap( "images/tank_dead.png", NULL)))
+    abort_on_error( "Cannot find image images/tank_dead.png\nPlease check your files and try again");
+
+  if (!(tank_images[2] = load_bitmap( "images/tank_turret_green.png", NULL)))
+    abort_on_error( "Cannot find image images/tank_turret_green.png\nPlease check your files and try again");
+
+  if (!(tank_images[3] = load_bitmap( "images/tank_base_green.png", NULL)))
+    abort_on_error( "Cannot find image images/tank_base_green.png\nPlease check your files and try again");
+
+  if (!(tank_images[4] = load_bitmap( "images/tank_turret_red.png", NULL)))
+    abort_on_error( "Cannot find image images/tank_turret_red.png\nPlease check your files and try again");
+
+  if (!(tank_images[5] = load_bitmap( "images/tank_base_red.png", NULL)))
+    abort_on_error( "Cannot find image images/tank_base_red.png\nPlease check your files and try again");
+
+  if (!(tank_images[6] = load_bitmap( "images/tank_turret_blue.png", NULL)))
+    abort_on_error( "Cannot find image images/tank_turret_blue.png\nPlease check your files and try again");
+
+  if (!(tank_images[7] = load_bitmap( "images/tank_base_blue.png", NULL)))
+    abort_on_error( "Cannot find image images/tank_base_blue.png\nPlease check your files and try again");
 
   // Make a map
   // Erase map

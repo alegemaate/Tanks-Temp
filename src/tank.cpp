@@ -72,7 +72,7 @@ void tank::explode( int newX, int newY, int newVelocity, int newAmount, int newL
 }
 
 // Get bullets
-vector<bullet>* tank::getBullets(){
+vector<bullet> *tank::getBullets(){
   return &bullets;
 }
 
@@ -218,7 +218,7 @@ void tank::draw( BITMAP* tempImage){
 
 // Put decals
 void tank::putDecal( BITMAP* tempImage){
-  rotate_sprite( tempImage, image_treads, x + width/2, y, itofix(rotation_allegro_turret));
+  rotate_sprite( tempImage, image_treads, x + width/2, y, itofix(rotation_allegro_body));
 }
 
 
@@ -330,7 +330,7 @@ void ai_tank::update(){
     if( otherTanks -> size() > 0){
       int temp_enemy_x, temp_enemy_y;
 
-      for( int i = 0; i < otherTanks -> size(); i++){
+      for( unsigned int i = 0; i < otherTanks -> size(); i++){
         temp_enemy_x = otherTanks -> at(i) -> getX() + otherTanks -> at(i) -> getWidth()/2;
         temp_enemy_y = otherTanks -> at(i) -> getY() + otherTanks -> at(i) -> getHeight()/2;
 
