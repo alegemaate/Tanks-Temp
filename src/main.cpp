@@ -11,7 +11,9 @@ using namespace std;
 
 // Images
 BITMAP *buffer;
+BITMAP *map_buffer;
 BITMAP *decal_buffer;
+BITMAP *vision_buffer;
 BITMAP *background;
 BITMAP *cursor;
 BITMAP *blocks[3];
@@ -25,9 +27,10 @@ vector<tank*> enemy_tanks;
 vector<tank*> player_tanks;
 
 // Map stuff
-const int map_width = 800/40;
-const int map_height = 600/40;
+const int map_width = 1600/40;
+const int map_height = 1200/40;
 int map_temp[map_width][map_height];
+int map_x, map_y;
 
 // FPS Tickers
 volatile int ticks = 0;
@@ -166,6 +169,7 @@ void update(){
                         random(50,150), random(1,4), random(50,300), random(1,10)/10,
                         tank_images[5], tank_images[4], tank_images[1], tank_images[0]);
       newPlayer -> process_enemies( &player_tanks);
+      newPlayer -> set_map_dimensions( map_width * 40, map_height * 40);
       enemy_tanks.push_back( newPlayer);
     }
   }
@@ -183,17 +187,25 @@ void update(){
                             tank_images[3], tank_images[2], tank_images[1], tank_images[0]);
 
     newPlayer -> process_enemies( &enemy_tanks);
+    newPlayer -> set_map_dimensions( map_width * 40, map_height * 40);
     player_tanks.push_back( newPlayer);
 
     // Friends?
-    for( int i = 0; i < 5; i ++){
+    for( int i = 0; i < 10; i ++){
       ai_tank *newPlayer = new ai_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
                             100, 4, 20, 1,
                             tank_images[7], tank_images[6], tank_images[1], tank_images[0]);
 
       newPlayer -> process_enemies( &enemy_tanks);
+      newPlayer -> set_map_dimensions( map_width * 40, map_height * 40);
       player_tanks.push_back( newPlayer);
     }
+  }
+
+  // Scroll map
+  if( player_tanks.size() > 0){
+    map_x = player_tanks.at(0) -> getX() + player_tanks.at(0) -> getWidth()/2 - buffer -> w / 2;
+    map_y = player_tanks.at(0) -> getY() + player_tanks.at(0) -> getHeight()/2 - buffer -> h / 2;
   }
 }
 
@@ -201,24 +213,30 @@ void draw(){
   // Draw background
   draw_sprite( buffer, background, 0, 0);
 
+  // Blank map map_buffer
+  rectfill( map_buffer, 0, 0, map_buffer -> w, map_buffer -> h, makecol( 0, 88, 0));
+
   // Decal to buffer
-  draw_sprite( buffer, decal_buffer, 0, 0);
+  draw_sprite( map_buffer, decal_buffer, 0, 0);
 
   // Draw tanks
   for( unsigned int i = 0; i < enemy_tanks.size(); i++){
-    enemy_tanks.at(i) -> draw( buffer);
+    enemy_tanks.at(i) -> draw( map_buffer);
     if( random( 1, 3) == 1)
       enemy_tanks.at(i) -> putDecal( decal_buffer);
   }
   for( unsigned int i = 0; i < player_tanks.size(); i++){
-    player_tanks.at(i) -> draw( buffer);
+    player_tanks.at(i) -> draw( map_buffer);
     if( random( 1, 3) == 1)
       player_tanks.at(i) -> putDecal( decal_buffer);
   }
 
   // Draw barriers
   for( unsigned int i = 0; i < barriers.size(); i++)
-    barriers.at(i).draw( buffer);
+    barriers.at(i).draw( map_buffer);
+
+  // Map to buffer
+  blit( map_buffer, buffer, map_x, map_y, 0, 0, buffer -> w, buffer -> h);
 
   // Cursor
   draw_sprite( buffer, cursor, mouse_x - 10, mouse_y - 10);
@@ -252,8 +270,14 @@ void setup(){
 
   // Create buffer
   buffer = create_bitmap( 800, 600);
-  decal_buffer = create_bitmap( 800, 600);
-  rectfill( decal_buffer, 0, 0, 800, 600, makecol( 255, 0, 255));
+  decal_buffer = create_bitmap( map_width * 40, map_height * 40);
+  rectfill( decal_buffer, 0, 0, map_width * 40, map_height * 400, makecol( 255, 0, 255));
+
+  vision_buffer = create_bitmap( 800, 600);
+  rectfill( vision_buffer, 0, 0, 800, 600, makecol( 0, 0, 0));
+
+  map_buffer = create_bitmap( map_width * 40, map_height * 40);
+  rectfill( vision_buffer, 0, 0, map_width * 40, map_height * 40, makecol( 0, 0, 0));
 
   // Create random number generator
   srand( time( NULL));

@@ -25,6 +25,8 @@ class tank{
     virtual int getHeight(){ return width; }
     virtual int getWidth(){ return height; }
 
+    virtual void set_map_dimensions( int newMapWidth, int newMapHeight){ map_width = newMapWidth; map_height = newMapHeight;}
+
     virtual void checkCollision( vector<bullet>* newBullets);
     virtual void checkCollision( vector<barrier>* newBarriers);
 
@@ -41,6 +43,8 @@ class tank{
     int fire_speed;
     int fire_delay_rate;
     int bullet_delay;
+
+    int map_width, map_height;
 
     float rotation_radians_body;
     float rotation_allegro_body;

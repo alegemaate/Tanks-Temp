@@ -68,7 +68,7 @@ void bullet::update(){
       pendingErase = true;
       player_health -= 5;
     }*/
-    if( x > 800){
+    if( x > 10000){
       vector_x = -vector_x;
       bounceCounter( LEFT);
     }
@@ -76,7 +76,7 @@ void bullet::update(){
       vector_x = -vector_x;
       bounceCounter( RIGHT);
     }
-    if( y > 600){
+    if( y > 10000){
       vector_y = -vector_y;
       bounceCounter( TOP);
     }

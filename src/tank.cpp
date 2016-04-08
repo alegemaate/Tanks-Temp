@@ -24,6 +24,10 @@ tank::tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed
   width = image_base -> w;
   height = image_base -> h;
 
+  // Map size
+  map_width = SCREEN_W;
+  map_height = SCREEN_H;
+
   if (image_base -> w < 1)
     abort_on_error( "Cannot find tank base\nPlease check your files and try again");
   if (image_hurt -> w < 1)
@@ -218,6 +222,9 @@ void tank::draw( BITMAP* tempImage){
       explosionEffect.at(i).draw(tempImage);
     }
   }
+
+
+
   // Debug
   //textprintf_ex( tempImage, font, x, y, makecol(0,0,0), makecol(255,255,255), "Rot:%f", rotation_radians_turret);
 }
@@ -241,7 +248,7 @@ player_tank::player_tank( int newX, int newY, int newHurtTime, int newHealth, in
 void player_tank::update(){
   if( !isDead()){
     // Shoot
-    rotation_radians_turret = find_angle( x + 25, y + 25, mouse_x, mouse_y);
+    rotation_radians_turret = find_angle( SCREEN_W/2, SCREEN_H/2, mouse_x, mouse_y); // find_angle( x + 25, y + 25, mouse_x, mouse_y);
     if( joy[0].stick[0].axis[0].pos != 0 || joy[0].stick[0].axis[1].pos != 0)
       rotation_radians_turret = find_angle( x + width/2 - 2, y + height/2 - 2, (joy[0].stick[0].axis[0].pos) + (x + 25), (joy[0].stick[0].axis[1].pos) + (y + 25));
     rotation_allegro_turret = rotation_radians_turret * 40.5845104792;
@@ -264,7 +271,7 @@ void player_tank::update(){
     // Drive
     if( mouse_b & 2 || joy[0].button[0].b || key[KEY_W] || key[KEY_UP]){
       if( mouse_b & 2){
-        rotation_radians_body = find_angle( x + width/2, y + height/2, mouse_x, mouse_y);
+        rotation_radians_body = find_angle( SCREEN_W/2, SCREEN_H/2, mouse_x, mouse_y); // find_angle( x + width/2, y + height/2, mouse_x, mouse_y);
         rotation_allegro_body = rotation_radians_body * 40.5845104792;
         drive( rotation_radians_body);
       }
@@ -356,7 +363,7 @@ void ai_tank::update(){
     rotation_allegro_turret = rotation_radians_turret * 40.5845104792;
 
     // Shoot
-    if( random(0,10) == 0){
+    if( random(0,10) == 0 && find_distance( x, y, best_enemy_x, best_enemy_y) < 500){
       shoot( rotation_radians_turret, x + 23, y + 23);
     }
 
@@ -396,7 +403,7 @@ void ai_tank::update(){
 // Ai point choosing
 void ai_tank::update_target(){
   if( find_distance(x + 25, y + 25, destination_x, destination_y) < 10 || (canMoveX == false && canMoveY == false)){
-    destination_x = random( 0, 800);
-    destination_y = random( 0, 600);
+    destination_x = random( 0, map_width);
+    destination_y = random( 0, map_height);
   }
 }
