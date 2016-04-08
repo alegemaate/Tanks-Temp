@@ -234,6 +234,13 @@ void tank::putDecal( BITMAP* tempImage){
   rotate_sprite( tempImage, image_treads, x + width/2, y, itofix(rotation_allegro_body));
 }
 
+// Health
+void tank::giveHealth( int healthAmount){
+  health += healthAmount;
+  if( health > initialHealth)
+    health = initialHealth;
+}
+
 
 /*****************
    Player Tank

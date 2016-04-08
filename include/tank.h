@@ -19,6 +19,8 @@ class tank{
     virtual void draw( BITMAP* tempImage);
     virtual void putDecal( BITMAP* tempImage);
 
+    virtual void giveHealth( int healthAmount);
+
     virtual int getX(){ return x; }
     virtual int getY(){ return y; }
 

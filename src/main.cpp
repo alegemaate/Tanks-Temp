@@ -172,6 +172,11 @@ void update(){
       newPlayer -> set_map_dimensions( map_width * 40, map_height * 40);
       enemy_tanks.push_back( newPlayer);
     }
+
+    // Get 1 health!
+    for( unsigned int i = 0; i < player_tanks.size(); i ++){
+      player_tanks.at(i) -> giveHealth(20);
+    }
   }
   // U died
   else if( player_tanks.size() == 0){
@@ -237,6 +242,11 @@ void draw(){
 
   // Map to buffer
   blit( map_buffer, buffer, map_x, map_y, 0, 0, buffer -> w, buffer -> h);
+
+  // Text
+  textprintf_ex( buffer, font, 20, 20, makecol(0,0,0), makecol(255,255,255), "Round: %i", currentRound);
+  textprintf_ex( buffer, font, 20, 35, makecol(0,0,0), makecol(255,255,255), "Team BLUE: %i", player_tanks.size());
+  textprintf_ex( buffer, font, 20, 50, makecol(0,0,0), makecol(255,255,255), "Team RED: %i", enemy_tanks.size());
 
   // Cursor
   draw_sprite( buffer, cursor, mouse_x - 10, mouse_y - 10);
