@@ -226,12 +226,13 @@ void tank::draw( BITMAP* tempImage){
 
 
   // Debug
-  //textprintf_ex( tempImage, font, x, y, makecol(0,0,0), makecol(255,255,255), "Rot:%f", rotation_radians_turret);
+  //textprintf_ex( tempImage, font, x, y, makecol(0,0,0), makecol(255,255,255), "SPEED:%f", speed);
 }
 
 // Put decals
 void tank::putDecal( BITMAP* tempImage){
-  rotate_sprite( tempImage, image_treads, x + width/2, y, itofix(rotation_allegro_body));
+  if( speed > 0)
+    rotate_sprite( tempImage, image_treads, x + width/2, y, itofix(rotation_allegro_body));
 }
 
 // Health
@@ -276,32 +277,33 @@ void player_tank::update(){
     }
 
     // Drive
+    drive( rotation_radians_body);
+
     if( mouse_b & 2 || joy[0].button[0].b || key[KEY_W] || key[KEY_UP]){
       if( mouse_b & 2){
         rotation_radians_body = find_angle( SCREEN_W/2, SCREEN_H/2, mouse_x, mouse_y); // find_angle( x + width/2, y + height/2, mouse_x, mouse_y);
-        rotation_allegro_body = rotation_radians_body * 40.5845104792;
-        drive( rotation_radians_body);
       }
       else if( joy[0].button[0].b){
         rotation_radians_body = find_angle( x + width/2, y + height/2, (joy[0].stick[0].axis[0].pos) + (x + width/2), (joy[0].stick[0].axis[1].pos) + (y + height/2));
-        rotation_allegro_body = rotation_radians_body * 40.5845104792;
-        drive( rotation_radians_body);
-      }
-      else if( key[KEY_W]){
-        rotation_allegro_body = rotation_radians_body * 40.5845104792;
-        drive( rotation_radians_body);
-      }
-      else if( key[KEY_UP]){
-        rotation_allegro_body = rotation_radians_body * 40.5845104792;
-        drive( rotation_radians_body);
       }
 
+      rotation_allegro_body = rotation_radians_body * 40.5845104792;
 
-      if( speed < 1)
+      // Accelerate
+      if( speed == 0)
+        speed = 0.2;
+      else if( speed < 1)
+        speed *= 1.03;
+      else
         speed = 1;
     }
     else{
-      speed = 0;
+      // Decelerate
+      if( speed > 0.1)
+        speed *= 0.95;
+      else
+        speed = 0;
+
     }
   }
   else{
@@ -381,7 +383,15 @@ void ai_tank::update(){
     if( random(0,100)){
       rotation_radians_body = find_angle( x + 25, y + 25, destination_x, destination_y);
       rotation_allegro_body = rotation_radians_body * 40.5845104792;
-      speed = 1;
+
+      // Accelerate
+      if( speed == 0)
+        speed = 0.2;
+      else if( speed < 1)
+        speed *= 1.03;
+      else
+        speed = 1;
+
       drive( rotation_radians_body);
     }
     else{
