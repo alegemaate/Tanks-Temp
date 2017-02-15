@@ -14,7 +14,8 @@ tank::tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed
   fire_speed = newFireSpeed;
 
   fire_delay_rate = newFireDelay;
-  speed = newSpeed;
+  max_speed = newSpeed;
+  speed = 0;
 
   image_base = newBaseImage;
   image_hurt = newHurtImage;
@@ -114,6 +115,14 @@ void tank::checkCollision( vector<barrier>* newBarriers){
                      y + 2 + guess_vector_y, y + height - 2 + guess_vector_y,
                      newBarriers -> at(i).getY(), newBarriers -> at(i).getY() + newBarriers -> at(i).getHeight())){
       canMoveY = false;
+    }
+  }
+}
+void tank::checkCollision( vector<powerup>* newPowerups){
+  for( unsigned int i = 0; i < newPowerups -> size(); i++){
+    if( collisionAny( x, x + 50, newPowerups -> at(i).getX(), newPowerups -> at(i).getX() + newPowerups -> at(i).getWidth(), y, y + 50, newPowerups -> at(i).getY(), newPowerups -> at(i).getY() + newPowerups -> at(i).getHeight())){
+      get_powerup( newPowerups -> at(i).getType());
+      newPowerups -> at(i).pickup();
     }
   }
 }
@@ -242,6 +251,26 @@ void tank::giveHealth( int healthAmount){
     health = initialHealth;
 }
 
+// Powerups
+void tank::get_powerup( int powerup_id){
+  if( powerup_id == 0){
+    health += 10;
+    if( health > 100)
+      health = 100;
+  }
+  else if( powerup_id == 1){
+    max_speed += 0.5;
+  }
+  else if( powerup_id == 2){
+    fire_speed += 1;
+  }
+  else if( powerup_id == 3){
+    fire_delay_rate -= 1;
+    if( fire_delay_rate < 0)
+      fire_delay_rate = 0;
+  }
+}
+
 
 /*****************
    Player Tank
@@ -292,10 +321,10 @@ void player_tank::update(){
       // Accelerate
       if( speed == 0)
         speed = 0.2;
-      else if( speed < 1)
-        speed *= 1.03;
+      else if( speed < max_speed)
+        speed *= (max_speed * 1.03);
       else
-        speed = 1;
+        speed = max_speed;
     }
     else{
       // Decelerate

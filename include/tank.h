@@ -5,6 +5,7 @@
 #include "../include/particle.h"
 #include "../include/bullet.h"
 #include "../include/barrier.h"
+#include "../include/powerup.h"
 
 class tank{
   public:
@@ -31,8 +32,11 @@ class tank{
 
     virtual void checkCollision( vector<bullet>* newBullets);
     virtual void checkCollision( vector<barrier>* newBarriers);
+    virtual void checkCollision( vector<powerup>* newPowerups);
 
     virtual void process_enemies( vector<tank*> *tempOtherTanks);
+
+    virtual void get_powerup( int powerup_id);
   protected:
     float x;
     float y;
@@ -54,7 +58,7 @@ class tank{
     float rotation_allegro_turret;
     float vector_x;
     float vector_y;
-    float speed;
+    float speed, max_speed;
 
     bool dead;
     bool pendingErase;

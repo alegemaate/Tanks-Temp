@@ -6,6 +6,7 @@
 #include "../include/barrier.h"
 #include "../include/tools.h"
 #include "../include/tank.h"
+#include "../include/powerup.h"
 
 using namespace std;
 
@@ -17,6 +18,7 @@ BITMAP *vision_buffer;
 BITMAP *background;
 BITMAP *cursor;
 BITMAP *blocks[3];
+BITMAP *powerup_images[4];
 
 BITMAP *tank_images[10];
 
@@ -25,6 +27,7 @@ BITMAP *tank_images[10];
 vector<barrier> barriers;
 vector<tank*> enemy_tanks;
 vector<tank*> player_tanks;
+vector<powerup> powerups;
 
 // Map stuff
 const int map_width = 1600/40;
@@ -43,15 +46,13 @@ int frame_index = 0;
 
 int currentRound = 0;
 
-void ticker()
-{
+void ticker(){
 	ticks++;
 }
 END_OF_FUNCTION(ticker)
 
 volatile int game_time = 0;
-void game_time_ticker()
-{
+void game_time_ticker(){
 	game_time++;
 }
 END_OF_FUNCTION(game_time_ticker)
@@ -117,6 +118,9 @@ void update(){
     // Collision with barrier
     enemy_tanks.at(i) -> checkCollision( &barriers);
 
+    // Collision with powerups
+    enemy_tanks.at(i) -> checkCollision( &powerups);
+
     // Update tanks
     enemy_tanks.at(i) -> update();
 
@@ -138,6 +142,9 @@ void update(){
     // Collision with barrier
     player_tanks.at(i) -> checkCollision( &barriers);
 
+    // Collision with powerups
+    player_tanks.at(i) -> checkCollision( &powerups);
+
     // Update tanks
     player_tanks.at(i) -> update();
 
@@ -151,7 +158,21 @@ void update(){
   // Remove broken barriers
   for( unsigned int i = 0; i < barriers.size(); i++){
     if( barriers.at(i).getDead()){
+      // Spawn powerup
+      if( random( 0, 1) == 0){
+        int type = random( 0, 3);
+        powerup newPowerup( barriers.at(i).getX(), barriers.at(i).getY(), type, powerup_images[type]);
+        powerups.push_back( newPowerup);
+      }
+
       barriers.erase( barriers.begin() + i);
+    }
+  }
+
+  // Delete powerup
+  for( unsigned int i = 0; i < powerups.size(); i++){
+    if(powerups.at(i).getDead()){
+      powerups.erase(powerups.begin() + i);
     }
   }
 
@@ -238,6 +259,11 @@ void draw(){
   for( unsigned int i = 0; i < barriers.size(); i++)
     barriers.at(i).draw( map_buffer);
 
+  // Draw powerups
+  for( unsigned int i = 0; i < powerups.size(); i++){
+    powerups.at(i).draw( map_buffer);
+  }
+
   // Map to buffer
   blit( map_buffer, buffer, map_x, map_y, 0, 0, buffer -> w, buffer -> h);
 
@@ -318,6 +344,19 @@ void setup(){
 
   if (!(blocks[2] = load_bitmap( "images/block_box_1.png", NULL)))
     abort_on_error( "Cannot find image images/block_box_1.png\nPlease check your files and try again");
+
+
+  if (!(powerup_images[0] = load_bitmap( "images/powerup_health.png", NULL)))
+    abort_on_error( "Cannot find image images/powerup_health.png\nPlease check your files and try again");
+
+  if (!(powerup_images[1] = load_bitmap( "images/powerup_tank_speed.png", NULL)))
+    abort_on_error( "Cannot find image images/powerup_tank_speed.png\nPlease check your files and try again");
+
+  if (!(powerup_images[2] = load_bitmap( "images/powerup_bullet_speed.png", NULL)))
+    abort_on_error( "Cannot find image images/powerup_bullet_speed.png\nPlease check your files and try again");
+
+  if (!(powerup_images[3] = load_bitmap( "images/powerup_bullet_delay.png", NULL)))
+    abort_on_error( "Cannot find image images/powerup_bullet_delay.png\nPlease check your files and try again");
 
 
   if (!(tank_images[0] = load_bitmap( "images/tank_treads.png", NULL)))
@@ -412,7 +451,7 @@ void setup(){
   // Create barriers (where needed)
   for( int i = 0; i < map_width; i++){
     for( int t = 0; t < map_height; t++){
-      if( map_temp[i][t] != 0){
+      if( map_temp[i][t] == 1 || map_temp[i][t] == 2){
         barrier newBarrier( i * 40, t * 40, blocks[map_temp[i][t]], -1);
 
         // Destroyable
