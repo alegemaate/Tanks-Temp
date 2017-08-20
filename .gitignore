@@ -1,3 +1,5 @@
 *.o
 *.exe
 Tanks.depend
+*.exe
+*.o
