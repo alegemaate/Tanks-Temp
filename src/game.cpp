@@ -112,29 +112,8 @@ game::game(){
     }
   }
 
-
-  for( int i = 0; i < num_enemies; i ++){
-    // choose a start location ID
-    int randomStartLocation = random( 0, startLocations.size() - 1);
-
-    ai_tank *newPlayer = new ai_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
-                      random(50,150), random(1,4), random(50,300), random(1,10)/10,
-                      tank_images[5], tank_images[4], tank_images[1], tank_images[0]);
-    newPlayer -> process_enemies( &player_tanks);
-    newPlayer -> set_map_dimensions( map_width * 40, map_height * 40);
-    enemy_tanks.push_back( newPlayer);
-  }
-
-  // Get 1 health!
-  for( unsigned int i = 0; i < player_tanks.size(); i ++){
-    player_tanks.at(i) -> giveHealth(20);
-  }
-
-  set_next_state( STATE_MENU);
-
-  // The new you!
-  int randomStartLocation = random( 0, startLocations.size());
-
+  // Player
+  int randomStartLocation = random( 0, startLocations.size() - 1);
   player_tank *newPlayer = new player_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
                           100, 4, 20, 1,
                           tank_images[3], tank_images[2], tank_images[1], tank_images[0]);
@@ -143,8 +122,21 @@ game::game(){
   newPlayer -> set_map_dimensions( map_width * 40, map_height * 40);
   player_tanks.push_back( newPlayer);
 
-  // Friends?
+  // Enemies
+  for( int i = 0; i < num_enemies; i ++){
+    int randomStartLocation = random( 0, startLocations.size() - 1);
+    ai_tank *newPlayer = new ai_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
+                      random(50,150), random(1,4), random(50,300), random(1,10)/10,
+                      tank_images[5], tank_images[4], tank_images[1], tank_images[0]);
+
+    newPlayer -> process_enemies( &player_tanks);
+    newPlayer -> set_map_dimensions( map_width * 40, map_height * 40);
+    enemy_tanks.push_back( newPlayer);
+  }
+
+  // Friends
   for( int i = 0; i < num_friends; i ++){
+    int randomStartLocation = random( 0, startLocations.size() - 1);
     ai_tank *newPlayer = new ai_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
                           100, 4, 20, 1,
                           tank_images[7], tank_images[6], tank_images[1], tank_images[0]);
@@ -231,58 +223,9 @@ void game::update(){
     }
   }
 
-  // GAME!
-
-  // Next round
-  if( enemy_tanks.size() == 0){
+  // Game over
+  if( player_tanks.size() == 0 || enemy_tanks.size() == 0){
     set_next_state( STATE_MENU);
-    /*currentRound += 1;
-
-    for( int i = 0; i < currentRound; i ++){
-      // choose a start location ID
-      int randomStartLocation = random( 0, startLocations.size() - 1);
-
-      ai_tank *newPlayer = new ai_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
-                        random(50,150), random(1,4), random(50,300), random(1,10)/10,
-                        tank_images[5], tank_images[4], tank_images[1], tank_images[0]);
-      newPlayer -> process_enemies( &player_tanks);
-      newPlayer -> set_map_dimensions( map_width * 40, map_height * 40);
-      enemy_tanks.push_back( newPlayer);
-    }
-
-    // Get 1 health!
-    for( unsigned int i = 0; i < player_tanks.size(); i ++){
-      player_tanks.at(i) -> giveHealth(20);
-    }*/
-  }
-  // U died
-  else if( player_tanks.size() == 0){
-    set_next_state( STATE_MENU);
-    /*enemy_tanks.clear();
-    player_tanks.clear();
-    currentRound = 0;
-
-    // The new you!
-    int randomStartLocation = random( 0, startLocations.size());
-
-    player_tank *newPlayer = new player_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
-                            100, 4, 20, 1,
-                            tank_images[3], tank_images[2], tank_images[1], tank_images[0]);
-
-    newPlayer -> process_enemies( &enemy_tanks);
-    newPlayer -> set_map_dimensions( map_width * 40, map_height * 40);
-    player_tanks.push_back( newPlayer);
-
-    // Friends?
-    for( int i = 0; i < num_friends; i ++){
-      ai_tank *newPlayer = new ai_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
-                            100, 4, 20, 1,
-                            tank_images[7], tank_images[6], tank_images[1], tank_images[0]);
-
-      newPlayer -> process_enemies( &enemy_tanks);
-      newPlayer -> set_map_dimensions( map_width * 40, map_height * 40);
-      player_tanks.push_back( newPlayer);
-    }*/
   }
 
   // Scroll map
