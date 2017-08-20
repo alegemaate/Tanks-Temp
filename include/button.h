@@ -1,9 +1,7 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
-#include <allegro5/allegro5.h>
-#include <allegro5/allegro_primitives.h>
-#include <allegro5/allegro_font.h>
+#include <allegro.h>
 
 #include <string>
 #include <mouseListener.h>
@@ -13,7 +11,7 @@
 class button{
   public:
     // Constructor
-    button( int x, int y, std::string text, ALLEGRO_FONT *button_font, int width = 10, int height = 10, int padding_x = 10, int padding_y = 10);
+    button( int x, int y, std::string text, FONT *button_font, int width = 10, int height = 10, int padding_x = 10, int padding_y = 10);
 
     button();
     ~button();
@@ -38,8 +36,8 @@ class button{
     void setSize( int width, int height){ this -> width = width; this -> height = height;}
     void setPadding( int padding_x, int padding_y){ this -> padding_x = padding_x; this -> padding_y = padding_y; }
     void setText( std::string text){ this -> text = text; }
-    void setImage( ALLEGRO_BITMAP *image);
-    void setFont( ALLEGRO_FONT *font);
+    void setImage( BITMAP *image);
+    void setFont( FONT *font);
 
     bool mouseReleased();
     bool hover();
@@ -47,7 +45,7 @@ class button{
     void update();
 
     // Draw
-    void draw();
+    void draw( BITMAP *tempBitmap);
   protected:
 
   private:
@@ -64,10 +62,10 @@ class button{
     bool mouse_released;
     bool visible;
 
-    ALLEGRO_BITMAP *image;
+    BITMAP *image;
 
     // Font
-    ALLEGRO_FONT *button_font;
+    FONT *button_font;
 
     std::string text;
 };

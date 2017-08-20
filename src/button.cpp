@@ -15,7 +15,7 @@ button::button(){
 }
 
 // Constructor
-button::button( int x, int y, std::string text, ALLEGRO_FONT *button_font, int width, int height, int padding_x, int padding_y){
+button::button( int x, int y, std::string text, FONT *button_font, int width, int height, int padding_x, int padding_y){
 
   // Literally this
   this -> x = x;
@@ -31,8 +31,8 @@ button::button( int x, int y, std::string text, ALLEGRO_FONT *button_font, int w
   this -> hovering = false;
 
   if( button_font != nullptr){
-    this -> width = al_get_text_width( button_font, text.c_str());
-    this -> height = al_get_font_line_height( button_font);
+    //this -> width = al_get_text_width( button_font, text.c_str());
+    //this -> height = al_get_font_line_height( button_font);
   }
   else{
     this -> width = width;
@@ -46,35 +46,29 @@ button::button( int x, int y, std::string text, ALLEGRO_FONT *button_font, int w
 // Destruct
 button::~button(){
   if( image != nullptr)
-    al_destroy_bitmap( image);
+    destroy_bitmap( image);
 }
 
 // Sets an image
-void button::setImage( ALLEGRO_BITMAP *image){
+void button::setImage( BITMAP *image){
   this -> image = image;
-  this -> width = al_get_bitmap_width( this -> image);
-  this -> height = al_get_bitmap_height( this -> image);
+  this -> width = this -> image -> w;
+  this -> height = this -> image -> h;
 }
 
 // Set new font
-void button::setFont( ALLEGRO_FONT *font){
+void button::setFont( FONT *font){
   this -> button_font = font;
   if( button_font != nullptr){
-    this -> width = al_get_text_width( button_font, text.c_str());
-    this -> height = al_get_font_line_height( button_font);
+    //this -> width = al_get_text_width( button_font, text.c_str());
+    //this -> height = al_get_font_line_height( button_font);
   }
 }
 
 // Update
 void button::update(){
-  mouse_released = false;
-  if( hovering && old_mouse_down && !mouseListener::mouse_button & 1){
-    mouse_released = true;
-    std::cout << text << ", it's true then\n";
-  }
-  old_mouse_down = hovering && mouseListener::mouse_button & 1;
-  hovering = mouseListener::mouse_x > x && mouseListener::mouse_x < x + getWidth() &&
-             mouseListener::mouse_y > y && mouseListener::mouse_y < y + getHeight();
+  hovering = mouse_x > x && mouse_x < x + getWidth() &&
+             mouse_y > y && mouse_y < y + getHeight();
 }
 
 // True if hovering
@@ -92,18 +86,18 @@ bool button::mouseReleased(){
 }
 
 // Draw
-void button::draw(){
+void button::draw( BITMAP *tempBitmap){
   if(visible){
     // Backdrop
-    al_draw_filled_rectangle( x, y, x + width + padding_x * 2, y + height + padding_y * 2, al_map_rgb( 200 + 20 * hovering, 200 + 20 * hovering, 200 + 20 * hovering));
-    al_draw_rectangle( x, y, x + width + padding_x * 2, y + height + padding_y * 2, al_map_rgb( 0, 0, 0), 2);
+    rectfill( tempBitmap, x, y, x + width + padding_x * 2, y + height + padding_y * 2, makecol( 200 + 20 * hovering, 200 + 20 * hovering, 200 + 20 * hovering));
+    rect( tempBitmap, x, y, x + width + padding_x * 2, y + height + padding_y * 2, makecol( 0, 0, 0));
 
     // Text
     if( button_font != nullptr)
-      al_draw_text( button_font, al_map_rgb( 0, 0, 0), x + padding_x, y + padding_y, 0, text.c_str());
+      textprintf_ex( tempBitmap, button_font, makecol( 0, 0, 0), x + padding_x, y + padding_y, 0, text.c_str());
 
     // Image if avail
     if( image != nullptr)
-      al_draw_bitmap( image, x + padding_x, y + padding_y, 0);
+      draw_sprite( tempBitmap, image, x + padding_x, y + padding_y);
   }
 }

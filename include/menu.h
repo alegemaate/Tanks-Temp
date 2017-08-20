@@ -8,8 +8,8 @@
 
 #include <allegro.h>
 #include <alpng.h>
-#include "tools.h"
 
+#include "tools.h"
 #include "state.h"
 
 class menu : public state

@@ -1,10 +1,17 @@
 #include <allegro.h>
 #include <alpng.h>
 
+#include "mouseListener.h"
+#include "keyListener.h"
+
 #include "state.h"
 #include "init.h"
 #include "menu.h"
 #include "game.h"
+
+// Input listener classes
+mouseListener m_listener;
+keyListener k_listener;
 
 // Current state object
 state *currentState = nullptr;
@@ -150,6 +157,18 @@ void setup(){
   currentState = new init();
 }
 
+void update(){
+  // Change state (if needed)
+  change_state();
+
+  // Update listeners
+  m_listener.update();
+  k_listener.update();
+
+  // Update state
+  currentState -> update();
+}
+
 int main(){
   // Setup
   setup();
@@ -160,8 +179,7 @@ int main(){
       rest( 1);
     while( ticks > 0){
       int old_ticks = ticks;
-      currentState -> update();
-      change_state();
+      update();
       ticks--;
       if( old_ticks <= ticks){
         break;
