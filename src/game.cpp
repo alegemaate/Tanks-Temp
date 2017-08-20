@@ -162,7 +162,7 @@ void game::update(){
     player_tanks.at(i) -> update();
 
     // Delete tank
-    if(player_tanks.at(i) -> getErase()){
+    if( player_tanks.at(i) -> getErase()){
       delete player_tanks[i];
       player_tanks.erase(player_tanks.begin() + i);
     }

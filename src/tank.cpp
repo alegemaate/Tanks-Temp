@@ -52,7 +52,6 @@ tank::tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed
 // Delete
 tank::~tank(){
   destroy_sample(sample_shot);
-  //delete sample_shot;
 }
 
 // Check dead

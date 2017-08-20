@@ -1,12 +1,12 @@
 #include "../include/bullet.h"
 
 // Init
-bullet::bullet( float newX, float newY, float newAngle, float newSpeed, bool newOwner, int newHealth, SAMPLE* newSound){
+bullet::bullet( float newX, float newY, float newAngle, float newSpeed, int newOwnerID, int newHealth, SAMPLE* newSound){
   x = newX;
   y = newY;
   vector_x = -newSpeed*cos( newAngle);
   vector_y = -newSpeed*sin( newAngle);
-  owner = newOwner;
+  owner = newOwnerID;
   shotSound = newSound;
   play_sample( shotSound, 255, 127, random(800,1200), 0);
   pendingErase = false;
@@ -117,7 +117,7 @@ void bullet::update(){
 // Draw image
 void bullet::draw( BITMAP* tempImage){
   if( health > 0){
-    if(owner){
+    if( owner == 0){
       rectfill( tempImage, x, y, x + 5, y + 5, makecol(0,0,0));
       rectfill( tempImage, x + 1, y + 1, x + 4, y + 4, makecol(255,0,0));
       rectfill( tempImage, x + 2, y + 2, x + 3, y + 3, makecol(0,255,0));

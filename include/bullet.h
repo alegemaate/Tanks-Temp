@@ -14,7 +14,7 @@
 class bullet
 {
   public:
-    bullet( float newX, float newY, float newAngle, float newSpeed, bool newOwner, int newHealth, SAMPLE* newSound);
+    bullet( float newX, float newY, float newAngle, float newSpeed, int newOwnerID, int newHealth, SAMPLE* newSound);
     ~bullet();
 
     bool getErase();

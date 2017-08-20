@@ -3,6 +3,7 @@
 
 #include "state.h"
 #include "init.h"
+#include "menu.h"
 #include "game.h"
 
 // Current state object
@@ -59,6 +60,9 @@ void change_state(){
         break;
       case STATE_GAME:
         currentState = new game();
+        break;
+      case STATE_MENU:
+        currentState = new menu();
         break;
       case STATE_EXIT:
         closing = true;
