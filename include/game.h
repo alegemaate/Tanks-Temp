@@ -15,6 +15,7 @@
 #include "tools.h"
 #include "tank.h"
 #include "powerup.h"
+#include "globals.h"
 
 #include "state.h"
 

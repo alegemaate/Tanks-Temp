@@ -14,6 +14,10 @@ menu::menu(){
   friends_up = button( 460, 275, "/\\", font);
   friends_down = button( 460, 320, "\\/", font);
   start = button( 340, 485, "START", font);
+
+  // Reset number of players
+  num_enemies = 0;
+  num_friends = 0;
 }
 
 // Update routine
