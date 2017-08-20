@@ -27,19 +27,22 @@ class bullet
     float getYVelocity();
     float getXVelocity();
 
-    void bounceCounter( int newDirection);
+    void bounce( int newDirection);
+    void destroy();
+
     void reverseDirection( std::string newDirection);
   protected:
   private:
     int health;
     int incidenceDirection;
 
+    bool exploded;
+
     float x;
     float y;
     float vector_x;
     float vector_y;
 
-    bool exploded;
     bool owner;
     bool pendingErase;
 

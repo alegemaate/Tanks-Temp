@@ -92,7 +92,7 @@ void tank::checkCollision( std::vector<bullet>* newBullets){
   for( unsigned int i = 0; i < newBullets -> size(); i++){
     if( collisionAny( x, x + 50, newBullets -> at(i).getX(), newBullets -> at(i).getX() + newBullets -> at(i).getXVelocity(), y, y + 50, newBullets -> at(i).getY(), newBullets -> at(i).getY() + newBullets -> at(i).getYVelocity())){
       health -= 10;
-      newBullets -> at(i).bounceCounter( TANK);
+      newBullets -> at(i).destroy();
     }
   }
 }

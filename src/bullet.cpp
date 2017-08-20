@@ -42,15 +42,45 @@ float bullet::getY(){
   return y;
 }
 
-// Add to the bounce count
-void bullet::bounceCounter( int newDirection){
+// Bounce off wall
+void bullet::bounce( int newDirection){
   health--;
   incidenceDirection = newDirection;
-  if( newDirection == TANK)
-    health = 0;
+
+  if( health <= 0)
+    destroy();
 }
 
-// Return vectors
+// Destroy
+void bullet::destroy(){
+  // Make sure health is 0
+  health = 0;
+
+  // Make explosion
+  if( !exploded){
+    exploded = true;
+    for( int i = 0; i < 100; i ++){
+      if( incidenceDirection == BOTTOM){
+        particle newParticle( x, y, makecol( 255, random(0,255), 0), -5, 5,  0, 3, 1, CIRCLE, 10, EXPLODE);
+        explosionEffect.push_back(newParticle);
+      }
+      else if( incidenceDirection == TOP){
+        particle newParticle( x, y, makecol( 255, random(0,255), 0), -5, 5, -3, 0, 1, CIRCLE, 10, EXPLODE);
+        explosionEffect.push_back(newParticle);
+      }
+      else if( incidenceDirection == LEFT){
+        particle newParticle( x, y, makecol( 255, random(0,255), 0), -3, 0, -5, 5, 1, CIRCLE, 10, EXPLODE);
+        explosionEffect.push_back(newParticle);
+      }
+      else if( incidenceDirection == RIGHT){
+        particle newParticle( x, y, makecol( 255, random(0,255), 0),  0, 3, -5, 5, 1, CIRCLE, 10, EXPLODE);
+        explosionEffect.push_back(newParticle);
+      }
+    }
+  }
+}
+
+// Return velocities
 float bullet::getXVelocity(){
   return vector_x;
 }
@@ -60,53 +90,14 @@ float bullet::getYVelocity(){
 
 // Update bullets
 void bullet::update(){
-  if(!exploded){
+  if( health > 0){
+    // Move
     x += vector_x;
     y += vector_y;
-    /*if(collisionAny( player_x, player_x + 50, x, x+5, player_y, player_y + 50, y, y + 5) && !owner){
-      player_hurt_timer = 3;
-      pendingErase = true;
-      player_health -= 5;
-    }*/
-    if( x > 10000){
-      vector_x = -vector_x;
-      bounceCounter( LEFT);
-    }
-    if( x < 0){
-      vector_x = -vector_x;
-      bounceCounter( RIGHT);
-    }
-    if( y > 10000){
-      vector_y = -vector_y;
-      bounceCounter( TOP);
-    }
-    if( y < 0){
-      vector_y = -vector_y;
-      bounceCounter( BOTTOM);
-    }
 
-    if( health <= 0){
-      exploded = true;
-      // Make explosion
-      for( int i = 0; i < 100; i ++){
-        if( incidenceDirection == BOTTOM){
-          particle newParticle(x, y, makecol(255,random(0,255),0), -5, 5, 0, 3, 1, CIRCLE, 10, EXPLODE);
-          explosionEffect.push_back(newParticle);
-        }
-        else if( incidenceDirection == TOP){
-          particle newParticle(x, y, makecol(255,random(0,255),0), -5, 5, -3, 0, 1, CIRCLE, 10, EXPLODE);
-          explosionEffect.push_back(newParticle);
-        }
-        else if( incidenceDirection == LEFT){
-          particle newParticle(x, y, makecol(255,random(0,255),0), -3, 0, -5, 5, 1, CIRCLE, 10, EXPLODE);
-          explosionEffect.push_back(newParticle);
-        }
-        else if( incidenceDirection == RIGHT){
-          particle newParticle(x, y, makecol(255,random(0,255),0), 0, 3, -5, 5, 1, CIRCLE, 10, EXPLODE);
-          explosionEffect.push_back(newParticle);
-        }
-      }
-    }
+    // Off screen
+    if( x < 0 || x > 10000 || y < 0 || y > 10000)
+      destroy();
   }
   else{
     // Update particles
@@ -125,7 +116,7 @@ void bullet::update(){
 
 // Draw image
 void bullet::draw( BITMAP* tempImage){
-  if(!exploded){
+  if( health > 0){
     if(owner){
       rectfill( tempImage, x, y, x + 5, y + 5, makecol(0,0,0));
       rectfill( tempImage, x + 1, y + 1, x + 4, y + 4, makecol(255,0,0));

@@ -24,19 +24,19 @@ void barrier::update( std::vector<bullet>* newBullets){
       if( collisionAny( x, x + width, newBullets -> at(i).getX(), newBullets -> at(i).getX() + 5, y, y + height, newBullets -> at(i).getY(), newBullets -> at(i).getY() + 5)){
         if( collisionBottom( newBullets -> at(i).getY() + newBullets -> at(i).getYVelocity(), newBullets -> at(i).getY() + 5, y, y + height)){
           newBullets -> at(i).reverseDirection("y");
-          newBullets -> at(i).bounceCounter( BOTTOM);
+          newBullets -> at(i).bounce( BOTTOM);
         }
         if( collisionTop( newBullets -> at(i).getY(), newBullets -> at(i).getY() + 5 + newBullets -> at(i).getYVelocity(), y, y + height)){
           newBullets -> at(i).reverseDirection("y");
-          newBullets -> at(i).bounceCounter( TOP);
+          newBullets -> at(i).bounce( TOP);
         }
         if( collisionLeft( newBullets -> at(i).getX(), newBullets -> at(i).getX() + 5 + newBullets -> at(i).getXVelocity(), x, x + width)){
           newBullets -> at(i).reverseDirection("x");
-          newBullets -> at(i).bounceCounter( LEFT);
+          newBullets -> at(i).bounce( LEFT);
         }
         if( collisionRight( newBullets -> at(i).getX() + newBullets -> at(i).getXVelocity(), newBullets -> at(i).getX() + 5, x, x + width)){
           newBullets -> at(i).reverseDirection("x");
-          newBullets -> at(i).bounceCounter( RIGHT);
+          newBullets -> at(i).bounce( RIGHT);
         }
         explode( x + width/2, y + height/2, 6, 100, 30);
       }
