@@ -18,8 +18,6 @@
 
 #include "state.h"
 
-using namespace std;
-
 // Coordinate system
 struct coordinate{
   int x = 0;
@@ -48,11 +46,11 @@ class game : public state
     BITMAP *tank_images[10];
 
     // Objects
-    vector<barrier> barriers;
-    vector<tank*> enemy_tanks;
-    vector<tank*> player_tanks;
-    vector<powerup> powerups;
-    vector<coordinate> startLocations;
+    std::vector<barrier> barriers;
+    std::vector<tank*> enemy_tanks;
+    std::vector<tank*> player_tanks;
+    std::vector<powerup> powerups;
+    std::vector<coordinate> startLocations;
 
     // Map stuff
     static const int map_width = 1600/40;

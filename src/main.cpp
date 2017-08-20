@@ -5,8 +5,6 @@
 #include "init.h"
 #include "game.h"
 
-using namespace std;
-
 // Current state object
 state *currentState = nullptr;
 

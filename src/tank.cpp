@@ -83,12 +83,12 @@ void tank::explode( int newX, int newY, int newVelocity, int newAmount, int newL
 }
 
 // Get bullets
-vector<bullet> *tank::getBullets(){
+std::vector<bullet> *tank::getBullets(){
   return &bullets;
 }
 
 // Check collision
-void tank::checkCollision( vector<bullet>* newBullets){
+void tank::checkCollision( std::vector<bullet>* newBullets){
   for( unsigned int i = 0; i < newBullets -> size(); i++){
     if( collisionAny( x, x + 50, newBullets -> at(i).getX(), newBullets -> at(i).getX() + newBullets -> at(i).getXVelocity(), y, y + 50, newBullets -> at(i).getY(), newBullets -> at(i).getY() + newBullets -> at(i).getYVelocity())){
       health -= 10;
@@ -96,7 +96,7 @@ void tank::checkCollision( vector<bullet>* newBullets){
     }
   }
 }
-void tank::checkCollision( vector<barrier>* newBarriers){
+void tank::checkCollision( std::vector<barrier>* newBarriers){
   float guess_vector_x = -speed * cos( rotation_radians_body);
   float guess_vector_y = -speed * sin( rotation_radians_body);
 
@@ -118,7 +118,7 @@ void tank::checkCollision( vector<barrier>* newBarriers){
     }
   }
 }
-void tank::checkCollision( vector<powerup>* newPowerups){
+void tank::checkCollision( std::vector<powerup>* newPowerups){
   for( unsigned int i = 0; i < newPowerups -> size(); i++){
     if( collisionAny( x, x + 50, newPowerups -> at(i).getX(), newPowerups -> at(i).getX() + newPowerups -> at(i).getWidth(), y, y + 50, newPowerups -> at(i).getY(), newPowerups -> at(i).getY() + newPowerups -> at(i).getHeight())){
       get_powerup( newPowerups -> at(i).getType());
@@ -355,7 +355,7 @@ void player_tank::update(){
 }
 
 // Feed AI player positions
-void tank::process_enemies( vector<tank*>* tempOtherTanks){
+void tank::process_enemies( std::vector<tank*>* tempOtherTanks){
   otherTanks = tempOtherTanks;
 }
 

@@ -9,8 +9,6 @@
 #include <fstream>
 #include <cmath>
 
-using namespace std;
-
 //Collision
 extern bool collisionAny(int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int yMax1, int yMin2, int yMax2);
 extern bool collisionBottom(int yMin1, int yMax1, int yMin2, int yMax2);
@@ -34,13 +32,13 @@ extern int random(int newLowest, int newHighest);
 extern float randomf(float newLowest, float newHighest);
 
 //Convert int to string
-extern string convertIntToString(int number);
+extern std::string convertIntToString(int number);
 
 //Convert double to string
-extern string convertDoubleToString(double number);
+extern std::string convertDoubleToString(double number);
 
 //Convert bool to string
-extern string convertBoolToString(bool boolean);
+extern std::string convertBoolToString(bool boolean);
 
 // Fade in and out
 extern void highcolor_fade_in(BITMAP* bmp_orig, int speed);

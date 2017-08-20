@@ -23,7 +23,7 @@ bool bullet::getErase(){
 }
 
 // Reverse specified vector
-void bullet::reverseDirection( string newDirection){
+void bullet::reverseDirection( std::string newDirection){
   if( newDirection == "x")
     vector_x = -vector_x;
   else if( newDirection == "y")

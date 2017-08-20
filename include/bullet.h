@@ -28,7 +28,7 @@ class bullet
     float getXVelocity();
 
     void bounceCounter( int newDirection);
-    void reverseDirection( string newDirection);
+    void reverseDirection( std::string newDirection);
   protected:
   private:
     int health;
@@ -43,7 +43,7 @@ class bullet
     bool owner;
     bool pendingErase;
 
-    vector<particle> explosionEffect;
+    std::vector<particle> explosionEffect;
 
     SAMPLE* shotSound;
 };

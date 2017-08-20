@@ -14,7 +14,7 @@ class tank{
 
     virtual bool getErase();
 
-    virtual vector<bullet>* getBullets();
+    virtual std::vector<bullet>* getBullets();
 
     virtual void update();
     virtual void draw( BITMAP* tempImage);
@@ -30,11 +30,11 @@ class tank{
 
     virtual void set_map_dimensions( int newMapWidth, int newMapHeight){ map_width = newMapWidth; map_height = newMapHeight;}
 
-    virtual void checkCollision( vector<bullet>* newBullets);
-    virtual void checkCollision( vector<barrier>* newBarriers);
-    virtual void checkCollision( vector<powerup>* newPowerups);
+    virtual void checkCollision( std::vector<bullet>* newBullets);
+    virtual void checkCollision( std::vector<barrier>* newBarriers);
+    virtual void checkCollision( std::vector<powerup>* newPowerups);
 
-    virtual void process_enemies( vector<tank*> *tempOtherTanks);
+    virtual void process_enemies( std::vector<tank*> *tempOtherTanks);
 
     virtual void get_powerup( int powerup_id);
   protected:
@@ -66,9 +66,9 @@ class tank{
     bool canMoveX;
     bool canMoveY;
 
-    vector<bullet> bullets;
-    vector<particle> explosionEffect;
-    vector<tank*> *otherTanks;
+    std::vector<bullet> bullets;
+    std::vector<particle> explosionEffect;
+    std::vector<tank*> *otherTanks;
 
     BITMAP *image_base;
     BITMAP *image_hurt;

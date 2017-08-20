@@ -6,14 +6,12 @@
 #include "tools.h"
 #include "bullet.h"
 
-using namespace std;
-
 class barrier{
   public:
     barrier( int newX, int newY, BITMAP* newImage, int newHealth);
     ~barrier();
 
-    void update( vector<bullet>* newBullets);
+    void update( std::vector<bullet>* newBullets);
     void draw( BITMAP* tempImage);
 
     int getX();
@@ -34,7 +32,7 @@ class barrier{
 
     int health;
 
-    vector<particle> explosionEffect;
+    std::vector<particle> explosionEffect;
 
     void explode( int newX, int newY, int newVelocity, int newAmount, int newLife);
 

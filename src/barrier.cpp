@@ -18,7 +18,7 @@ barrier::~barrier(){
 }
 
 // Update
-void barrier::update( vector<bullet>* newBullets){
+void barrier::update( std::vector<bullet>* newBullets){
   if( health != 0){
     for( unsigned int i = 0; i < newBullets -> size(); i++){
       if( collisionAny( x, x + width, newBullets -> at(i).getX(), newBullets -> at(i).getX() + 5, y, y + height, newBullets -> at(i).getY(), newBullets -> at(i).getY() + 5)){
