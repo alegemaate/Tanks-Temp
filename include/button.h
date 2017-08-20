@@ -37,9 +37,8 @@ class button{
     void setPadding( int padding_x, int padding_y){ this -> padding_x = padding_x; this -> padding_y = padding_y; }
     void setText( std::string text){ this -> text = text; }
     void setImage( BITMAP *image);
-    void setFont( FONT *font);
+    bool setFont( FONT *font);
 
-    bool mouseReleased();
     bool hover();
     bool clicked();
     void update();
@@ -58,8 +57,6 @@ class button{
     int padding_y;
 
     bool hovering;
-    bool old_mouse_down;
-    bool mouse_released;
     bool visible;
 
     BITMAP *image;

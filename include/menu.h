@@ -11,6 +11,7 @@
 
 #include "tools.h"
 #include "state.h"
+#include "button.h"
 
 class menu : public state
 {
@@ -24,6 +25,15 @@ class menu : public state
   protected:
 
   private:
+    char num_enemies = 0;
+    char num_friends = 0;
+
+    button enemies_up;
+    button enemies_down;
+    button friends_up;
+    button friends_down;
+    button start;
+
     BITMAP *buffer;
     BITMAP *background;
 };

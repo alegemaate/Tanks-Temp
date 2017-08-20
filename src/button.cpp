@@ -16,28 +16,18 @@ button::button(){
 
 // Constructor
 button::button( int x, int y, std::string text, FONT *button_font, int width, int height, int padding_x, int padding_y){
-
-  // Literally this
   this -> x = x;
   this -> y = y;
   this -> text = text;
   this -> image = nullptr;
-  this -> button_font = button_font;
 
-  this -> visible = true;
-
-  this -> mouse_released=false;
-  this -> old_mouse_down=false;
-  this -> hovering = false;
-
-  if( button_font != nullptr){
-    //this -> width = al_get_text_width( button_font, text.c_str());
-    //this -> height = al_get_font_line_height( button_font);
-  }
-  else{
+  if( !setFont( button_font)){
     this -> width = width;
     this -> height = height;
   }
+
+  this -> visible = true;
+  this -> hovering = false;
 
   this -> padding_x = padding_x;
   this -> padding_y = padding_y;
@@ -57,12 +47,14 @@ void button::setImage( BITMAP *image){
 }
 
 // Set new font
-void button::setFont( FONT *font){
+bool button::setFont( FONT *font){
   this -> button_font = font;
   if( button_font != nullptr){
-    //this -> width = al_get_text_width( button_font, text.c_str());
-    //this -> height = al_get_font_line_height( button_font);
+    this -> width = text_length( button_font, text.c_str());
+    this -> height = text_height( button_font);
+    return true;
   }
+  return false;
 }
 
 // Update
@@ -81,10 +73,6 @@ bool button::clicked(){
   return hovering && mouseListener::mouse_pressed & 1;
 }
 
-bool button::mouseReleased(){
-  return mouse_released;
-}
-
 // Draw
 void button::draw( BITMAP *tempBitmap){
   if(visible){
@@ -94,7 +82,7 @@ void button::draw( BITMAP *tempBitmap){
 
     // Text
     if( button_font != nullptr)
-      textprintf_ex( tempBitmap, button_font, makecol( 0, 0, 0), x + padding_x, y + padding_y, 0, text.c_str());
+      textprintf_ex( tempBitmap, button_font, x + padding_x, y + padding_y, makecol( 0, 0, 0), -1, text.c_str());
 
     // Image if avail
     if( image != nullptr)
