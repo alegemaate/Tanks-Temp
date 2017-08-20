@@ -41,7 +41,7 @@ tank::tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed
   dead = false;
   pendingErase = false;
 
-  sample_shot = load_sample( "sfx/fire.wav");
+  sample_shot = load_sample_ex( "sfx/fire.wav");
 
   rotation_radians_body = 0;
   rotation_allegro_body = 0;

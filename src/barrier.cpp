@@ -10,7 +10,7 @@ barrier::barrier( int newX, int newY, BITMAP* newImage, int newHealth){
 
   this -> health = newHealth;
 
-  sample_explode = load_sample( "sfx/explode.wav");
+  sample_explode = load_sample_ex( "sfx/explode.wav");
 }
 
 barrier::~barrier(){

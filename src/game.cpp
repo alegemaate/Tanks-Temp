@@ -14,58 +14,23 @@ game::game(){
   rectfill( vision_buffer, 0, 0, map_width * 40, map_height * 40, makecol( 0, 0, 0));
 
   // Load images
-  if (!(background = load_bitmap( "images/background.png", NULL)))
-    abort_on_error( "Cannot find image images/background.png\nPlease check your files and try again");
-
-  if (!(cursor = load_bitmap( "images/cursor.png", NULL)))
-    abort_on_error( "Cannot find image images/cursor.png\nPlease check your files and try again");\
-
-  if (!(blocks[0] = load_bitmap( "images/block_box_1.png", NULL)))
-    abort_on_error( "Cannot find image images/block_box_1.png\nPlease check your files and try again");
-
-  if (!(blocks[1] = load_bitmap( "images/block_stone_1.png", NULL)))
-    abort_on_error( "Cannot find image images/block_stone_1.png\nPlease check your files and try again");
-
-  if (!(blocks[2] = load_bitmap( "images/block_box_1.png", NULL)))
-    abort_on_error( "Cannot find image images/block_box_1.png\nPlease check your files and try again");
-
-
-  if (!(powerup_images[0] = load_bitmap( "images/powerup_health.png", NULL)))
-    abort_on_error( "Cannot find image images/powerup_health.png\nPlease check your files and try again");
-
-  if (!(powerup_images[1] = load_bitmap( "images/powerup_tank_speed.png", NULL)))
-    abort_on_error( "Cannot find image images/powerup_tank_speed.png\nPlease check your files and try again");
-
-  if (!(powerup_images[2] = load_bitmap( "images/powerup_bullet_speed.png", NULL)))
-    abort_on_error( "Cannot find image images/powerup_bullet_speed.png\nPlease check your files and try again");
-
-  if (!(powerup_images[3] = load_bitmap( "images/powerup_bullet_delay.png", NULL)))
-    abort_on_error( "Cannot find image images/powerup_bullet_delay.png\nPlease check your files and try again");
-
-
-  if (!(tank_images[0] = load_bitmap( "images/tank_treads.png", NULL)))
-    abort_on_error( "Cannot find image images/tank_treads.png\nPlease check your files and try again");
-
-  if (!(tank_images[1] = load_bitmap( "images/tank_dead.png", NULL)))
-    abort_on_error( "Cannot find image images/tank_dead.png\nPlease check your files and try again");
-
-  if (!(tank_images[2] = load_bitmap( "images/tank_turret_green.png", NULL)))
-    abort_on_error( "Cannot find image images/tank_turret_green.png\nPlease check your files and try again");
-
-  if (!(tank_images[3] = load_bitmap( "images/tank_base_green.png", NULL)))
-    abort_on_error( "Cannot find image images/tank_base_green.png\nPlease check your files and try again");
-
-  if (!(tank_images[4] = load_bitmap( "images/tank_turret_red.png", NULL)))
-    abort_on_error( "Cannot find image images/tank_turret_red.png\nPlease check your files and try again");
-
-  if (!(tank_images[5] = load_bitmap( "images/tank_base_red.png", NULL)))
-    abort_on_error( "Cannot find image images/tank_base_red.png\nPlease check your files and try again");
-
-  if (!(tank_images[6] = load_bitmap( "images/tank_turret_blue.png", NULL)))
-    abort_on_error( "Cannot find image images/tank_turret_blue.png\nPlease check your files and try again");
-
-  if (!(tank_images[7] = load_bitmap( "images/tank_base_blue.png", NULL)))
-    abort_on_error( "Cannot find image images/tank_base_blue.png\nPlease check your files and try again");
+  background = load_bitmap_ex( "images/background.png");
+  cursor = load_bitmap_ex( "images/cursor.png");
+  blocks[0] = load_bitmap_ex( "images/block_box_1.png");
+  blocks[1] = load_bitmap_ex( "images/block_stone_1.png");
+  blocks[2] = load_bitmap_ex( "images/block_box_1.png");
+  powerup_images[0] = load_bitmap_ex( "images/powerup_health.png");
+  powerup_images[1] = load_bitmap_ex( "images/powerup_tank_speed.png");
+  powerup_images[2] = load_bitmap_ex( "images/powerup_bullet_speed.png");
+  powerup_images[3] = load_bitmap_ex( "images/powerup_bullet_delay.png");
+  tank_images[0] = load_bitmap_ex( "images/tank_treads.png");
+  tank_images[1] = load_bitmap_ex( "images/tank_dead.png");
+  tank_images[2] = load_bitmap_ex( "images/tank_turret_green.png");
+  tank_images[3] = load_bitmap_ex( "images/tank_base_green.png");
+  tank_images[4] = load_bitmap_ex( "images/tank_turret_red.png");
+  tank_images[5] = load_bitmap_ex( "images/tank_base_red.png");
+  tank_images[6] = load_bitmap_ex( "images/tank_turret_blue.png");
+  tank_images[7] = load_bitmap_ex( "images/tank_base_blue.png");
 
   // Make a map
   // Erase map
