@@ -27,6 +27,8 @@ class bullet
     float getYVelocity();
     float getXVelocity();
 
+    bool getExploded(){ return exploded; }
+
     void bounce( int newDirection);
     void destroy();
 

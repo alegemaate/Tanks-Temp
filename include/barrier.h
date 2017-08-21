@@ -22,6 +22,8 @@ class barrier{
 
     void setHealth( int newHealth){ health = newHealth; }
 
+    void setIndestructable( bool newIndestructable){ indestructable = newIndestructable; }
+
     bool getDead();
   private:
     int x;
@@ -31,6 +33,9 @@ class barrier{
     int height;
 
     int health;
+
+    bool indestructable;
+    bool exploded;
 
     std::vector<particle> explosionEffect;
 
