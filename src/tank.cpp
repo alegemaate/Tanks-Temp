@@ -396,14 +396,14 @@ void ai_tank::update(){
           best_enemy_y = otherTanks -> at(target_enemy_index) -> getY() + otherTanks -> at(target_enemy_index) -> getHeight()/2;
         }
       }
-    }
 
-    rotation_radians_turret = find_angle( x + 25, y + 25, best_enemy_x, best_enemy_y);//randomf(-0.1,0.1);
-    rotation_allegro_turret = rotation_radians_turret * 40.5845104792;
+      rotation_radians_turret = find_angle( x + 25, y + 25, best_enemy_x, best_enemy_y);//randomf(-0.1,0.1);
+      rotation_allegro_turret = rotation_radians_turret * 40.5845104792;
 
-    // Shoot
-    if( random(0,10) == 0 && find_distance( x, y, best_enemy_x, best_enemy_y) < 500){
-      shoot( rotation_radians_turret, x + 23, y + 23);
+      // Shoot
+      if( random(0,10) == 0 && find_distance( x, y, best_enemy_x, best_enemy_y) < 500){
+        shoot( rotation_radians_turret, x + 23, y + 23);
+      }
     }
 
     // Path
