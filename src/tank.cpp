@@ -405,6 +405,10 @@ void ai_tank::update(){
         shoot( rotation_radians_turret, x + 23, y + 23);
       }
     }
+    else{
+      rotation_radians_turret = rotation_radians_body;
+      rotation_allegro_turret = rotation_allegro_body;
+    }
 
     // Path
     update_target();
