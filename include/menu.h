@@ -11,6 +11,7 @@
 
 #include "tools.h"
 #include "state.h"
+#include "game.h"
 #include "button.h"
 #include "globals.h"
 
@@ -30,6 +31,12 @@ class menu : public state
     button enemies_down;
     button friends_up;
     button friends_down;
+    button width_up;
+    button width_down;
+    button height_up;
+    button height_down;
+    button bounce_up;
+    button bounce_down;
     button start;
 
     BITMAP *buffer;

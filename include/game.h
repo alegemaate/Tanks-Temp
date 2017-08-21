@@ -34,6 +34,16 @@ class game : public state
     void update();
     void draw();
 
+    // Map stuff
+    static const unsigned char max_map_width = 50;
+    static const unsigned char max_map_height = 50;
+
+    static unsigned char map_width;
+    static unsigned char map_height;
+
+    static unsigned char num_enemies;
+    static unsigned char num_friends;
+
   private:
     // Images
     BITMAP *buffer;
@@ -53,10 +63,7 @@ class game : public state
     std::vector<powerup> powerups;
     std::vector<coordinate> startLocations;
 
-    // Map stuff
-    static const int map_width = 1600/40;
-    static const int map_height = 1200/40;
-    int map_temp[map_width][map_height];
+    int map_temp[max_map_width][max_map_height];
     int map_x, map_y;
 
     int currentRound = 0;

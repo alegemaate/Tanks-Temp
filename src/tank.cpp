@@ -1,5 +1,7 @@
 #include "../include/tank.h"
 
+unsigned char tank::num_bullet_bounces = 0;
+
 /*****************
   General Tank
 *****************/
@@ -165,7 +167,7 @@ void tank::shoot( float newRotation, float newX, float newY){
   if( bullet_delay > fire_delay_rate ){
     bool magicMODE = key[KEY_LSHIFT];
 
-    bullet newBullet( newX, newY, newRotation, fire_speed, true, 1 + (magicMODE * 10), sample_shot);
+    bullet newBullet( newX, newY, newRotation, fire_speed, true, 1 + num_bullet_bounces + (magicMODE * 10), sample_shot);
     bullets.push_back( newBullet);
     bullet_delay = 0;
   }

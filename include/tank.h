@@ -37,6 +37,8 @@ class tank{
     virtual void process_enemies( std::vector<tank*> *tempOtherTanks);
 
     virtual void get_powerup( int powerup_id);
+
+    static unsigned char num_bullet_bounces;
   protected:
     float x;
     float y;
