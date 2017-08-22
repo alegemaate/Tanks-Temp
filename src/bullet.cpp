@@ -1,7 +1,8 @@
 #include "../include/bullet.h"
 
 // Init
-bullet::bullet( float newX, float newY, float newAngle, float newSpeed, int newOwnerID, int newHealth, SAMPLE* newSound){
+bullet::bullet( world *newWorld, float newX, float newY, float newAngle, float newSpeed, int newOwnerID, int newHealth, SAMPLE* newSound){
+  worldPointer = newWorld;
   x = newX;
   y = newY;
   vector_x = -newSpeed*cos( newAngle);
@@ -11,7 +12,6 @@ bullet::bullet( float newX, float newY, float newAngle, float newSpeed, int newO
   play_sample( shotSound, 255, 127, random(800,1200), 0);
   pendingErase = false;
   health = newHealth;
-  exploded = false;
 }
 
 bullet::~bullet(){
@@ -53,30 +53,31 @@ void bullet::bounce( int newDirection){
 
 // Destroy
 void bullet::destroy(){
-  // Make sure health is 0
-  health = 0;
+  // Has it already died?
+  if( !pendingErase){
+    // Make sure health is 0
+    health = 0;
 
-  // Make explosion
-  if( !exploded){
-    exploded = true;
+    // Make explosion
     for( int i = 0; i < 100; i ++){
+      particle *newParticle;
       if( incidenceDirection == BOTTOM){
-        particle newParticle( x, y, makecol( 255, random(0,255), 0), -5, 5,  0, 3, 1, CIRCLE, 10, EXPLODE);
-        explosionEffect.push_back(newParticle);
+        newParticle = new particle( x, y, makecol( 255, random(0,255), 0), -5, 5,  0, 3, 1, CIRCLE, 10, EXPLODE);
       }
       else if( incidenceDirection == TOP){
-        particle newParticle( x, y, makecol( 255, random(0,255), 0), -5, 5, -3, 0, 1, CIRCLE, 10, EXPLODE);
-        explosionEffect.push_back(newParticle);
+        newParticle = new particle( x, y, makecol( 255, random(0,255), 0), -5, 5, -3, 0, 1, CIRCLE, 10, EXPLODE);
       }
       else if( incidenceDirection == LEFT){
-        particle newParticle( x, y, makecol( 255, random(0,255), 0), -3, 0, -5, 5, 1, CIRCLE, 10, EXPLODE);
-        explosionEffect.push_back(newParticle);
+        newParticle = new particle( x, y, makecol( 255, random(0,255), 0), -3, 0, -5, 5, 1, CIRCLE, 10, EXPLODE);
       }
-      else if( incidenceDirection == RIGHT){
-        particle newParticle( x, y, makecol( 255, random(0,255), 0),  0, 3, -5, 5, 1, CIRCLE, 10, EXPLODE);
-        explosionEffect.push_back(newParticle);
+      else{
+        newParticle = new particle( x, y, makecol( 255, random(0,255), 0),  0, 3, -5, 5, 1, CIRCLE, 10, EXPLODE);
       }
+      worldPointer -> addParticle( newParticle);
     }
+
+    // Die
+    pendingErase = true;
   }
 }
 
@@ -99,19 +100,6 @@ void bullet::update(){
     if( x < 0 || x > 10000 || y < 0 || y > 10000)
       destroy();
   }
-  else{
-    // Update particles
-    for( unsigned int i = 0; i < explosionEffect.size(); i++){
-      explosionEffect.at(i).logic();
-      //Check death of particles
-      if(explosionEffect.at(i).getDead())
-        explosionEffect.erase(explosionEffect.begin() + i);
-    }
-
-    // Delete bullet once particles are all dead
-    if( explosionEffect.size() <= 0)
-      pendingErase = true;
-  }
 }
 
 // Draw image
@@ -126,11 +114,6 @@ void bullet::draw( BITMAP* tempImage){
       rectfill( tempImage, x, y, x + 5, y + 5, makecol(255,0,0));
       rectfill( tempImage, x + 1, y + 1, x + 4, y + 4, makecol(255,0,0));
       rectfill( tempImage, x + 2, y + 2, x + 3, y + 3, makecol(255,0,0));
-    }
-  }
-  else{
-    for( unsigned int i = 0; i < explosionEffect.size(); i++){
-      explosionEffect.at(i).draw(tempImage);
     }
   }
 }

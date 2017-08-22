@@ -94,7 +94,7 @@ game::game(){
         // Pass 7 (create barriers)
         else if( pass == 7){
           if( map_temp[i][t] == 1 || map_temp[i][t] == 2 || map_temp[i][t] == 3){
-            barrier newBarrier( i * 40, t * 40, blocks[map_temp[i][t]], 0);
+            barrier newBarrier( &game_world, i * 40, t * 40, blocks[map_temp[i][t]], 0);
 
             // Destroyable
             if( map_temp[i][t] == 2)
@@ -114,7 +114,7 @@ game::game(){
 
   // Player
   int randomStartLocation = random( 0, startLocations.size() - 1);
-  player_tank *newPlayer = new player_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
+  player_tank *newPlayer = new player_tank( &game_world, startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
                           100, 4, 20, 1,
                           tank_images[3], tank_images[2], tank_images[1], tank_images[0]);
 
@@ -125,7 +125,7 @@ game::game(){
   // Enemies
   for( unsigned char i = 0; i < num_enemies; i ++){
     int randomStartLocation = random( 0, startLocations.size() - 1);
-    ai_tank *newPlayer = new ai_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
+    ai_tank *newPlayer = new ai_tank( &game_world, startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
                       random(50,150), random(1,4), random(50,300), random(1,10)/10,
                       tank_images[5], tank_images[4], tank_images[1], tank_images[0]);
 
@@ -137,7 +137,7 @@ game::game(){
   // Friends
   for( unsigned char i = 0; i < num_friends; i ++){
     int randomStartLocation = random( 0, startLocations.size() - 1);
-    ai_tank *newPlayer = new ai_tank( startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
+    ai_tank *newPlayer = new ai_tank( &game_world, startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
                           100, 4, 20, 1,
                           tank_images[7], tank_images[6], tank_images[1], tank_images[0]);
 
@@ -151,6 +151,9 @@ game::game(){
 void game::update(){
   // Get joystick input
   poll_joystick();
+
+  // Update world
+  game_world.update();
 
   // Move
   for( unsigned int i = 0; i < enemy_tanks.size(); i++){
@@ -237,7 +240,7 @@ void game::update(){
 
 
 void game::draw(){
-// Draw background
+  // Draw background
   draw_sprite( buffer, background, 0, 0);
 
   // Blank map map_buffer
@@ -255,6 +258,9 @@ void game::draw(){
     player_tanks.at(i) -> draw( map_buffer);
     player_tanks.at(i) -> putDecal( decal_buffer);
   }
+
+  // Draw world
+  game_world.draw( map_buffer);
 
   // Draw barriers
   for( unsigned int i = 0; i < barriers.size(); i++)

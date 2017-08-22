@@ -8,7 +8,7 @@
 
 class barrier{
   public:
-    barrier( int newX, int newY, BITMAP* newImage, int newHealth);
+    barrier( world *newWorld, int newX, int newY, BITMAP* newImage, int newHealth);
     ~barrier();
 
     void update( std::vector<bullet>* newBullets);
@@ -37,7 +37,7 @@ class barrier{
     bool indestructable;
     bool exploded;
 
-    std::vector<particle> explosionEffect;
+    world *worldPointer;
 
     void explode( int newX, int newY, int newVelocity, int newAmount, int newLife);
 

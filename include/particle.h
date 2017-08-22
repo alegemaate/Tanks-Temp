@@ -13,6 +13,7 @@
 
 class particle{
   public:
+    particle();
     particle(int newX, int newY, int newColor, float newXMin, float newXMax, float newYMin, float newYMax, int newSize, int newType, int newLife, int newBehavior);
     ~particle();
 

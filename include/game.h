@@ -16,6 +16,7 @@
 #include "tank.h"
 #include "powerup.h"
 #include "globals.h"
+#include "world.h"
 
 #include "state.h"
 
@@ -55,6 +56,9 @@ class game : public state
     BITMAP *blocks[3];
     BITMAP *powerup_images[4];
     BITMAP *tank_images[10];
+
+    // World
+    world game_world;
 
     // Objects
     std::vector<barrier> barriers;

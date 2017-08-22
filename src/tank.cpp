@@ -5,7 +5,7 @@ unsigned char tank::num_bullet_bounces = 0;
 /*****************
   General Tank
 *****************/
-tank::tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage)
+tank::tank( world *newWorld, int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage)
 {
   x = newX;
   y = newY;
@@ -26,6 +26,8 @@ tank::tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed
 
   width = image_base -> w;
   height = image_base -> h;
+
+  worldPointer = newWorld;
 
   // Map size
   map_width = SCREEN_W;
@@ -78,8 +80,8 @@ bool tank::getErase(){
 // Explode
 void tank::explode( int newX, int newY, int newVelocity, int newAmount, int newLife){
   for( int i = 0; i < newAmount; i ++){
-    particle newParticle(newX, newY, makecol(255,random(0,255),0), -newVelocity, newVelocity, -newVelocity, newVelocity, 1, CIRCLE, newLife, EXPLODE);
-    explosionEffect.push_back(newParticle);
+    particle *newParticle = new particle(newX, newY, makecol(255,random(0,255),0), -newVelocity, newVelocity, -newVelocity, newVelocity, 1, CIRCLE, newLife, EXPLODE);
+    worldPointer -> addParticle(newParticle);
   }
 }
 
@@ -167,7 +169,7 @@ void tank::shoot( float newRotation, float newX, float newY){
   if( bullet_delay > fire_delay_rate ){
     bool magicMODE = key[KEY_LSHIFT];
 
-    bullet newBullet( newX, newY, newRotation, fire_speed, true, 1 + num_bullet_bounces + (magicMODE * 10), sample_shot);
+    bullet newBullet( worldPointer, newX, newY, newRotation, fire_speed, true, 1 + num_bullet_bounces + (magicMODE * 10), sample_shot);
     bullets.push_back( newBullet);
     bullet_delay = 0;
   }
@@ -227,16 +229,6 @@ void tank::draw( BITMAP* tempImage){
     if( health < initialHealth)
       drawHealthBar( tempImage, x - 5, y - 10, 50, 6, 1);
   }
-  else{
-    for( unsigned int i = 0; i < explosionEffect.size(); i++){
-      explosionEffect.at(i).draw(tempImage);
-    }
-  }
-
-
-
-  // Debug
-  //textprintf_ex( tempImage, font, x, y, makecol(0,0,0), makecol(255,255,255), "SPEED:%f", speed);
 }
 
 // Put decals
@@ -277,8 +269,8 @@ void tank::get_powerup( int powerup_id){
    Player Tank
 *****************/
 // Init
-player_tank::player_tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage) :
-      tank( newX, newY, newHurtTime, newHealth, newFireSpeed, newFireDelay, newSpeed, newBaseImage, newTurretImage, newHurtImage, newTreadsImage){
+player_tank::player_tank( world *newWorld, int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage) :
+      tank( newWorld, newX, newY, newHurtTime, newHealth, newFireSpeed, newFireDelay, newSpeed, newBaseImage, newTurretImage, newHurtImage, newTreadsImage){
 
 }
 
@@ -336,19 +328,6 @@ void player_tank::update(){
 
     }
   }
-  else{
-    // Update particles
-    for( unsigned int i = 0; i < explosionEffect.size(); i++){
-      explosionEffect.at(i).logic();
-      //Check death of particles
-      if(explosionEffect.at(i).getDead())
-        explosionEffect.erase(explosionEffect.begin() + i);
-    }
-
-    // Delete bullet once particles are all dead
-    if( explosionEffect.size() <= 0)
-      pendingErase = true;
-  }
 
   // Update bullets
   update_timers();
@@ -364,8 +343,8 @@ void tank::process_enemies( std::vector<tank*>* tempOtherTanks){
     AI Tank
 *****************/
 // Init
-ai_tank::ai_tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage) :
-      tank( newX, newY, newHurtTime, newHealth, newFireSpeed, newFireDelay, newSpeed, newBaseImage, newTurretImage, newHurtImage, newTreadsImage){
+ai_tank::ai_tank( world *newWorld, int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage) :
+      tank( newWorld, newX, newY, newHurtTime, newHealth, newFireSpeed, newFireDelay, newSpeed, newBaseImage, newTurretImage, newHurtImage, newTreadsImage){
   destination_x = x;
   destination_y = y;
 }
@@ -431,19 +410,6 @@ void ai_tank::update(){
     else{
       speed = 0;
     }
-  }
-  else{
-    // Update particles
-    for( unsigned int i = 0; i < explosionEffect.size(); i++){
-      explosionEffect.at(i).logic();
-      //Check death of particles
-      if(explosionEffect.at(i).getDead())
-        explosionEffect.erase(explosionEffect.begin() + i);
-    }
-
-    // Delete bullet once particles are all dead
-    if( explosionEffect.size() <= 0)
-      pendingErase = true;
   }
 
   // Update bullets

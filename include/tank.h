@@ -2,14 +2,15 @@
 #define TANK_H
 
 #include <allegro.h>
-#include "../include/particle.h"
-#include "../include/bullet.h"
-#include "../include/barrier.h"
-#include "../include/powerup.h"
+#include "particle.h"
+#include "bullet.h"
+#include "barrier.h"
+#include "powerup.h"
+#include "world.h"
 
 class tank{
   public:
-    explicit tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
+    explicit tank( world *newWorld, int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
     virtual ~tank();
 
     virtual bool getErase();
@@ -69,7 +70,6 @@ class tank{
     bool canMoveY;
 
     std::vector<bullet> bullets;
-    std::vector<particle> explosionEffect;
     std::vector<tank*> *otherTanks;
 
     BITMAP *image_base;
@@ -78,6 +78,8 @@ class tank{
     BITMAP *image_treads;
 
     SAMPLE *sample_shot;
+
+    world *worldPointer;
 
     // Update
     virtual void drive( float newRotation);
@@ -96,14 +98,14 @@ class tank{
 
 class player_tank: public tank{
   public:
-    player_tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
+    player_tank( world *newWorld, int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
     virtual void update();
   protected:
 };
 
 class ai_tank: public tank{
   public:
-    ai_tank( int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
+    ai_tank( world *newWorld, int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
     virtual void update();
   private:
     float destination_x;

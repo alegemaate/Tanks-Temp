@@ -1,5 +1,27 @@
 #include "../include/particle.h"
 
+// Default Constructor
+particle::particle(){
+  x = 0;
+  y = 0;
+
+  particleColor = makecol( 255, 255, 255);
+  particleRed = getr(particleColor);
+  particleGreen = getg(particleColor);
+  particleBlue = getb(particleColor);
+
+  particleSize = 1;
+  particleType = 0;
+  particleBehaviour = 0;
+
+  particleLife = 0;
+
+  x_velocity = 0;
+  y_velocity = 0;
+
+  dead = false;
+}
+
 // Constructor
 particle::particle(int newX, int newY, int newColor, float newXMin, float newXMax, float newYMin, float newYMax, int newSize, int newType, int newLife, int newBehaviour){
   x = newX;

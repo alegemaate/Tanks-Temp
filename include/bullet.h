@@ -3,6 +3,8 @@
 
 #include "tools.h"
 #include "particle.h"
+#include "world.h"
+
 #include <vector>
 
 #define TOP 0
@@ -14,7 +16,7 @@
 class bullet
 {
   public:
-    bullet( float newX, float newY, float newAngle, float newSpeed, int newOwnerID, int newHealth, SAMPLE* newSound);
+    bullet( world *newWorld, float newX, float newY, float newAngle, float newSpeed, int newOwnerID, int newHealth, SAMPLE* newSound);
     ~bullet();
 
     bool getErase();
@@ -27,8 +29,6 @@ class bullet
     float getYVelocity();
     float getXVelocity();
 
-    bool getExploded(){ return exploded; }
-
     void bounce( int newDirection);
     void destroy();
 
@@ -38,17 +38,15 @@ class bullet
     int health;
     int incidenceDirection;
 
-    bool exploded;
-
     float x;
     float y;
     float vector_x;
     float vector_y;
 
+    world *worldPointer;
+
     bool owner;
     bool pendingErase;
-
-    std::vector<particle> explosionEffect;
 
     SAMPLE* shotSound;
 };
