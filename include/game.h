@@ -36,8 +36,8 @@ class game : public state
     void draw();
 
     // Map stuff
-    static const unsigned char max_map_width = 50;
-    static const unsigned char max_map_height = 50;
+    static const unsigned char max_map_width = 255;
+    static const unsigned char max_map_height = 255;
 
     static unsigned char map_width;
     static unsigned char map_height;

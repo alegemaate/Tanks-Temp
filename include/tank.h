@@ -13,7 +13,7 @@ class tank{
     explicit tank( world *newWorld, int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
     virtual ~tank();
 
-    virtual bool getDead(){ return dead; };
+    virtual bool isDead();
 
     virtual std::vector<bullet>* getBullets();
 
@@ -86,7 +86,6 @@ class tank{
     virtual void update_bullets();
     virtual void update_timers();
     virtual void explode( int newX, int newY, int newVelocity, int newAmount, int newLife);
-    virtual bool isDead();
 
     // Draw
     virtual void drawBullets( BITMAP* tempImage);
