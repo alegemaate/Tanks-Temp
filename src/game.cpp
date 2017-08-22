@@ -175,7 +175,8 @@ void game::update(){
     enemy_tanks.at(i) -> update();
 
     // Delete tank
-    if(enemy_tanks.at(i) -> getErase()){
+    if(enemy_tanks.at(i) -> getDead()){
+      enemy_tanks.at(i) -> putDecal( decal_buffer);
       delete enemy_tanks[i];
       enemy_tanks.erase(enemy_tanks.begin() + i);
     }
@@ -199,7 +200,8 @@ void game::update(){
     player_tanks.at(i) -> update();
 
     // Delete tank
-    if( player_tanks.at(i) -> getErase()){
+    if( player_tanks.at(i) -> getDead()){
+      player_tanks.at(i) -> putDecal( decal_buffer);
       delete player_tanks[i];
       player_tanks.erase(player_tanks.begin() + i);
     }

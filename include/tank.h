@@ -13,7 +13,7 @@ class tank{
     explicit tank( world *newWorld, int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
     virtual ~tank();
 
-    virtual bool getErase();
+    virtual bool getDead(){ return dead; };
 
     virtual std::vector<bullet>* getBullets();
 
@@ -64,7 +64,6 @@ class tank{
     float speed, max_speed;
 
     bool dead;
-    bool pendingErase;
 
     bool canMoveX;
     bool canMoveY;

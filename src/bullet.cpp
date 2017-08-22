@@ -105,15 +105,15 @@ void bullet::update(){
 // Draw image
 void bullet::draw( BITMAP* tempImage){
   if( health > 0){
-    if( owner == 0){
+    //if( owner == 0){
       rectfill( tempImage, x, y, x + 5, y + 5, makecol(0,0,0));
       rectfill( tempImage, x + 1, y + 1, x + 4, y + 4, makecol(255,0,0));
       rectfill( tempImage, x + 2, y + 2, x + 3, y + 3, makecol(0,255,0));
-    }
+    /*}
     else{
       rectfill( tempImage, x, y, x + 5, y + 5, makecol(255,0,0));
       rectfill( tempImage, x + 1, y + 1, x + 4, y + 4, makecol(255,0,0));
       rectfill( tempImage, x + 2, y + 2, x + 3, y + 3, makecol(255,0,0));
-    }
+    }*/
   }
 }

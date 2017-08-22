@@ -43,7 +43,6 @@ tank::tank( world *newWorld, int newX, int newY, int newHurtTime, int newHealth,
     abort_on_error( "Cannot find tank treads\nPlease check your files and try again");
 
   dead = false;
-  pendingErase = false;
 
   sample_shot = load_sample_ex( "sfx/fire.wav");
 
@@ -70,11 +69,6 @@ bool tank::isDead(){
   dead = (health < 1);
 
   return dead;
-}
-
-// Check erase
-bool tank::getErase(){
-  return pendingErase;
 }
 
 // Explode
@@ -177,6 +171,7 @@ void tank::shoot( float newRotation, float newX, float newY){
 
 // Update
 void tank::update(){
+
 }
 
 // Draw bullets
@@ -233,8 +228,10 @@ void tank::draw( BITMAP* tempImage){
 
 // Put decals
 void tank::putDecal( BITMAP* tempImage){
-  if( speed > 0)
+  if( !dead && speed > 0)
     rotate_sprite( tempImage, image_treads, x + width/2, y, itofix(rotation_allegro_body));
+  else if( dead)
+    drawTankBase( tempImage);
 }
 
 // Health
