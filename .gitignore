@@ -3,3 +3,7 @@
 Tanks.depend
 *.exe
 *.o
+*.o
+build/Tanks.exe
+*.depend
+Tanks.layout

@@ -25,6 +25,8 @@ class barrier{
     void setIndestructable( bool newIndestructable){ indestructable = newIndestructable; }
 
     bool getDead();
+
+    bool visible;
   private:
     int x;
     int y;

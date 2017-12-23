@@ -57,7 +57,7 @@ void barrier::update( std::vector<bullet>* newBullets){
 
 // Draw image
 void barrier::draw( BITMAP* tempImage){
-  if( health > 0 || indestructable)
+  if( (health > 0 || indestructable) && visible)
     draw_sprite( tempImage, image, this -> x, this -> y);
 }
 

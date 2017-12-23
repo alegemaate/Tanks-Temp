@@ -26,6 +26,9 @@ class tank{
     virtual int getX(){ return x; }
     virtual int getY(){ return y; }
 
+    virtual int getCenterX(){ return x + width/2; }
+    virtual int getCenterY(){ return y + height/2; }
+
     virtual int getHeight(){ return width; }
     virtual int getWidth(){ return height; }
 

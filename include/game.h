@@ -20,6 +20,11 @@
 
 #include "state.h"
 
+#include <math.h>
+#define M_PI 3.14159265358979323846264338327
+
+#define number_of_rays 200
+
 // Coordinate system
 struct coordinate{
   int x = 0;
@@ -30,7 +35,7 @@ class game : public state
 {
   public:
     game();
-    ~game(){};
+    ~game();
 
     void update();
     void draw();

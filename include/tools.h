@@ -60,4 +60,12 @@ extern SAMPLE *load_sample_ex( const char *path);
 extern FONT *load_font_ex( const char *path);
 
 
+int distanceTo2D(int x1, int y1, int x2, int y2);
+
+// Returns 1 if the lines intersect, otherwise 0. In addition, if the lines
+// intersect the intersection point may be stored in the floats i_x and i_y.
+char get_line_intersection(float p0_x, float p0_y, float p1_x, float p1_y,
+                           float p2_x, float p2_y, float p3_x, float p3_y,
+                           float *i_x, float *i_y);
+
 #endif // TOOLS_H

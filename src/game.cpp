@@ -8,16 +8,17 @@ unsigned char game::num_friends = 5;
 
 // Init state (and game)
 game::game(){
-  // Create buffer
-  buffer = create_bitmap( 800, 600);
-  decal_buffer = create_bitmap( map_width * 40, map_height * 40);
-  rectfill( decal_buffer, 0, 0, map_width * 40, map_height * 400, makecol( 255, 0, 255));
+  // Create buffers
+  buffer = create_bitmap( SCREEN_W, SCREEN_H);
 
-  vision_buffer = create_bitmap( 800, 600);
-  rectfill( vision_buffer, 0, 0, 800, 600, makecol( 0, 0, 0));
+  decal_buffer = create_bitmap( map_width * 40, map_height * 40);
+  clear_to_color( decal_buffer, 0xFF00FF);
+
+  vision_buffer = create_bitmap( map_width * 40, map_height * 40);
+  clear_to_color( vision_buffer, 0x000000);
 
   map_buffer = create_bitmap( map_width * 40, map_height * 40);
-  rectfill( vision_buffer, 0, 0, map_width * 40, map_height * 40, makecol( 0, 0, 0));
+  clear_to_color( map_buffer, 0x000000);
 
   // Load images
   background = load_bitmap_ex( "images/background.png");
@@ -147,6 +148,27 @@ game::game(){
   }
 }
 
+// Clean up
+game::~game(){
+  destroy_bitmap(buffer);
+  destroy_bitmap(decal_buffer);
+  destroy_bitmap(vision_buffer);
+  destroy_bitmap(map_buffer);
+
+  destroy_bitmap(background);
+  destroy_bitmap(cursor);
+
+  destroy_bitmap(blocks[0]);
+  destroy_bitmap(blocks[1]);
+  destroy_bitmap(blocks[2]);
+
+  for( int i = 0; i < 4; i++)
+    destroy_bitmap(powerup_images[i]);
+
+  for( int i = 0; i < 8; i++)
+    destroy_bitmap(tank_images[i]);
+}
+
 
 void game::update(){
   // Get joystick input
@@ -235,9 +257,83 @@ void game::update(){
 
   // Scroll map
   if( player_tanks.size() > 0){
-    map_x = player_tanks.at(0) -> getX() + player_tanks.at(0) -> getWidth()/2 - buffer -> w / 2;
-    map_y = player_tanks.at(0) -> getY() + player_tanks.at(0) -> getHeight()/2 - buffer -> h / 2;
+    map_x = player_tanks.at(0) -> getCenterX() - buffer -> w / 2;
+    map_y = player_tanks.at(0) -> getCenterY() - buffer -> h / 2;
   }
+
+
+  // Vision buffer
+  // Check collision with all boxes!
+  /*for( unsigned int i = 0; i < barriers.size(); i++){
+    barriers.at(i).visible = false;
+  }
+
+  for( double q = 0; q < 2 * M_PI; q += ((2 * M_PI) / number_of_rays)){
+    float point_x = (SCREEN_W * 2) * cos(q) + player_tanks.at(0) -> getCenterX();
+    float point_y = (SCREEN_H * 2) * sin(q) + player_tanks.at(0) -> getCenterY();
+
+    // Closest POI
+    float poi_x = point_x;
+    float poi_y = point_y;
+
+    bool intersection_found = false;
+    int closest_index = -1;
+
+    for( unsigned int i = 0; i < barriers.size(); i++){
+      for( int t = 0; t < 4; t++){
+        float temp_poi_x = -1;
+        float temp_poi_y = -1;
+
+        float bar_x_1 = 0, bar_x_2 = 0, bar_y_1 = 0, bar_y_2 = 0;
+
+        // TOP
+        if( t == 0){
+          bar_x_2 = barriers.at(i).getWidth();
+        }
+        // RIGHT
+        if( t == 1){
+          bar_x_1 = barriers.at(i).getWidth();
+          bar_x_2 = barriers.at(i).getWidth();
+          bar_y_2 = barriers.at(i).getHeight();
+        }
+        // BOTTOM
+        if( t == 2){
+          bar_x_2 = barriers.at(i).getWidth();
+          bar_y_1 = barriers.at(i).getHeight();
+          bar_y_2 = barriers.at(i).getHeight();
+        }
+        // LEFT
+        if( t == 3){
+          bar_y_2 = barriers.at(i).getHeight();
+        }
+
+        // Check if ray and side intersect
+        if( get_line_intersection( player_tanks.at(0) -> getCenterX(), player_tanks.at(0) -> getCenterY(), point_x, point_y,
+                                   barriers.at(i).getX() + bar_x_1, barriers.at(i).getY() + bar_y_1,
+                                   barriers.at(i).getX() + bar_x_2, barriers.at(i).getY() + bar_y_2,
+                                   &temp_poi_x, &temp_poi_y)){
+          // Check if closer match found and if so update POI
+          if( distanceTo2D( temp_poi_x, temp_poi_y, player_tanks.at(0) -> getCenterX(), player_tanks.at(0) -> getCenterY()) <
+              distanceTo2D( poi_x, poi_y, player_tanks.at(0) -> getCenterX(), player_tanks.at(0) -> getCenterY())){
+            poi_x = temp_poi_x;
+            poi_y = temp_poi_y;
+            intersection_found = true;
+            closest_index = i;
+          }
+        }
+      }
+    }
+
+    // Draw line to closest collision
+    if( intersection_found){
+      //line( vision_buffer, player_tanks.at(0) -> getCenterX(), player_tanks.at(0) -> getCenterY(), poi_x, poi_y, makecol( 255, 255, 255));
+      barriers.at(closest_index).visible = true;
+    }
+
+    // Draw intersection if there is one
+    if( intersection_found && key[KEY_C])
+      ellipse( vision_buffer, poi_x, poi_y, 5, 5, makecol( 255, 0, 0));
+  }*/
 }
 
 
@@ -267,6 +363,10 @@ void game::draw(){
   // Draw barriers
   for( unsigned int i = 0; i < barriers.size(); i++)
     barriers.at(i).draw( map_buffer);
+
+  // Vision buffer
+  //draw_sprite( map_buffer, vision_buffer, 0, 0);
+  //clear_to_color( vision_buffer, 0xFF00FF);
 
   // Draw powerups
   for( unsigned int i = 0; i < powerups.size(); i++)

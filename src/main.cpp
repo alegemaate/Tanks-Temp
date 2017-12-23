@@ -196,6 +196,10 @@ int main(){
     currentState -> draw();
     frames_done++;
   }
+
+  // Exit allegro
+  allegro_exit();
+
 	return 0;
 }
 END_OF_MAIN()
