@@ -18,10 +18,8 @@
 					<Add directory="include" />
 				</Compiler>
 				<Linker>
-					<Add option="-s" />
 					<Add option="-lalpng" />
 					<Add option="-lalleg" />
-					<Add option="-lfmod" />
 				</Linker>
 			</Target>
 		</Build>

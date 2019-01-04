@@ -35,7 +35,7 @@ bool collisionRight(int xMin1, int xMax1, int xMin2, int xMax2){
 //Checks if file exists
 bool fexists(const char *filename){
   std::ifstream ifile(filename);
-  return ifile;
+  return ifile.good();
 }
 
 // Random number generator. Use int random(lowest,highest);
