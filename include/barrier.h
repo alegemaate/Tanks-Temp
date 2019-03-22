@@ -3,16 +3,21 @@
 
 #include <vector>
 
+#include "world.h"
+
 #include "tools.h"
 #include "bullet.h"
 
+class world;
+class bullet;
+
 class barrier{
   public:
-    barrier( world *newWorld, int newX, int newY, BITMAP* newImage, int newHealth);
+    barrier(world *newWorld, int newX, int newY, BITMAP* newImage, int newHealth);
     ~barrier();
 
-    void update( std::vector<bullet>* newBullets);
-    void draw( BITMAP* tempImage);
+    void update(std::vector<bullet>* newBullets);
+    void draw(BITMAP* tempImage);
 
     int getX();
     int getY();
@@ -43,7 +48,7 @@ class barrier{
 
     void explode( int newX, int newY, int newVelocity, int newAmount, int newLife);
 
-    BITMAP* image;
+    BITMAP *image;
     SAMPLE *sample_explode;
 };
 

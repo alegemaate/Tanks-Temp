@@ -1,5 +1,6 @@
 #include <allegro.h>
-#include <alpng.h>
+#include <png.h>
+#include <loadpng.h>
 
 #include "mouseListener.h"
 #include "keyListener.h"
@@ -8,6 +9,8 @@
 #include "init.h"
 #include "menu.h"
 #include "game.h"
+
+#include "globals.h"
 
 // Input listener classes
 mouseListener m_listener;
@@ -108,11 +111,30 @@ void calibrateJoystick(){
   save_joystick_data("joy_config.dat");
 }
 
+// Setup screen
+void setup_screen() {
+  set_color_depth(32);
+
+  set_gfx_mode( GFX_AUTODETECT_WINDOWED, 800, 600, 0, 0);
+  install_sound( DIGI_AUTODETECT, MIDI_AUTODETECT, ".");
+
+  // Window Title
+  set_window_title( "Tanks!");
+
+  // Setup for FPS system
+  LOCK_VARIABLE( ticks);
+  LOCK_FUNCTION( ticker);
+  install_int_ex( ticker, BPS_TO_TIMER( updates_per_second));
+
+  // FPS STUFF
+  for(int i = 0; i < 10; i++)
+    frames_array[i] = 0;
+}
+
 // Setup game
-void setup(){
+void setup(bool enable_gui = true){
   // Init Allegro
   allegro_init();
-  alpng_init();
   install_timer();
   install_keyboard();
   install_mouse();
@@ -123,38 +145,21 @@ void setup(){
     calibrateJoystick();
   }
 
-  set_color_depth(32);
-
-  // Setup screen
-  set_gfx_mode( GFX_AUTODETECT_WINDOWED, 800, 600, 0, 0);
-  install_sound( DIGI_AUTODETECT, MIDI_AUTODETECT, ".");
-
-  // Window Title
-  set_window_title( "Tanks!");
-
   // Create random number generator
   srand( time( NULL));
 
-   // Setup for FPS system
-  LOCK_VARIABLE( ticks);
-  LOCK_FUNCTION( ticker);
-  install_int_ex( ticker, BPS_TO_TIMER( updates_per_second));
-
+  // Game time
   LOCK_VARIABLE( game_time);
   LOCK_FUNCTION( game_time_ticker);
   install_int_ex( game_time_ticker, BPS_TO_TIMER(10));
 
-  // FPS STUFF
-  for(int i = 0; i < 10; i++)
-    frames_array[i] = 0;
+  //Set the current state ID
+  stateID = STATE_INIT;
+  currentState = new init();
 
   // Close button
   LOCK_FUNCTION( close_button_handler);
   set_close_button_callback( close_button_handler);
-
-  //Set the current state ID
-  stateID = STATE_INIT;
-  currentState = new init();
 }
 
 void update(){
@@ -169,9 +174,10 @@ void update(){
   currentState -> update();
 }
 
-int main(){
+int main(int argc, const char *argv[]){
   // Setup
   setup();
+  setup_screen();
 
   // FPS Counter
   while( !key[KEY_ESC] && !closing && !joy[0].button[7].b){
@@ -179,7 +185,9 @@ int main(){
       rest( 1);
     while( ticks > 0){
       int old_ticks = ticks;
+
       update();
+
       ticks--;
       if( old_ticks <= ticks){
         break;

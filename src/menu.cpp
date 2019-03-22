@@ -1,5 +1,7 @@
 #include "menu.h"
 
+#include "tank.h"
+
 // Initilizer
 menu::menu(){
   // Background image
@@ -19,7 +21,10 @@ menu::menu(){
   height_down = button( 450, 335, "\\/", font);
   bounce_up = button( 570, 275, "/\\", font);
   bounce_down = button( 570, 335, "\\/", font);
-  start = button( 340, 485, "START", font);
+  start = button( 340, 485, "SINGLE PLAYER", font);
+
+  host = button( 340, 525, "HOST", font);
+  join = button( 400, 525, "JOIN", font);
 }
 
 // Update routine
@@ -36,32 +41,46 @@ void menu::update(){
   bounce_up.update();
   bounce_down.update();
   start.update();
+  host.update();
+  join.update();
 
   // Make teams
   if( enemies_up.clicked())
-    game::num_enemies ++;
+    world::num_enemies ++;
   if( enemies_down.clicked())
-    game::num_enemies --;
+    world::num_enemies --;
   if( friends_up.clicked())
-    game::num_friends ++;
+    world::num_friends ++;
   if( friends_down.clicked())
-    game::num_friends --;
+    world::num_friends --;
   if( width_up.clicked())
-    game::map_width ++;
+    world::map_width ++;
   if( width_down.clicked())
-    game::map_width --;
+    world::map_width --;
   if( height_up.clicked())
-    game::map_height ++;
+    world::map_height ++;
   if( height_down.clicked())
-    game::map_height --;
+    world::map_height --;
   if( bounce_up.clicked())
     tank::num_bullet_bounces ++;
   if( bounce_down.clicked())
     tank::num_bullet_bounces --;
 
-  // Start game
-  if( start.clicked())
+  if(host.clicked()) {
+    bServer = true;
     set_next_state( STATE_GAME);
+  }
+
+  if(join.clicked()) {
+    bClient = true;
+    set_next_state(STATE_GAME);
+  }
+
+
+  // Start game
+  if( start.clicked()) {
+    set_next_state( STATE_GAME);
+  }
 }
 
 // Drawing routine
@@ -81,12 +100,14 @@ void menu::draw(){
   bounce_up.draw( buffer);
   bounce_down.draw( buffer);
   start.draw( buffer);
+  host.draw(buffer);
+  join.draw(buffer);
 
   // Player nums
-  textprintf_centre_ex( buffer, font, 109, 315, makecol( 0, 0, 0), -1, "%i", game::num_friends);
-  textprintf_centre_ex( buffer, font, 229, 315, makecol( 0, 0, 0), -1, "%i", game::num_enemies);
-  textprintf_centre_ex( buffer, font, 349, 315, makecol( 0, 0, 0), -1, "%i", game::map_width);
-  textprintf_centre_ex( buffer, font, 469, 315, makecol( 0, 0, 0), -1, "%i", game::map_height);
+  textprintf_centre_ex( buffer, font, 109, 315, makecol( 0, 0, 0), -1, "%i", world::num_friends);
+  textprintf_centre_ex( buffer, font, 229, 315, makecol( 0, 0, 0), -1, "%i", world::num_enemies);
+  textprintf_centre_ex( buffer, font, 349, 315, makecol( 0, 0, 0), -1, "%i", world::map_width);
+  textprintf_centre_ex( buffer, font, 469, 315, makecol( 0, 0, 0), -1, "%i", world::map_height);
   textprintf_centre_ex( buffer, font, 589, 315, makecol( 0, 0, 0), -1, "%i", tank::num_bullet_bounces);
 
   // Mouse

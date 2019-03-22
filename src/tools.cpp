@@ -137,7 +137,7 @@ void abort_on_error(const char *message){
 // Load bitmap with error checked_array_iterator
 BITMAP *load_bitmap_ex( const char *path){
   BITMAP *temp_loader;
-  if (!( temp_loader = load_bitmap(path, NULL)))
+  if (!( temp_loader = load_png(path, NULL)))
     abort_on_error(("Cannot find image " + std::string(path) + "\nPlease check your files and try again").c_str());
 
   return temp_loader;

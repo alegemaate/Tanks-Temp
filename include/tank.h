@@ -2,15 +2,18 @@
 #define TANK_H
 
 #include <allegro.h>
+
+#include "world.h"
+
 #include "particle.h"
 #include "bullet.h"
 #include "barrier.h"
 #include "powerup.h"
-#include "world.h"
+
 
 class tank{
   public:
-    explicit tank( world *newWorld, int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
+    explicit tank(world *newWorld, int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
     virtual ~tank();
 
     virtual bool isDead();
@@ -34,9 +37,9 @@ class tank{
 
     virtual void set_map_dimensions( int newMapWidth, int newMapHeight){ map_width = newMapWidth; map_height = newMapHeight;}
 
-    virtual void checkCollision( std::vector<bullet>* newBullets);
-    virtual void checkCollision( std::vector<barrier>* newBarriers);
-    virtual void checkCollision( std::vector<powerup>* newPowerups);
+    virtual void checkCollision( std::vector<bullet> *newBullets);
+    virtual void checkCollision( std::vector<barrier> *newBarriers);
+    virtual void checkCollision( std::vector<powerup> *newPowerups);
 
     virtual void process_enemies( std::vector<tank*> *tempOtherTanks);
 

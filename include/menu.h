@@ -7,7 +7,8 @@
 #define MENU_H
 
 #include <allegro.h>
-#include <alpng.h>
+#include <png.h>
+#include <loadpng.h>
 
 #include "tools.h"
 #include "state.h"
@@ -38,6 +39,9 @@ class menu : public state
     button bounce_up;
     button bounce_down;
     button start;
+
+    button host;
+    button join;
 
     BITMAP *buffer;
     BITMAP *background;

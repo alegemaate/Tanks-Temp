@@ -13,6 +13,8 @@
 #define RIGHT 3
 #define TANK 4
 
+class world;
+
 class bullet
 {
   public:

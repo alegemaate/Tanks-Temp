@@ -4,6 +4,8 @@ barrier::barrier( world *newWorld, int newX, int newY, BITMAP* newImage, int new
   this -> x = newX;
   this -> y = newY;
 
+  this -> visible = true;
+
   image = newImage;
 
   this -> worldPointer = newWorld;

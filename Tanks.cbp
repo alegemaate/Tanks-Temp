@@ -10,22 +10,29 @@
 				<Option output="build/Tanks" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="build" />
 				<Option object_output="output" />
-				<Option type="0" />
+				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add option="-std=c++11" />
+					<Add option="-std=c++0x" />
 					<Add directory="include" />
 				</Compiler>
 				<Linker>
-					<Add option="-lalpng" />
-					<Add option="-lalleg" />
+					<Add option="-lalleg44" />
+					<Add option="-lloadpng" />
+					<Add option="-lpng" />
+					<Add option="-lzlib" />
+					<Add option="-lGameNetworkingSockets" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="include/ChatClient.h" />
+		<Unit filename="include/ChatCommon.h" />
+		<Unit filename="include/ChatServer.h" />
+		<Unit filename="include/StringFunctions.h" />
 		<Unit filename="include/barrier.h" />
 		<Unit filename="include/bullet.h" />
 		<Unit filename="include/button.h" />
@@ -43,6 +50,10 @@
 		<Unit filename="include/tileMap.h" />
 		<Unit filename="include/tools.h" />
 		<Unit filename="include/world.h" />
+		<Unit filename="src/ChatClient.cpp" />
+		<Unit filename="src/ChatCommon.cpp" />
+		<Unit filename="src/ChatServer.cpp" />
+		<Unit filename="src/StringFunctions.cpp" />
 		<Unit filename="src/barrier.cpp" />
 		<Unit filename="src/bullet.cpp" />
 		<Unit filename="src/button.cpp" />

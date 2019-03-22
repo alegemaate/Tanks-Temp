@@ -93,6 +93,7 @@ void tank::checkCollision( std::vector<bullet>* newBullets){
     }
   }
 }
+
 void tank::checkCollision( std::vector<barrier>* newBarriers){
   float guess_vector_x = -speed * cos( rotation_radians_body);
   float guess_vector_y = -speed * sin( rotation_radians_body);
@@ -115,6 +116,7 @@ void tank::checkCollision( std::vector<barrier>* newBarriers){
     }
   }
 }
+
 void tank::checkCollision( std::vector<powerup>* newPowerups){
   for( unsigned int i = 0; i < newPowerups -> size(); i++){
     if( collisionAny( x, x + 50, newPowerups -> at(i).getX(), newPowerups -> at(i).getX() + newPowerups -> at(i).getWidth(), y, y + 50, newPowerups -> at(i).getY(), newPowerups -> at(i).getY() + newPowerups -> at(i).getHeight())){
