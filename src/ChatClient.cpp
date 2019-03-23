@@ -71,6 +71,11 @@ void ChatClient::PollIncomingMessages() {
       game_world -> place_barrier(std::stoi(message.at(1)), std::stoi(message.at(2)), 1);
       std::cout << "Placed barrier at " << message.at(1) << " , " << message.at(2) << std::endl;
     }
+    // Barrier
+    else if(message.size() == 3 && message.at(0).compare("E") == 0) {
+      game_world -> place_barrier(std::stoi(message.at(1)), std::stoi(message.at(2)), 1);
+      std::cout << "Placed enemy tank at " << message.at(1) << " , " << message.at(2) << std::endl;
+    }
 
     // We don't need this anymore.
     pIncomingMsg->Release();

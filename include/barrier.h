@@ -6,20 +6,17 @@
 #include "Entity.h"
 #include "tools.h"
 
-class world;
-class bullet;
-
 class Barrier : public Entity {
   public:
-    Barrier(world *newWorld, float x, float y, BITMAP* image, int health);
+    Barrier(float x, float y, BITMAP* image, int health);
     ~Barrier();
 
     void Update();
     void Draw(BITMAP* tempImage);
 
-    void SetHealth( int newHealth){ health = newHealth; }
+    void SetHealth(int newHealth){ health = newHealth; }
 
-    void SetIndestructable( bool newIndestructable){ indestructable = newIndestructable; }
+    void SetIndestructable(bool newIndestructable){ indestructable = newIndestructable; }
 
     bool GetDead();
 
@@ -30,7 +27,7 @@ class Barrier : public Entity {
     bool indestructable;
     bool exploded;
 
-    void Explode( int newX, int newY, int newVelocity, int newAmount, int newLife);
+    void Explode(int x, int y, int velocity, int amount, int life);
 
     BITMAP *image;
     SAMPLE *sample_explode;

@@ -12,8 +12,8 @@
 #include "tools.h"
 
 #include "barrier.h"
-/*#include "tank.h"
-#include "powerup.h"*/
+#include "tank.h"
+#include "powerup.h"
 
 #include "globals.h"
 
@@ -23,7 +23,9 @@
 
 #include "particle.h"
 
-class barrier;
+class tank;
+class bullet;
+class powerup;
 
 class world{
   public:
@@ -39,6 +41,7 @@ class world{
     void play_sample_2d(SAMPLE* spl, int vol, int pan, int freq, bool loop);
 
     void generate_map(int width, int height);
+    void setup_tanks();
     void init_map(int width, int height);
     void place_barrier(int x, int y, int type);
 
@@ -52,14 +55,11 @@ class world{
     static unsigned char num_enemies;
     static unsigned char num_friends;
 
-    // Get barriers
-    std::vector<Barrier*> get_barriers() {
-      return barriers;
-    }
-
   protected:
 
   private:
+    friend class ChatServer;
+
     // Images
     BITMAP *buffer;
     BITMAP *map_buffer;
@@ -71,9 +71,9 @@ class world{
 
     // Objects
     std::vector<Barrier*> barriers;
-    /*std::vector<tank*> enemy_tanks;
+    std::vector<tank*> enemy_tanks;
     std::vector<tank*> player_tanks;
-    std::vector<powerup> powerups;*/
+    std::vector<powerup> powerups;
     std::vector<coordinate> startLocations;
     std::vector<particle*> particles;
 

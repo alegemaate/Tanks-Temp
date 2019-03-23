@@ -1,4 +1,4 @@
-#include "../include/bullet.h"
+#include "bullet.h"
 
 // Init
 bullet::bullet( world *newWorld, float newX, float newY, float newAngle, float newSpeed, int newOwnerID, int newHealth, SAMPLE* newSound){

@@ -98,7 +98,7 @@ void world::generate_map(int width, int height) {
             coordinate newStartLocation;
             newStartLocation.x = i * 40;
             newStartLocation.y = t * 40;
-            startLocations.push_back( newStartLocation);
+            startLocations.push_back(newStartLocation);
           }
           else {
             place_barrier(i * 40, t * 40, map_temp[i][t]);
@@ -106,6 +106,42 @@ void world::generate_map(int width, int height) {
         }
       }
     }
+  }
+}
+
+void world::setup_tanks() {
+  // Player
+  int randomStartLocation = random( 0, startLocations.size() - 1);
+  player_tank *newPlayer = new player_tank(this, startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
+                          100, 4, 20, 1,
+                          tank_images[3], tank_images[2], tank_images[1], tank_images[0]);
+
+  newPlayer -> process_enemies( &enemy_tanks);
+  newPlayer -> set_map_dimensions( map_width * 40, map_height * 40);
+  player_tanks.push_back( newPlayer);
+
+  // Enemies
+  for( unsigned char i = 0; i < num_enemies; i ++){
+    int randomStartLocation = random( 0, startLocations.size() - 1);
+    ai_tank *newPlayer = new ai_tank(this, startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
+                      random(50,150), random(1,4), random(50,300), random(1,10)/10,
+                      tank_images[5], tank_images[4], tank_images[1], tank_images[0]);
+
+    newPlayer -> process_enemies( &player_tanks);
+    newPlayer -> set_map_dimensions( map_width * 40, map_height * 40);
+    enemy_tanks.push_back( newPlayer);
+  }
+
+  // Friends
+  for( unsigned char i = 0; i < num_friends; i ++){
+    int randomStartLocation = random( 0, startLocations.size() - 1);
+    ai_tank *newPlayer = new ai_tank(this, startLocations.at( randomStartLocation).x, startLocations.at( randomStartLocation).y, 3,
+                          100, 4, 20, 1,
+                          tank_images[7], tank_images[6], tank_images[1], tank_images[0]);
+
+    newPlayer -> process_enemies( &enemy_tanks);
+    newPlayer -> set_map_dimensions( map_width * 40, map_height * 40);
+    player_tanks.push_back( newPlayer);
   }
 }
 
@@ -124,17 +160,16 @@ void world::place_barrier(int x, int y, int type) {
   if (type < 1 || type > 3)
     return;
 
-  Barrier* newBarrier = new Barrier(this, x, y, blocks[type], 0);
+  Barrier* nbar = new Barrier(x, y, blocks[type], 0);
 
   // Destroyable
-  if( type == 2)
-    newBarrier -> SetHealth(3);
+  if (type == 2)
+    nbar -> SetHealth(3);
   else
-    newBarrier -> SetIndestructable(true);
+    nbar -> SetIndestructable(true);
 
-  barriers.push_back(newBarrier);
+  barriers.push_back(nbar);
 }
-
 
 // Adds particle to global particle handler
 void world::addParticle(particle *newParticle) {
@@ -167,11 +202,11 @@ void world::update() {
   }
 
   // Delete powerup
-  /*for( unsigned int i = 0; i < powerups.size(); i++){
+  for( unsigned int i = 0; i < powerups.size(); i++){
     if(powerups.at(i).getDead()){
       powerups.erase(powerups.begin() + i);
     }
-  }*/
+  }
 
   // Game over
   /*if( key[KEY_SPACE] && (player_tanks.size() == 0 || enemy_tanks.size() == 0)){
@@ -179,10 +214,10 @@ void world::update() {
   }*/
 
   // Scroll map
-  /*if( player_tanks.size() > 0){
+  if( player_tanks.size() > 0){
     map_x = player_tanks.at(0) -> getCenterX() - buffer -> w / 2;
     map_y = player_tanks.at(0) -> getCenterY() - buffer -> h / 2;
-  }*/
+  }
 }
 
 // Draw world
@@ -197,14 +232,14 @@ void world::draw(BITMAP *buffer) {
   draw_sprite(map_buffer, decal_buffer, 0, 0);
 
   // Draw tanks
-  /*for( unsigned int i = 0; i < enemy_tanks.size(); i++){
+  for( unsigned int i = 0; i < enemy_tanks.size(); i++){
     enemy_tanks.at(i) -> draw( map_buffer);
     enemy_tanks.at(i) -> putDecal( decal_buffer);
   }
   for( unsigned int i = 0; i < player_tanks.size(); i++){
     player_tanks.at(i) -> draw( map_buffer);
     player_tanks.at(i) -> putDecal( decal_buffer);
-  }*/
+  }
 
   // Draw particles
   for( unsigned int i = 0; i < particles.size(); i++){
@@ -216,8 +251,8 @@ void world::draw(BITMAP *buffer) {
     barriers.at(i) -> Draw(map_buffer);
 
   // Draw powerups
-  /*for( unsigned int i = 0; i < powerups.size(); i++)
-    powerups.at(i).draw( map_buffer);*/
+  for( unsigned int i = 0; i < powerups.size(); i++)
+    powerups.at(i).draw( map_buffer);
 
   // Map to buffer
   blit( map_buffer, buffer, map_x, map_y, 0, 0, buffer -> w, buffer -> h);

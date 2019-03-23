@@ -10,6 +10,8 @@
 #include "barrier.h"
 #include "powerup.h"
 
+class bullet;
+class world;
 
 class tank{
   public:

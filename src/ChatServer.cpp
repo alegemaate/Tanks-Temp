@@ -33,6 +33,8 @@ void ChatServer::Open(uint16 nPort) {
 
   // Create map
   game_world -> generate_map(world::map_width, world::map_height);
+
+  game_world -> setup_tanks();
 }
 
 
@@ -43,9 +45,14 @@ world* ChatServer::GetWorld() {
 }
 
 void ChatServer::SendMap(SteamNetConnectionStatusChangedCallback_t *pInfo) {
-  std::vector<Barrier*> barr = game_world -> get_barriers();
-  for (unsigned int i = 0; i < barr.size(); i++) {
-    std::string message = "B:" + std::to_string(barr.at(i) -> GetX()) + ":" + std::to_string(barr.at(i) -> GetY());
+  for (unsigned int i = 0; i < game_world -> barriers.size(); i++) {
+    std::string message = "B:" + std::to_string(game_world -> barriers.at(i) -> GetX()) + ":" + std::to_string(game_world -> barriers.at(i) -> GetY());
+    SendStringToClient( pInfo->m_hConn, message.c_str() );
+    std::cout << message.c_str() << std::endl;
+  }
+
+  for (unsigned int i = 0; i < game_world -> enemy_tanks.size(); i++) {
+    std::string message = "E:" + std::to_string(game_world -> enemy_tanks.at(i) -> getX()) + ":" + std::to_string(game_world -> enemy_tanks.at(i) -> getY());
     SendStringToClient( pInfo->m_hConn, message.c_str() );
     std::cout << message.c_str() << std::endl;
   }

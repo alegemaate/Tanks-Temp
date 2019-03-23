@@ -1,4 +1,4 @@
-#include "../include/tank.h"
+#include "tank.h"
 
 unsigned char tank::num_bullet_bounces = 0;
 

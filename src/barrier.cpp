@@ -1,6 +1,6 @@
 #include "barrier.h"
 
-Barrier::Barrier(world *newWorld, float x, float y, BITMAP* image, int health) :
+Barrier::Barrier(float x, float y, BITMAP* image, int health) :
   Entity(x, y) {
 
   this -> image = image;
@@ -14,11 +14,11 @@ Barrier::Barrier(world *newWorld, float x, float y, BITMAP* image, int health) :
   this -> exploded = false;
   this -> visible = true;
 
-  sample_explode = load_sample_ex( "sfx/explode.wav");
+  sample_explode = load_sample_ex("sfx/explode.wav");
 }
 
 Barrier::~Barrier(){
-  //destroy_sample( sample_explode);
+
 }
 
 // Update
@@ -48,31 +48,31 @@ void Barrier::Update() {
     }*/
   }
   else if(!exploded) {
-    Explode(GetX() + GetWidth()/2, GetY() + GetHeight()/2, 6, 100, 30);
+    Explode(GetX() + GetWidth() / 2, GetY() + GetHeight() / 2, 6, 100, 30);
     exploded = true;
   }
 }
 
 // Draw image
-void Barrier::Draw( BITMAP* tempImage) {
+void Barrier::Draw(BITMAP* tempImage) {
   if((health > 0 || indestructable) && visible)
     draw_sprite( tempImage, image, GetX(), GetY());
 }
 
 // Check if needs cleanup
 bool Barrier::GetDead(){
-  if( !indestructable && health <= 0) {
+  if(!indestructable && health <= 0) {
     return true;
   }
   return false;
 }
 
 // Explode
-void Barrier::Explode( int newX, int newY, int newVelocity, int newAmount, int newLife) {
+void Barrier::Explode(int x, int y, int velocity, int amount, int life) {
   // Explode
   play_sample(sample_explode, 255, 127, 1000, 0);
 
-  for(int i = 0; i < newAmount; i++) {
+  for(int i = 0; i < amount; i++) {
     int new_colour = 0;
 
     // Make sure not transparent ( they show as white)
@@ -82,11 +82,11 @@ void Barrier::Explode( int newX, int newY, int newVelocity, int newAmount, int n
       int random_x = random(0, GetWidth());
 
       // New colour
-      new_colour = getpixel( image, random_y, random_x);
-    } while( getr(new_colour) == 255 && getg(new_colour) == 255 && getb(new_colour) == 255);
+      new_colour = getpixel(image, random_y, random_x);
+    } while(getr(new_colour) == 255 && getg(new_colour) == 255 && getb(new_colour) == 255);
 
     // Make particle
-    //particle *newParticle = new particle(newX, newY, new_colour, -newVelocity, newVelocity, -newVelocity, newVelocity, 1, CIRCLE, newLife, EXPLODE);
+    //particle *newParticle = new particle(x, y, new_colour, -velocity, velocity, -velocity, velocity, 1, CIRCLE, life, EXPLODE);
 
     //worldPointer -> addParticle(newParticle);
   }
