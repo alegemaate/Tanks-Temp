@@ -124,13 +124,13 @@ void world::place_barrier(int x, int y, int type) {
   if (type < 1 || type > 3)
     return;
 
-  barrier* newBarrier = new barrier(this, x, y, blocks[type], 0);
+  Barrier* newBarrier = new Barrier(this, x, y, blocks[type], 0);
 
   // Destroyable
   if( type == 2)
-    newBarrier -> setHealth(3);
+    newBarrier -> SetHealth(3);
   else
-    newBarrier -> setIndestructable(true);
+    newBarrier -> SetIndestructable(true);
 
   barriers.push_back(newBarrier);
 }
@@ -154,7 +154,7 @@ void world::update() {
 
   // Remove broken barriers
   for( unsigned int i = 0; i < barriers.size(); i++){
-    if( barriers.at(i) -> getDead()){
+    if( barriers.at(i) -> GetDead()){
       // Spawn powerup
       /*if( random( 0, 1) == 0){
         int type = random( 0, 3);
@@ -213,7 +213,7 @@ void world::draw(BITMAP *buffer) {
 
   // Draw barriers
   for( unsigned int i = 0; i < barriers.size(); i++)
-    barriers.at(i) -> draw(map_buffer);
+    barriers.at(i) -> Draw(map_buffer);
 
   // Draw powerups
   /*for( unsigned int i = 0; i < powerups.size(); i++)

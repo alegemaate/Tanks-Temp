@@ -9,6 +9,8 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+
+#define _USE_MATH_DEFINES
 #include <cmath>
 
 //Collision

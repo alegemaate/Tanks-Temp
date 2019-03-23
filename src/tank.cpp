@@ -94,7 +94,7 @@ void tank::checkCollision( std::vector<bullet>* newBullets){
   }
 }
 
-void tank::checkCollision( std::vector<barrier>* newBarriers){
+void tank::checkCollision( std::vector<Barrier>* newBarriers){
   float guess_vector_x = -speed * cos( rotation_radians_body);
   float guess_vector_y = -speed * sin( rotation_radians_body);
 
@@ -103,15 +103,15 @@ void tank::checkCollision( std::vector<barrier>* newBarriers){
 
   for( unsigned int i = 0; i < newBarriers -> size(); i++){
     if( collisionAny( x + 2 + guess_vector_x, x + width - 2 + guess_vector_x,
-                     newBarriers -> at(i).getX(), newBarriers -> at(i).getX() + newBarriers -> at(i).getWidth(),
+                     newBarriers -> at(i).GetX(), newBarriers -> at(i).GetX() + newBarriers -> at(i).GetWidth(),
                      y + 2, y + height - 2,
-                     newBarriers -> at(i).getY(), newBarriers -> at(i).getY() + newBarriers -> at(i).getHeight())){
+                     newBarriers -> at(i).GetY(), newBarriers -> at(i).GetY() + newBarriers -> at(i).GetHeight())){
       canMoveX = false;
     }
     if( collisionAny( x + 2, x + width - 2,
-                     newBarriers -> at(i).getX(), newBarriers -> at(i).getX() + newBarriers -> at(i).getWidth(),
+                     newBarriers -> at(i).GetX(), newBarriers -> at(i).GetX() + newBarriers -> at(i).GetWidth(),
                      y + 2 + guess_vector_y, y + height - 2 + guess_vector_y,
-                     newBarriers -> at(i).getY(), newBarriers -> at(i).getY() + newBarriers -> at(i).getHeight())){
+                     newBarriers -> at(i).GetY(), newBarriers -> at(i).GetY() + newBarriers -> at(i).GetHeight())){
       canMoveY = false;
     }
   }

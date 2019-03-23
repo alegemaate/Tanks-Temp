@@ -17,8 +17,10 @@
 
 #include "globals.h"
 
+#define _USE_MATH_DEFINES
 #include <math.h>
-#define M_PI 3.14159265358979323846264338327
+#include <cmath>
+
 #include "particle.h"
 
 class barrier;
@@ -51,7 +53,7 @@ class world{
     static unsigned char num_friends;
 
     // Get barriers
-    std::vector<barrier*> get_barriers() {
+    std::vector<Barrier*> get_barriers() {
       return barriers;
     }
 
@@ -68,7 +70,7 @@ class world{
     BITMAP *tank_images[10];
 
     // Objects
-    std::vector<barrier*> barriers;
+    std::vector<Barrier*> barriers;
     /*std::vector<tank*> enemy_tanks;
     std::vector<tank*> player_tanks;
     std::vector<powerup> powerups;*/

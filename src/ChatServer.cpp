@@ -43,9 +43,9 @@ world* ChatServer::GetWorld() {
 }
 
 void ChatServer::SendMap(SteamNetConnectionStatusChangedCallback_t *pInfo) {
-  std::vector<barrier*> barr = game_world -> get_barriers();
+  std::vector<Barrier*> barr = game_world -> get_barriers();
   for (unsigned int i = 0; i < barr.size(); i++) {
-    std::string message = "B:" + std::to_string(barr.at(i) -> getX()) + ":" + std::to_string(barr.at(i) -> getY());
+    std::string message = "B:" + std::to_string(barr.at(i) -> GetX()) + ":" + std::to_string(barr.at(i) -> GetY());
     SendStringToClient( pInfo->m_hConn, message.c_str() );
     std::cout << message.c_str() << std::endl;
   }

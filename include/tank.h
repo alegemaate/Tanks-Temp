@@ -38,7 +38,7 @@ class tank{
     virtual void set_map_dimensions( int newMapWidth, int newMapHeight){ map_width = newMapWidth; map_height = newMapHeight;}
 
     virtual void checkCollision( std::vector<bullet> *newBullets);
-    virtual void checkCollision( std::vector<barrier> *newBarriers);
+    virtual void checkCollision( std::vector<Barrier> *newBarriers);
     virtual void checkCollision( std::vector<powerup> *newPowerups);
 
     virtual void process_enemies( std::vector<tank*> *tempOtherTanks);

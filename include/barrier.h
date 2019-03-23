@@ -3,50 +3,34 @@
 
 #include <vector>
 
-#include "world.h"
-
+#include "Entity.h"
 #include "tools.h"
-#include "bullet.h"
 
 class world;
 class bullet;
 
-class barrier{
+class Barrier : public Entity {
   public:
-    barrier(world *newWorld, int newX, int newY, BITMAP* newImage, int newHealth);
-    ~barrier();
+    Barrier(world *newWorld, float x, float y, BITMAP* image, int health);
+    ~Barrier();
 
-    void update(std::vector<bullet>* newBullets);
-    void draw(BITMAP* tempImage);
+    void Update();
+    void Draw(BITMAP* tempImage);
 
-    int getX();
-    int getY();
+    void SetHealth( int newHealth){ health = newHealth; }
 
-    int getWidth();
-    int getHeight();
+    void SetIndestructable( bool newIndestructable){ indestructable = newIndestructable; }
 
-    void setHealth( int newHealth){ health = newHealth; }
-
-    void setIndestructable( bool newIndestructable){ indestructable = newIndestructable; }
-
-    bool getDead();
+    bool GetDead();
 
     bool visible;
   private:
-    int x;
-    int y;
-
-    int width;
-    int height;
-
     int health;
 
     bool indestructable;
     bool exploded;
 
-    world *worldPointer;
-
-    void explode( int newX, int newY, int newVelocity, int newAmount, int newLife);
+    void Explode( int newX, int newY, int newVelocity, int newAmount, int newLife);
 
     BITMAP *image;
     SAMPLE *sample_explode;
