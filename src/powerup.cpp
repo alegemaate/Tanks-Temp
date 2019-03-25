@@ -1,20 +1,21 @@
-#include "powerup.h"
+#include "Powerup.h"
+
 #include "tools.h"
 
-BITMAP* powerup::images[4] = { nullptr };
+BITMAP* Powerup::images[4] = { nullptr };
 
-powerup::powerup(world *wrld, int x, int y, int type) :
+Powerup::Powerup(world *wrld, int x, int y, int type) :
   Entity(wrld, x, y) {
 
   this -> image = nullptr;
   SetType(type);
 }
 
-powerup::~powerup(){
+Powerup::~Powerup(){
 
 }
 
-void powerup::SetType(int type) {
+void Powerup::SetType(int type) {
   // Ensure images are loaded
   if (images[0] == nullptr) {
     images[0] = load_bitmap_ex( "images/powerup_health.png");
@@ -54,11 +55,11 @@ void powerup::SetType(int type) {
     SetDimensions(vec2<int>(image -> w, image -> h));
 }
 
-void powerup::Update() {
+void Powerup::Update() {
 
 }
 
-void powerup::Draw(BITMAP *buffer) {
+void Powerup::Draw(BITMAP *buffer) {
   if (image)
     draw_sprite(buffer, image, GetX(), GetY());
 }

@@ -1,7 +1,9 @@
-#include "bullet.h"
+#include "Bullet.h"
+
+#include "Particle.h"
 
 // Init
-bullet::bullet(world *wrld, float x, float y, float angle, float speed, int ownerID, int health, SAMPLE* sound) :
+Bullet::Bullet(world *wrld, float x, float y, float angle, float speed, int ownerID, int health, SAMPLE* sound) :
   Entity(wrld, x, y) {
   SetVelocity(vec2<float>(-speed*cos(angle), -speed*sin(angle)));
 
@@ -11,12 +13,12 @@ bullet::bullet(world *wrld, float x, float y, float angle, float speed, int owne
   this -> health = health;
 }
 
-bullet::~bullet(){
+Bullet::~Bullet(){
 
 }
 
 // Reverse specified vector
-void bullet::ReverseDirection( std::string newDirection){
+void Bullet::ReverseDirection( std::string newDirection){
   if( newDirection == "x")
     velocity.x = -velocity.x;
   else if( newDirection == "y")
@@ -28,16 +30,16 @@ void bullet::ReverseDirection( std::string newDirection){
 }
 
 // Bounce off wall
-void bullet::Bounce( int newDirection){
+void Bullet::Bounce( int newDirection){
   health--;
-  incidenceDirection = newDirection;
+  //incidenceDirection = newDirection;
 
   if( health <= 0)
     Destroy();
 }
 
 // Destroy
-void bullet::Destroy(){
+void Bullet::Destroy(){
   // Make sure health is 0
   health = 0;
 
@@ -61,7 +63,7 @@ void bullet::Destroy(){
 }
 
 // Update bullets
-void bullet::Update() {
+void Bullet::Update() {
   if(health > 0){
     // Move
     position.x += velocity.x;
@@ -74,7 +76,7 @@ void bullet::Update() {
 }
 
 // Draw image
-void bullet::Draw(BITMAP* buffer) {
+void Bullet::Draw(BITMAP* buffer) {
   if( health > 0){
     //if( owner == 0){
       rectfill(buffer, GetX()    , GetY()    , GetX() + 5, GetY() + 5, makecol(0,0,0));

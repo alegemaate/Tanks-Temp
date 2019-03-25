@@ -10,10 +10,10 @@ enum powerup_types {
   POWERUP_BULLET_RATE
 };
 
-class powerup : public Entity {
+class Powerup : public Entity {
   public:
-    powerup(world *wrld, int x, int y, int type);
-    virtual ~powerup();
+    Powerup(world *wrld, int x, int y, int type);
+    virtual ~Powerup();
 
     int getType(){ return type;}
 

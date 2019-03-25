@@ -91,8 +91,7 @@ void tank::SetupTank(int type) {
 // Explode
 void tank::explode( int newX, int newY, int newVelocity, int newAmount, int newLife){
   for( int i = 0; i < newAmount; i ++){
-    particle *newParticle = new particle(newX, newY, makecol(255,random(0,255),0), -newVelocity, newVelocity, -newVelocity, newVelocity, 1, CIRCLE, newLife, EXPLODE);
-    wrld -> addParticle(newParticle);
+    wrld -> addParticle(new Particle(newX, newY, makecol(255,random(0,255),0), -newVelocity, newVelocity, -newVelocity, newVelocity, 1, CIRCLE, newLife, EXPLODE));
   }
 }
 
@@ -127,7 +126,7 @@ void tank::update_bullets(){
 void tank::shoot(float rotation, float x, float y) {
   if( bullet_delay > fire_delay_rate ){
     bool magicMODE = key[KEY_LSHIFT];
-    wrld -> AddEntity(new bullet(wrld, x, y, rotation, fire_speed, true, 1 + num_bullet_bounces + (magicMODE * 10), sample_shot));
+    wrld -> AddEntity(new Bullet(wrld, x, y, rotation, fire_speed, true, 1 + num_bullet_bounces + (magicMODE * 10), sample_shot));
     bullet_delay = 0;
   }
 }

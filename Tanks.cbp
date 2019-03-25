@@ -29,13 +29,15 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="include/Barrier.h" />
+		<Unit filename="include/Bullet.h" />
 		<Unit filename="include/ChatClient.h" />
 		<Unit filename="include/ChatCommon.h" />
 		<Unit filename="include/ChatServer.h" />
 		<Unit filename="include/Entity.h" />
+		<Unit filename="include/Particle.h" />
+		<Unit filename="include/Powerup.h" />
 		<Unit filename="include/StringFunctions.h" />
-		<Unit filename="include/barrier.h" />
-		<Unit filename="include/bullet.h" />
 		<Unit filename="include/button.h" />
 		<Unit filename="include/game.h" />
 		<Unit filename="include/globals.h" />
@@ -43,20 +45,20 @@
 		<Unit filename="include/keyListener.h" />
 		<Unit filename="include/menu.h" />
 		<Unit filename="include/mouseListener.h" />
-		<Unit filename="include/particle.h" />
-		<Unit filename="include/powerup.h" />
 		<Unit filename="include/state.h" />
 		<Unit filename="include/tank.h" />
 		<Unit filename="include/tools.h" />
 		<Unit filename="include/vec2.h" />
 		<Unit filename="include/world.h" />
+		<Unit filename="src/Barrier.cpp" />
+		<Unit filename="src/Bullet.cpp" />
 		<Unit filename="src/ChatClient.cpp" />
 		<Unit filename="src/ChatCommon.cpp" />
 		<Unit filename="src/ChatServer.cpp" />
 		<Unit filename="src/Entity.cpp" />
+		<Unit filename="src/Particle.cpp" />
+		<Unit filename="src/Powerup.cpp" />
 		<Unit filename="src/StringFunctions.cpp" />
-		<Unit filename="src/barrier.cpp" />
-		<Unit filename="src/bullet.cpp" />
 		<Unit filename="src/button.cpp" />
 		<Unit filename="src/game.cpp" />
 		<Unit filename="src/globals.cpp" />
@@ -65,8 +67,6 @@
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/menu.cpp" />
 		<Unit filename="src/mouseListener.cpp" />
-		<Unit filename="src/particle.cpp" />
-		<Unit filename="src/powerup.cpp" />
 		<Unit filename="src/state.cpp" />
 		<Unit filename="src/tank.cpp" />
 		<Unit filename="src/tools.cpp" />

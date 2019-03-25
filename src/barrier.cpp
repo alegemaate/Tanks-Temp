@@ -1,8 +1,9 @@
-#include "barrier.h"
-#include "tools.h"
+#include "Barrier.h"
 
+#include "tools.h"
 #include "world.h"
-#include "powerup.h"
+
+#include "Powerup.h"
 
 BITMAP* Barrier::images[3] = { nullptr };
 SAMPLE* Barrier::sample_explode = nullptr;
@@ -97,7 +98,7 @@ void Barrier::Update() {
   if (health <= 0 && !indestructable) {
     // Drop powerup
     if (type == BARRIER_CRATE) {
-      wrld -> AddEntity(new powerup(wrld, GetX(), GetY(), random(0, 4)));
+      wrld -> AddEntity(new Powerup(wrld, GetX(), GetY(), random(0, 4)));
     }
 
     // Explode
@@ -133,7 +134,6 @@ void Barrier::Destroy(int x, int y, int velocity, int amount, int life) {
     } while(getr(new_colour) == 255 && getg(new_colour) == 255 && getb(new_colour) == 255);
 
     // Make particle
-    particle *newParticle = new particle(x, y, new_colour, -velocity, velocity, -velocity, velocity, 1, CIRCLE, life, EXPLODE);
-    wrld -> addParticle(newParticle);
+    wrld -> addParticle(new Particle(x, y, new_colour, -velocity, velocity, -velocity, velocity, 1, CIRCLE, life, EXPLODE));
   }
 }

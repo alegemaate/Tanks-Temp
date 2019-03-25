@@ -11,26 +11,28 @@
 #include <allegro.h>
 #include "tools.h"
 
-class particle{
+class Particle {
   public:
-    particle();
-    particle(int newX, int newY, int newColor, float newXMin, float newXMax, float newYMin, float newYMax, int newSize, int newType, int newLife, int newBehavior);
-    ~particle();
+    Particle();
+    Particle(int x, int y, int colour, float x_min, float x_max, float y_min, float y_max, int size, int type, int life, int behaviour);
+    ~Particle();
 
-    void logic();
-    void draw(BITMAP* tempBitmap);
+    void Update();
+    void Draw(BITMAP* buffer);
 
-    bool getDead();
+    bool IsDead();
   private:
-    int particleColor;
-    int particleRed;
-    int particleGreen;
-    int particleBlue;
+    void SetColour(int colour);
 
-    int particleType;
-    int particleSize;
-    int particleLife;
-    int particleBehaviour;
+    int colour;
+    int red;
+    int green;
+    int blue;
+
+    int type;
+    int size;
+    int life;
+    int behaviour;
 
     bool dead;
 

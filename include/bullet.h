@@ -3,7 +3,6 @@
 
 #include "Entity.h"
 #include "tools.h"
-#include "particle.h"
 
 #include <vector>
 
@@ -14,10 +13,10 @@
 #define TANK 4
 
 
-class bullet : public Entity {
+class Bullet : public Entity {
   public:
-    bullet(world *wrld, float x, float y, float angle, float speed, int ownerID, int health, SAMPLE* sound);
-    ~bullet();
+    Bullet(world *wrld, float x, float y, float angle, float speed, int ownerID, int health, SAMPLE* sound);
+    ~Bullet();
 
     virtual void Update() override;
     virtual void Draw(BITMAP* buffer) override;
@@ -29,8 +28,6 @@ class bullet : public Entity {
   protected:
   private:
     int health;
-    int incidenceDirection;
-
     bool owner;
 
     SAMPLE* shotSound;

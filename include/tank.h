@@ -3,10 +3,10 @@
 
 #include <allegro.h>
 
-#include "particle.h"
-#include "bullet.h"
-#include "barrier.h"
-#include "powerup.h"
+#include "Particle.h"
+#include "Bullet.h"
+#include "Barrier.h"
+#include "Powerup.h"
 #include "Entity.h"
 
 class bullet;
@@ -58,7 +58,6 @@ class tank : public Entity {
     bool canMoveX;
     bool canMoveY;
 
-    std::vector<bullet> bullets;
     std::vector<tank*> *otherTanks;
 
     static BITMAP* images[8];

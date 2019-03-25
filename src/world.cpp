@@ -2,9 +2,9 @@
 
 #include <algorithm>
 
-#include "barrier.h"
+#include "Barrier.h"
 #include "tank.h"
-#include "powerup.h"
+#include "Powerup.h"
 
 unsigned char world::map_width = 10;
 unsigned char world::map_height = 10;
@@ -135,8 +135,8 @@ void world::RemoveEntity(Entity *entity) {
 }
 
 // Adds particle to global particle handler
-void world::addParticle(particle *newParticle) {
-  particles.push_back(newParticle);
+void world::addParticle(Particle *particle) {
+  particles.push_back(particle);
 }
 
 // Updates world
@@ -148,11 +148,11 @@ void world::update() {
 
   // Update particles
   for(unsigned int i = 0; i < particles.size(); i++) {
-    particles.at(i) -> logic();
+    particles.at(i) -> Update();
 
     //Check death of particles
-    if(particles.at(i) -> getDead())
-      particles.erase( particles.begin() + i);
+    if(particles.at(i) -> IsDead())
+      particles.erase(particles.begin() + i);
   }
 
   // Game over
@@ -185,7 +185,7 @@ void world::draw(BITMAP *buffer) {
 
   // Draw particles
   for(unsigned int i = 0; i < particles.size(); i++) {
-    particles.at(i) -> draw(map_buffer);
+    particles.at(i) -> Draw(map_buffer);
   }
 
   // Map to buffer

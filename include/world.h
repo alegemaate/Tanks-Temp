@@ -18,7 +18,7 @@
 #include "globals.h"
 
 #include "Entity.h"
-#include "particle.h"
+#include "Particle.h"
 
 class world{
   public:
@@ -28,7 +28,7 @@ class world{
     void update();
     void draw(BITMAP *buffer);
 
-    void addParticle(particle *newParticle);
+    void addParticle(Particle *particle);
 
     void generate_map(int width, int height);
     void setup_tanks();
@@ -61,7 +61,7 @@ class world{
 
     // Objects
     std::vector<Entity*> entities;
-    std::vector<particle*> particles;
+    std::vector<Particle*> particles;
     std::vector<vec2<int>> startLocations;
 
     int map_temp[max_map_width][max_map_height];

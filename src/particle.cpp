@@ -1,105 +1,90 @@
-#include "../include/particle.h"
+#include "Particle.h"
 
 // Default Constructor
-particle::particle(){
-  x = 0;
-  y = 0;
-
-  particleColor = makecol( 255, 255, 255);
-  particleRed = getr(particleColor);
-  particleGreen = getg(particleColor);
-  particleBlue = getb(particleColor);
-
-  particleSize = 1;
-  particleType = 0;
-  particleBehaviour = 0;
-
-  particleLife = 0;
-
-  x_velocity = 0;
-  y_velocity = 0;
-
-  dead = false;
+Particle::Particle() :
+  Particle(0, 0, makecol(255,255,255), 0, 0, 0, 0, 1, 0, 0, 0) {
 }
 
 // Constructor
-particle::particle(int newX, int newY, int newColor, float newXMin, float newXMax, float newYMin, float newYMax, int newSize, int newType, int newLife, int newBehaviour){
-  x = newX;
-  y = newY;
+Particle::Particle(int x, int y, int colour, float x_min, float x_max, float y_min, float y_max, int size, int type, int life, int behaviour) {
+  this -> x = x;
+  this -> y = y;
 
-  particleColor = newColor;
-  particleRed = getr(particleColor);
-  particleGreen = getg(particleColor);
-  particleBlue = getb(particleColor);
+  this -> size = size;
+  this -> type = type;
+  this -> life = life;
+  this -> behaviour = behaviour;
 
-  particleSize = newSize;
-  particleType = newType;
-  particleBehaviour = newBehaviour;
-
-  particleLife = newLife;
-
-  x_velocity = randomf( newXMin, newXMax);
-  y_velocity = randomf( newYMin, newXMax);
+  x_velocity = randomf(x_min, x_max);
+  y_velocity = randomf(y_min, y_max);
 
   // No unmoving
-  if( x_velocity == 0)
+  if (x_velocity == 0)
     x_velocity = 0.1;
-  if( y_velocity == 0)
+  if (y_velocity == 0)
     y_velocity = 0.1;
 
   dead = false;
 }
 
 // Deconstructor
-particle::~particle(){
+Particle::~Particle(){
 
 }
 
+// Set colour and extract values
+void Particle::SetColour(int colour) {
+  this -> colour = colour;
+  this -> red = getr(colour);
+  this -> green = getg(colour);
+  this -> blue = getb(colour);
+}
+
 // Logic
-void particle::logic(){
+void Particle::Update() {
   // Behaviour
-  if( particleBehaviour == EXPLODE){
+  if (behaviour == EXPLODE) {
     x += x_velocity;
     y += y_velocity;
     x_velocity -= x_velocity/10;
     y_velocity -= y_velocity/10;
   }
-  else{
-    x += randomf( -x_velocity, x_velocity);
-    y += randomf( -y_velocity, y_velocity);
+  else {
+    x += randomf(-x_velocity, x_velocity);
+    y += randomf(-y_velocity, y_velocity);
   }
 
   // Die
-  if( random( 0, particleLife) == 0)
+  if (random(0, life) == 0)
     dead = true;
 }
 
 // Check death
-bool particle::getDead(){
+bool Particle::IsDead() {
   return dead;
 }
 
 // Draw
-void particle::draw( BITMAP* tempBitmap){
-  if(particleType == PIXEL){
-    putpixel( tempBitmap, x, y, makecol( particleRed, particleGreen, particleBlue));
+void Particle::Draw(BITMAP* buffer) {
+  if (type == PIXEL){
+    putpixel(buffer, x, y, makecol(red, green, blue));
   }
-  else if(particleType == SQUARE){
-    rectfill( tempBitmap, x, y, x + particleSize, y + particleSize, makecol( particleRed, particleGreen, particleBlue));
+  else if (type == SQUARE) {
+    rectfill(buffer, x, y, x + size, y + size, makecol(red, green, blue));
   }
-  else if(particleType == CIRCLE){
-    circlefill( tempBitmap, x, y, particleSize, makecol( particleRed, particleGreen, particleBlue));
+  else if (type == CIRCLE) {
+    circlefill(buffer, x, y, size, makecol(red, green, blue));
   }
-  else if(particleType == RANDOM){
+  else if (type == RANDOM) {
     switch(random(0,3)){
       case 0:
-        putpixel( tempBitmap, x, y, makecol( particleRed, particleGreen, particleBlue));
+        putpixel(buffer, x, y, makecol(red, green, blue));
         break;
       case 1:
-        circlefill( tempBitmap, x, y, particleSize, makecol( particleRed, particleGreen, particleBlue));
+        circlefill(buffer, x, y, size, makecol(red, green, blue));
         break;
       case 2:
-        rectfill( tempBitmap, x, y, x + particleSize, y + particleSize, makecol( particleRed, particleGreen, particleBlue));
+        rectfill(buffer, x, y, x + size, y + size, makecol(red, green, blue));
         break;
     }
   }
