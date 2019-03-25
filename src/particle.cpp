@@ -25,6 +25,8 @@ Particle::Particle(int x, int y, int colour, float x_min, float x_max, float y_m
     y_velocity = 0.1;
 
   dead = false;
+
+  SetColour(colour);
 }
 
 // Deconstructor

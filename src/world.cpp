@@ -155,6 +155,20 @@ void world::update() {
       particles.erase(particles.begin() + i);
   }
 
+  // Do collisions
+  for(unsigned int i = 0; i < entities.size(); i++) {
+    for(unsigned int t = 0; t < entities.size(); t++) {
+      if (i < entities.size() && t < entities.size()) {
+        if (collisionAny(entities.at(i) -> GetX(), entities.at(i) -> GetX() + entities.at(i) -> GetWidth() + entities.at(i) -> GetVelocity().x,
+                         entities.at(t) -> GetX(), entities.at(t) -> GetX() + entities.at(t) -> GetWidth() + entities.at(t) -> GetVelocity().x,
+                         entities.at(i) -> GetY(), entities.at(i) -> GetY() + entities.at(i) -> GetHeight() + entities.at(i) -> GetVelocity().y,
+                         entities.at(t) -> GetY(), entities.at(t) -> GetY() + entities.at(t) -> GetHeight() + entities.at(t) -> GetVelocity().y)) {
+          entities.at(i) -> Collide(entities.at(t));
+        }
+      }
+    }
+  }
+
   // Game over
   /*if( key[KEY_SPACE] && (player_tanks.size() == 0 || enemy_tanks.size() == 0)){
     set_next_state( STATE_MENU);

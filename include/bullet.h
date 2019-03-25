@@ -20,14 +20,14 @@ class Bullet : public Entity {
 
     virtual void Update() override;
     virtual void Draw(BITMAP* buffer) override;
+    virtual void Collide(Entity *other) override;
 
-    void Bounce( int newDirection);
+    void Bounce(int newDirection);
     void Destroy();
-
-    void ReverseDirection( std::string newDirection);
   protected:
   private:
     int health;
+    int lastBounceDirection;
     bool owner;
 
     SAMPLE* shotSound;

@@ -20,7 +20,7 @@
 #include "Entity.h"
 #include "Particle.h"
 
-class world{
+class world {
   public:
     world();
     virtual ~world();

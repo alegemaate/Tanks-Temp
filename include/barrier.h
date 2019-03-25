@@ -21,6 +21,7 @@ class Barrier : public Entity {
 
     virtual void Update() override;
     virtual void Draw(BITMAP* buffer) override;
+    virtual void Collide(Entity *other) override;
 
   private:
     void SetType(int type);
