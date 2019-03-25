@@ -1,35 +1,32 @@
 #ifndef POWERUP_H
 #define POWERUP_H
 
-#include <allegro.h>
+#include "Entity.h"
 
-class powerup{
+enum powerup_types {
+  POWERUP_HEALTH,
+  POWERUP_TANK_SPEED,
+  POWERUP_BULLET_SPEED,
+  POWERUP_BULLET_RATE
+};
+
+class powerup : public Entity {
   public:
-    powerup();
-    powerup( int x, int y, int type, BITMAP *image);
+    powerup(world *wrld, int x, int y, int type);
     virtual ~powerup();
 
-    int getX(){ return x;}
-    int getY(){ return y;}
-    int getWidth(){ return image -> w;}
-    int getHeight(){ return image -> h;}
     int getType(){ return type;}
 
-    bool getDead(){ return dead;}
-
-    void pickup(){ dead = true;}
-
-    void draw( BITMAP *tempBitmap);
+    virtual void Update() override;
+    virtual void Draw(BITMAP *buffer) override;
   protected:
 
   private:
-    BITMAP *image;
-
-    int x;
-    int y;
+    void SetType(int type);
     int type;
 
-    bool dead;
+    BITMAP *image;
+    static BITMAP* images[4];
 };
 
 #endif // POWERUP_H

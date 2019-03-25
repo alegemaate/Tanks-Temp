@@ -1,114 +1,85 @@
 #include "bullet.h"
 
 // Init
-bullet::bullet( world *newWorld, float newX, float newY, float newAngle, float newSpeed, int newOwnerID, int newHealth, SAMPLE* newSound){
-  worldPointer = newWorld;
-  x = newX;
-  y = newY;
-  vector_x = -newSpeed*cos( newAngle);
-  vector_y = -newSpeed*sin( newAngle);
-  owner = newOwnerID;
-  shotSound = newSound;
-  play_sample( shotSound, 255, 127, random(800,1200), 0);
-  pendingErase = false;
-  health = newHealth;
+bullet::bullet(world *wrld, float x, float y, float angle, float speed, int ownerID, int health, SAMPLE* sound) :
+  Entity(wrld, x, y) {
+  SetVelocity(vec2<float>(-speed*cos(angle), -speed*sin(angle)));
+
+  this -> owner = ownerID;
+  this -> shotSound = sound;
+  play_sample(shotSound, 255, 127, random(800,1200), 0);
+  this -> health = health;
 }
 
 bullet::~bullet(){
 
 }
 
-bool bullet::getErase(){
-  return pendingErase;
-}
-
 // Reverse specified vector
-void bullet::reverseDirection( std::string newDirection){
+void bullet::ReverseDirection( std::string newDirection){
   if( newDirection == "x")
-    vector_x = -vector_x;
+    velocity.x = -velocity.x;
   else if( newDirection == "y")
-    vector_y = -vector_y;
+    velocity.y = -velocity.y;
   else{
-    vector_y = -vector_y;
-    vector_x = -vector_x;
+    velocity.y = -velocity.y;
+    velocity.x = -velocity.x;
   }
 }
 
-// Get coordinates
-float bullet::getX(){
-  return x;
-}
-float bullet::getY(){
-  return y;
-}
-
 // Bounce off wall
-void bullet::bounce( int newDirection){
+void bullet::Bounce( int newDirection){
   health--;
   incidenceDirection = newDirection;
 
   if( health <= 0)
-    destroy();
+    Destroy();
 }
 
 // Destroy
-void bullet::destroy(){
-  // Has it already died?
-  if( !pendingErase){
-    // Make sure health is 0
-    health = 0;
+void bullet::Destroy(){
+  // Make sure health is 0
+  health = 0;
 
-    // Make explosion
-    for( int i = 0; i < 100; i ++){
-      particle *newParticle;
-      if( incidenceDirection == BOTTOM){
-        newParticle = new particle( x, y, makecol( 255, random(0,255), 0), -5, 5,  0, 3, 1, CIRCLE, 10, EXPLODE);
-      }
-      else if( incidenceDirection == TOP){
-        newParticle = new particle( x, y, makecol( 255, random(0,255), 0), -5, 5, -3, 0, 1, CIRCLE, 10, EXPLODE);
-      }
-      else if( incidenceDirection == LEFT){
-        newParticle = new particle( x, y, makecol( 255, random(0,255), 0), -3, 0, -5, 5, 1, CIRCLE, 10, EXPLODE);
-      }
-      else{
-        newParticle = new particle( x, y, makecol( 255, random(0,255), 0),  0, 3, -5, 5, 1, CIRCLE, 10, EXPLODE);
-      }
-      worldPointer -> addParticle( newParticle);
+  // Make explosion
+  /*for( int i = 0; i < 100; i ++){
+    particle *newParticle;
+    if( incidenceDirection == BOTTOM){
+      newParticle = new particle(GetX(), GetY(), makecol( 255, random(0,255), 0), -5, 5,  0, 3, 1, CIRCLE, 10, EXPLODE);
     }
-
-    // Die
-    pendingErase = true;
-  }
-}
-
-// Return velocities
-float bullet::getXVelocity(){
-  return vector_x;
-}
-float bullet::getYVelocity(){
-  return vector_y;
+    else if( incidenceDirection == TOP){
+      newParticle = new particle(GetX(), GetY(), makecol( 255, random(0,255), 0), -5, 5, -3, 0, 1, CIRCLE, 10, EXPLODE);
+    }
+    else if( incidenceDirection == LEFT){
+      newParticle = new particle(GetX(), GetY(), makecol( 255, random(0,255), 0), -3, 0, -5, 5, 1, CIRCLE, 10, EXPLODE);
+    }
+    else{
+      newParticle = new particle(GetX(), GetY(), makecol( 255, random(0,255), 0),  0, 3, -5, 5, 1, CIRCLE, 10, EXPLODE);
+    }
+    //worldPointer -> addParticle(newParticle);
+  }*/
 }
 
 // Update bullets
-void bullet::update(){
-  if( health > 0){
+void bullet::Update() {
+  if(health > 0){
     // Move
-    x += vector_x;
-    y += vector_y;
+    position.x += velocity.x;
+    position.y += velocity.y;
 
     // Off screen
-    if( x < 0 || x > 10000 || y < 0 || y > 10000)
-      destroy();
+    if (GetX() < 0 || GetX() > 10000 || GetY() < 0 || GetY() > 10000)
+      Destroy();
   }
 }
 
 // Draw image
-void bullet::draw( BITMAP* tempImage){
+void bullet::Draw(BITMAP* buffer) {
   if( health > 0){
     //if( owner == 0){
-      rectfill( tempImage, x, y, x + 5, y + 5, makecol(0,0,0));
-      rectfill( tempImage, x + 1, y + 1, x + 4, y + 4, makecol(255,0,0));
-      rectfill( tempImage, x + 2, y + 2, x + 3, y + 3, makecol(0,255,0));
+      rectfill(buffer, GetX()    , GetY()    , GetX() + 5, GetY() + 5, makecol(0,0,0));
+      rectfill(buffer, GetX() + 1, GetY() + 1, GetX() + 4, GetY() + 4, makecol(255,0,0));
+      rectfill(buffer, GetX() + 2, GetY() + 2, GetX() + 3, GetY() + 3, makecol(0,255,0));
     /*}
     else{
       rectfill( tempImage, x, y, x + 5, y + 5, makecol(255,0,0));

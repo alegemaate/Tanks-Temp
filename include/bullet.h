@@ -1,9 +1,9 @@
 #ifndef BULLET_H
 #define BULLET_H
 
+#include "Entity.h"
 #include "tools.h"
 #include "particle.h"
-#include "world.h"
 
 #include <vector>
 
@@ -13,42 +13,25 @@
 #define RIGHT 3
 #define TANK 4
 
-class world;
 
-class bullet
-{
+class bullet : public Entity {
   public:
-    bullet( world *newWorld, float newX, float newY, float newAngle, float newSpeed, int newOwnerID, int newHealth, SAMPLE* newSound);
+    bullet(world *wrld, float x, float y, float angle, float speed, int ownerID, int health, SAMPLE* sound);
     ~bullet();
 
-    bool getErase();
-    void update();
-    void draw( BITMAP* tempImage);
+    virtual void Update() override;
+    virtual void Draw(BITMAP* buffer) override;
 
-    float getX();
-    float getY();
+    void Bounce( int newDirection);
+    void Destroy();
 
-    float getYVelocity();
-    float getXVelocity();
-
-    void bounce( int newDirection);
-    void destroy();
-
-    void reverseDirection( std::string newDirection);
+    void ReverseDirection( std::string newDirection);
   protected:
   private:
     int health;
     int incidenceDirection;
 
-    float x;
-    float y;
-    float vector_x;
-    float vector_y;
-
-    world *worldPointer;
-
     bool owner;
-    bool pendingErase;
 
     SAMPLE* shotSound;
 };

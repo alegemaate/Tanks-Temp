@@ -37,7 +37,6 @@
 		<Unit filename="include/barrier.h" />
 		<Unit filename="include/bullet.h" />
 		<Unit filename="include/button.h" />
-		<Unit filename="include/coordinate.h" />
 		<Unit filename="include/game.h" />
 		<Unit filename="include/globals.h" />
 		<Unit filename="include/init.h" />
@@ -59,7 +58,6 @@
 		<Unit filename="src/barrier.cpp" />
 		<Unit filename="src/bullet.cpp" />
 		<Unit filename="src/button.cpp" />
-		<Unit filename="src/coordinate.cpp" />
 		<Unit filename="src/game.cpp" />
 		<Unit filename="src/globals.cpp" />
 		<Unit filename="src/init.cpp" />

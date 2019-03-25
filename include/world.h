@@ -8,24 +8,17 @@
 #include <time.h>
 #include <vector>
 
-#include "coordinate.h"
-#include "tools.h"
-
-#include "barrier.h"
-#include "tank.h"
-#include "powerup.h"
-
-#include "globals.h"
-
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cmath>
 
-#include "particle.h"
+#include "vec2.h"
+#include "tools.h"
 
-class tank;
-class bullet;
-class powerup;
+#include "globals.h"
+
+#include "Entity.h"
+#include "particle.h"
 
 class world{
   public:
@@ -37,13 +30,13 @@ class world{
 
     void addParticle(particle *newParticle);
 
-    // Play 3d sample
-    void play_sample_2d(SAMPLE* spl, int vol, int pan, int freq, bool loop);
-
     void generate_map(int width, int height);
     void setup_tanks();
     void init_map(int width, int height);
     void place_barrier(int x, int y, int type);
+
+    void AddEntity(Entity *entity);
+    void RemoveEntity(Entity *entity);
 
     // Map stuff
     static const unsigned char max_map_width = 255;
@@ -65,17 +58,11 @@ class world{
     BITMAP *map_buffer;
     BITMAP *decal_buffer;
     BITMAP *background;
-    BITMAP *blocks[3];
-    BITMAP *powerup_images[4];
-    BITMAP *tank_images[10];
 
     // Objects
-    std::vector<Barrier*> barriers;
-    std::vector<tank*> enemy_tanks;
-    std::vector<tank*> player_tanks;
-    std::vector<powerup> powerups;
-    std::vector<coordinate> startLocations;
+    std::vector<Entity*> entities;
     std::vector<particle*> particles;
+    std::vector<vec2<int>> startLocations;
 
     int map_temp[max_map_width][max_map_height];
     int map_x, map_y;

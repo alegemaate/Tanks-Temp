@@ -3,57 +3,41 @@
 
 #include <allegro.h>
 
-#include "world.h"
-
 #include "particle.h"
 #include "bullet.h"
 #include "barrier.h"
 #include "powerup.h"
+#include "Entity.h"
 
 class bullet;
 class world;
+class Barrier;
 
-class tank{
+enum tank_types {
+  TANK_PLAYER,
+  TANK_FRIEND,
+  TANK_ENEMY
+};
+
+class tank : public Entity {
   public:
-    explicit tank(world *newWorld, int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
+    explicit tank(world *wrld, float x, float y, int type);
     virtual ~tank();
 
-    virtual bool isDead();
+    virtual void SetupTank(int type);
 
-    virtual std::vector<bullet>* getBullets();
+    virtual void Update() override;
+    virtual void Draw(BITMAP* buffer) override;
 
-    virtual void update();
-    virtual void draw( BITMAP* tempImage);
-    virtual void putDecal( BITMAP* tempImage);
+    virtual void putDecal(BITMAP* buffer);
 
-    virtual void giveHealth( int healthAmount);
+    virtual int getCenterX(){ return GetX() + GetWidth()/2; }
+    virtual int getCenterY(){ return GetY() + GetHeight()/2; }
 
-    virtual int getX(){ return x; }
-    virtual int getY(){ return y; }
-
-    virtual int getCenterX(){ return x + width/2; }
-    virtual int getCenterY(){ return y + height/2; }
-
-    virtual int getHeight(){ return width; }
-    virtual int getWidth(){ return height; }
-
-    virtual void set_map_dimensions( int newMapWidth, int newMapHeight){ map_width = newMapWidth; map_height = newMapHeight;}
-
-    virtual void checkCollision( std::vector<bullet> *newBullets);
-    virtual void checkCollision( std::vector<Barrier> *newBarriers);
-    virtual void checkCollision( std::vector<powerup> *newPowerups);
-
-    virtual void process_enemies( std::vector<tank*> *tempOtherTanks);
-
-    virtual void get_powerup( int powerup_id);
+    virtual void set_map_dimensions(int map_width, int map_height){ this -> map_width = map_width; this -> map_height = map_height;}
 
     static unsigned char num_bullet_bounces;
   protected:
-    float x;
-    float y;
-
-    int width, height;
-
     int hurt_timer;
     int health;
     int initialHealth;
@@ -71,48 +55,45 @@ class tank{
     float vector_y;
     float speed, max_speed;
 
-    bool dead;
-
     bool canMoveX;
     bool canMoveY;
 
     std::vector<bullet> bullets;
     std::vector<tank*> *otherTanks;
 
+    static BITMAP* images[8];
+
     BITMAP *image_base;
     BITMAP *image_hurt;
     BITMAP *image_top;
     BITMAP *image_treads;
 
-    SAMPLE *sample_shot;
-
-    world *worldPointer;
+    static SAMPLE *sample_shot;
 
     // Update
-    virtual void drive( float newRotation);
-    virtual void shoot( float newRotation, float newX, float newY);
+    virtual void drive(float rotation);
+    virtual void shoot(float rotation, float x, float y);
     virtual void update_bullets();
     virtual void update_timers();
-    virtual void explode( int newX, int newY, int newVelocity, int newAmount, int newLife);
+    virtual void explode(int x, int y, int newVelocity, int newAmount, int newLife);
 
     // Draw
-    virtual void drawBullets( BITMAP* tempImage);
-    virtual void drawTankBase( BITMAP* tempImage);
-    virtual void drawTankTurret( BITMAP* tempImage);
-    virtual void drawHealthBar( BITMAP* tempImage, int newX, int newY, int newWidth, int newHeight, int newBorderWidth);
+    virtual void drawTankBase(BITMAP* tempImage);
+    virtual void drawTankTurret(BITMAP* tempImage);
+    virtual void drawHealthBar(BITMAP* tempImage, int x, int y, int newWidth, int newHeight, int newBorderWidth);
 };
 
 class player_tank: public tank{
   public:
-    player_tank( world *newWorld, int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
-    virtual void update();
+    player_tank(world *wrld, int x, int y, int type);
+    virtual void Update() override;
   protected:
 };
 
 class ai_tank: public tank{
   public:
-    ai_tank( world *newWorld, int newX, int newY, int newHurtTime, int newHealth, int newFireSpeed, int newFireDelay, float newSpeed, BITMAP* newBaseImage, BITMAP* newTurretImage, BITMAP* newHurtImage, BITMAP* newTreadsImage);
-    virtual void update();
+    ai_tank(world *wrld, int x, int y, int type);
+    virtual void Update() override;
   private:
     float destination_x;
     float destination_y;
