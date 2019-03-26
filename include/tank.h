@@ -9,9 +9,7 @@
 #include "Powerup.h"
 #include "Entity.h"
 
-class bullet;
-class world;
-class Barrier;
+class World;
 
 enum tank_types {
   TANK_PLAYER,
@@ -21,15 +19,17 @@ enum tank_types {
 
 class tank : public Entity {
   public:
-    explicit tank(world *wrld, float x, float y, int type);
+    explicit tank(World *wrld, float x, float y, int type);
     virtual ~tank();
 
     virtual void SetupTank(int type);
 
     virtual void Update() override;
     virtual void Draw(BITMAP* buffer) override;
+    virtual void Collide(Entity* other) override;
 
     virtual void putDecal(BITMAP* buffer);
+    void get_powerup(int powerup_id);
 
     virtual int getCenterX(){ return GetX() + GetWidth()/2; }
     virtual int getCenterY(){ return GetY() + GetHeight()/2; }
@@ -38,12 +38,13 @@ class tank : public Entity {
 
     static unsigned char num_bullet_bounces;
   protected:
-    int hurt_timer;
     int health;
     int initialHealth;
     int fire_speed;
     int fire_delay_rate;
     int bullet_delay;
+
+    int team;
 
     int map_width, map_height;
 
@@ -72,8 +73,6 @@ class tank : public Entity {
     // Update
     virtual void drive(float rotation);
     virtual void shoot(float rotation, float x, float y);
-    virtual void update_bullets();
-    virtual void update_timers();
     virtual void explode(int x, int y, int newVelocity, int newAmount, int newLife);
 
     // Draw
@@ -84,14 +83,14 @@ class tank : public Entity {
 
 class player_tank: public tank{
   public:
-    player_tank(world *wrld, int x, int y, int type);
+    player_tank(World *wrld, int x, int y, int type);
     virtual void Update() override;
   protected:
 };
 
 class ai_tank: public tank{
   public:
-    ai_tank(world *wrld, int x, int y, int type);
+    ai_tank(World *wrld, int x, int y, int type);
     virtual void Update() override;
   private:
     float destination_x;

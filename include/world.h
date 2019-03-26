@@ -20,20 +20,19 @@
 #include "Entity.h"
 #include "Particle.h"
 
-class world {
+class World {
   public:
-    world();
-    virtual ~world();
+    World();
+    virtual ~World();
 
-    void update();
-    void draw(BITMAP *buffer);
+    void Update();
+    void Draw(BITMAP *buffer);
 
-    void addParticle(Particle *particle);
+    void AddParticle(Particle *particle);
 
-    void generate_map(int width, int height);
-    void setup_tanks();
-    void init_map(int width, int height);
-    void place_barrier(int x, int y, int type);
+    void GenerateMap(int width, int height);
+    void SetupTanks();
+    void InitializeMap(int width, int height);
 
     void AddEntity(Entity *entity);
     void RemoveEntity(Entity *entity);
@@ -63,6 +62,9 @@ class world {
     std::vector<Entity*> entities;
     std::vector<Particle*> particles;
     std::vector<vec2<int>> startLocations;
+
+    // Pointer to camera tank
+    Entity *camera_tank;
 
     int map_temp[max_map_width][max_map_height];
     int map_x, map_y;

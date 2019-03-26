@@ -7,6 +7,7 @@
 
 #include "StringFunctions.h"
 #include "ChatCommon.h"
+#include "World.h"
 
 void ChatServer::Open(uint16 nPort) {
   // Create client and server sockets
@@ -29,16 +30,15 @@ void ChatServer::Open(uint16 nPort) {
   cc.Printf( "Server listening on port %d\n", nPort );
 
   // Create world
-  game_world = new world();
+  game_world = new World();
 
   // Create map
-  game_world -> generate_map(world::map_width, world::map_height);
-
-  game_world -> setup_tanks();
+  game_world -> GenerateMap(World::map_width, World::map_height);
+  game_world -> SetupTanks();
 }
 
 
-world* ChatServer::GetWorld() {
+World* ChatServer::GetWorld() {
   if (this -> game_world)
     return this -> game_world;
   return nullptr;
@@ -58,7 +58,7 @@ void ChatServer::Run() {
   PollLocalUserInput();
 
   // Update world
-  game_world -> update();
+  game_world -> Update();
 }
 
 void ChatServer::Close() {

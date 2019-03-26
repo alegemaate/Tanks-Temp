@@ -1,6 +1,7 @@
 #include "menu.h"
 
 #include "tank.h"
+#include "World.h"
 
 // Initilizer
 menu::menu(){
@@ -46,21 +47,21 @@ void menu::update(){
 
   // Make teams
   if( enemies_up.clicked())
-    world::num_enemies ++;
+    World::num_enemies ++;
   if( enemies_down.clicked())
-    world::num_enemies --;
+    World::num_enemies --;
   if( friends_up.clicked())
-    world::num_friends ++;
+    World::num_friends ++;
   if( friends_down.clicked())
-    world::num_friends --;
+    World::num_friends --;
   if( width_up.clicked())
-    world::map_width ++;
+    World::map_width ++;
   if( width_down.clicked())
-    world::map_width --;
+    World::map_width --;
   if( height_up.clicked())
-    world::map_height ++;
+    World::map_height ++;
   if( height_down.clicked())
-    world::map_height --;
+    World::map_height --;
   if( bounce_up.clicked())
     tank::num_bullet_bounces ++;
   if( bounce_down.clicked())
@@ -89,26 +90,26 @@ void menu::draw(){
   draw_sprite( buffer, background, 0, 0);
 
   // Buttons
-  enemies_up.draw( buffer);
-  enemies_down.draw( buffer);
-  friends_up.draw( buffer);
-  friends_down.draw( buffer);
-  width_up.draw( buffer);
-  width_down.draw( buffer);
-  height_up.draw( buffer);
-  height_down.draw( buffer);
-  bounce_up.draw( buffer);
-  bounce_down.draw( buffer);
-  start.draw( buffer);
+  enemies_up.draw(buffer);
+  enemies_down.draw(buffer);
+  friends_up.draw(buffer);
+  friends_down.draw(buffer);
+  width_up.draw(buffer);
+  width_down.draw(buffer);
+  height_up.draw(buffer);
+  height_down.draw(buffer);
+  bounce_up.draw(buffer);
+  bounce_down.draw(buffer);
+  start.draw(buffer);
   host.draw(buffer);
   join.draw(buffer);
 
   // Player nums
-  textprintf_centre_ex( buffer, font, 109, 315, makecol( 0, 0, 0), -1, "%i", world::num_friends);
-  textprintf_centre_ex( buffer, font, 229, 315, makecol( 0, 0, 0), -1, "%i", world::num_enemies);
-  textprintf_centre_ex( buffer, font, 349, 315, makecol( 0, 0, 0), -1, "%i", world::map_width);
-  textprintf_centre_ex( buffer, font, 469, 315, makecol( 0, 0, 0), -1, "%i", world::map_height);
-  textprintf_centre_ex( buffer, font, 589, 315, makecol( 0, 0, 0), -1, "%i", tank::num_bullet_bounces);
+  textprintf_centre_ex(buffer, font, 109, 315, makecol( 0, 0, 0), -1, "%i", World::num_friends);
+  textprintf_centre_ex(buffer, font, 229, 315, makecol( 0, 0, 0), -1, "%i", World::num_enemies);
+  textprintf_centre_ex(buffer, font, 349, 315, makecol( 0, 0, 0), -1, "%i", World::map_width);
+  textprintf_centre_ex(buffer, font, 469, 315, makecol( 0, 0, 0), -1, "%i", World::map_height);
+  textprintf_centre_ex(buffer, font, 589, 315, makecol( 0, 0, 0), -1, "%i", tank::num_bullet_bounces);
 
   // Mouse
   rectfill( buffer, mouse_x, mouse_y, mouse_x + 4, mouse_y + 4, makecol( 255, 255, 255));

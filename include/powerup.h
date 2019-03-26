@@ -12,13 +12,13 @@ enum powerup_types {
 
 class Powerup : public Entity {
   public:
-    Powerup(world *wrld, int x, int y, int type);
+    Powerup(World *wrld, int x, int y, int type);
     virtual ~Powerup();
-
-    int getType(){ return type;}
 
     virtual void Update() override;
     virtual void Draw(BITMAP *buffer) override;
+
+    int GetType();
   protected:
 
   private:

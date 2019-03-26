@@ -6,9 +6,7 @@
 #include <steam/steamnetworkingsockets.h>
 #include <steam/isteamnetworkingutils.h>
 
-#include "world.h"
-
-class world;
+class World;
 
 class ChatServer : private ISteamNetworkingSocketsCallbacks {
   public:
@@ -18,7 +16,7 @@ class ChatServer : private ISteamNetworkingSocketsCallbacks {
 
     void Close();
 
-    world *GetWorld();
+    World *GetWorld();
 
   private:
 
@@ -47,7 +45,7 @@ class ChatServer : private ISteamNetworkingSocketsCallbacks {
     int id_index;
 
     // World
-    world *game_world;
+    World *game_world;
 
     void SendMap(SteamNetConnectionStatusChangedCallback_t *pInfo);
 };

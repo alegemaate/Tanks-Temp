@@ -1,4 +1,4 @@
-#include "world.h"
+#include "World.h"
 
 #include <algorithm>
 
@@ -6,32 +6,34 @@
 #include "tank.h"
 #include "Powerup.h"
 
-unsigned char world::map_width = 10;
-unsigned char world::map_height = 10;
+unsigned char World::map_width = 10;
+unsigned char World::map_height = 10;
 
-unsigned char world::num_enemies = 5;
-unsigned char world::num_friends = 5;
+unsigned char World::num_enemies = 5;
+unsigned char World::num_friends = 5;
 
-world::world() {
+World::World() {
   // Create buffer
-  buffer = create_bitmap( SCREEN_W, SCREEN_H);
+  buffer = create_bitmap(SCREEN_W, SCREEN_H);
 
   // Load images
-  background = load_bitmap_ex( "images/background.png");
+  background = load_bitmap_ex("images/background.png");
 
   // Init map
-  init_map(map_width, map_height);
+  InitializeMap(map_width, map_height);
+
+  // Nullify camera tank
+  camera_tank = nullptr;
 }
 
-world::~world() {
+World::~World() {
   destroy_bitmap(decal_buffer);
   destroy_bitmap(map_buffer);
-
   destroy_bitmap(background);
 }
 
 
-void world::generate_map(int width, int height) {
+void World::GenerateMap(int width, int height) {
   // Make a map
   for( unsigned char pass = 1; pass < 7; pass++){
     for( unsigned char i = 0; i < width; i++){
@@ -74,7 +76,7 @@ void world::generate_map(int width, int height) {
             startLocations.push_back(vec2<int>(i * 40, t * 40));
           }
           else {
-            place_barrier(i * 40, t * 40, map_temp[i][t] - 1);
+            AddEntity(new Barrier(this, i * 40, t * 40, map_temp[i][t] - 1));
           }
         }
       }
@@ -82,15 +84,17 @@ void world::generate_map(int width, int height) {
   }
 }
 
-void world::setup_tanks() {
+void World::SetupTanks() {
   // Player
   int randomStartLocation = random(0, startLocations.size() - 1);
   player_tank *newPlayer = new player_tank(this, startLocations.at(randomStartLocation).x, startLocations.at( randomStartLocation).y, TANK_PLAYER);
   newPlayer -> set_map_dimensions(map_width * 40, map_height * 40);
   AddEntity(newPlayer);
 
+  camera_tank = newPlayer;
+
   // Enemies
-  for( unsigned char i = 0; i < num_enemies; i ++){
+  /*for( unsigned char i = 0; i < num_enemies; i ++){
     int randomStartLocation = random( 0, startLocations.size() - 1);
     ai_tank *newPlayer = new ai_tank(this, startLocations.at(randomStartLocation).x, startLocations.at( randomStartLocation).y, TANK_ENEMY);
     newPlayer -> set_map_dimensions(map_width * 40, map_height * 40);
@@ -103,61 +107,55 @@ void world::setup_tanks() {
     ai_tank *newPlayer = new ai_tank(this, startLocations.at(randomStartLocation).x, startLocations.at( randomStartLocation).y, TANK_FRIEND);
     newPlayer -> set_map_dimensions(map_width * 40, map_height * 40);
     AddEntity(newPlayer);
-  }
+  }*/
 }
 
-void world::init_map(int width, int height) {
-  decal_buffer = create_bitmap( width * 40, height * 40);
-  clear_to_color( decal_buffer, 0xFF00FF);
+void World::InitializeMap(int width, int height) {
+  decal_buffer = create_bitmap(width * 40, height * 40);
+  clear_to_color(decal_buffer, 0xFF00FF);
 
-  map_buffer = create_bitmap( width * 40, height * 40);
-  clear_to_color( map_buffer, 0x000000);
+  map_buffer = create_bitmap(width * 40, height * 40);
+  clear_to_color(map_buffer, 0x000000);
 
   map_x = 0;
   map_y = 0;
 }
 
-void world::place_barrier(int x, int y, int type) {
-  if (type < BARRIER_INDESTRUCTABLE || type > BARRIER_CRATE)
-    return;
-
-  AddEntity(new Barrier(this, x, y, type));
-}
-
-void world::AddEntity(Entity *entity) {
+void World::AddEntity(Entity *entity) {
   if (entity)
     entities.push_back(entity);
 }
 
-void world::RemoveEntity(Entity *entity) {
+void World::RemoveEntity(Entity *entity) {
   if (entity)
     entities.erase(std::remove(entities.begin(), entities.end(), entity), entities.end());
 }
 
 // Adds particle to global particle handler
-void world::addParticle(Particle *particle) {
-  particles.push_back(particle);
+void World::AddParticle(Particle *particle) {
+  if (particle)
+    particles.push_back(particle);
 }
 
 // Updates world
-void world::update() {
+void World::Update() {
   // Update entities
-  for(unsigned int i = 0; i < entities.size(); i++) {
+  for (unsigned int i = 0; i < entities.size(); i++) {
     entities.at(i) -> Update();
   }
 
   // Update particles
-  for(unsigned int i = 0; i < particles.size(); i++) {
+  for (unsigned int i = 0; i < particles.size(); i++) {
     particles.at(i) -> Update();
 
     //Check death of particles
-    if(particles.at(i) -> IsDead())
+    if (particles.at(i) -> IsDead())
       particles.erase(particles.begin() + i);
   }
 
   // Do collisions
-  for(unsigned int i = 0; i < entities.size(); i++) {
-    for(unsigned int t = 0; t < entities.size(); t++) {
+  for (unsigned int i = 0; i < entities.size(); i++) {
+    for (unsigned int t = 0; t < entities.size(); t++) {
       if (i < entities.size() && t < entities.size()) {
         if (collisionAny(entities.at(i) -> GetX(), entities.at(i) -> GetX() + entities.at(i) -> GetWidth() + entities.at(i) -> GetVelocity().x,
                          entities.at(t) -> GetX(), entities.at(t) -> GetX() + entities.at(t) -> GetWidth() + entities.at(t) -> GetVelocity().x,
@@ -175,14 +173,14 @@ void world::update() {
   }*/
 
   // Scroll map
-  /*if( player_tanks.size() > 0){
-    map_x = player_tanks.at(0) -> getCenterX() - buffer -> w / 2;
-    map_y = player_tanks.at(0) -> getCenterY() - buffer -> h / 2;
-  }*/
+  if (camera_tank) {
+    map_x = camera_tank -> GetPositionCenter().x - buffer -> w / 2;
+    map_y = camera_tank -> GetPositionCenter().y - buffer -> h / 2;
+  }
 }
 
 // Draw world
-void world::draw(BITMAP *buffer) {
+void World::Draw(BITMAP *buffer) {
   // Blank map map_buffer
   rectfill(map_buffer, 0, 0, map_buffer -> w, map_buffer -> h, makecol(0, 88, 0));
 

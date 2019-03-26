@@ -1,6 +1,6 @@
 #include "tank.h"
 
-#include "world.h"
+#include "World.h"
 
 unsigned char tank::num_bullet_bounces = 0;
 BITMAP* tank::images[8] = { nullptr };
@@ -9,10 +9,9 @@ SAMPLE* tank::sample_shot = nullptr;
 /*****************
   General Tank
 *****************/
-tank::tank(world *wrld, float x, float y, int type) :
+tank::tank(World *wrld, float x, float y, int type) :
   Entity(wrld, x, y)
 {
-  hurt_timer = 3;
   health = 100;
   initialHealth = health;
   fire_speed = 4;
@@ -39,6 +38,9 @@ tank::~tank(){
 }
 
 void tank::SetupTank(int type) {
+  // Set team
+  team = type;
+
   // Load sound
   if (sample_shot == nullptr) {
     sample_shot = load_sample_ex( "sfx/fire.wav");
@@ -91,7 +93,7 @@ void tank::SetupTank(int type) {
 // Explode
 void tank::explode( int newX, int newY, int newVelocity, int newAmount, int newLife){
   for( int i = 0; i < newAmount; i ++){
-    wrld -> addParticle(new Particle(newX, newY, makecol(255,random(0,255),0), -newVelocity, newVelocity, -newVelocity, newVelocity, 1, CIRCLE, newLife, EXPLODE));
+    wrld -> AddParticle(new Particle(newX, newY, makecol(255,random(0,255),0), -newVelocity, newVelocity, -newVelocity, newVelocity, 1, CIRCLE, newLife, EXPLODE));
   }
 }
 
@@ -110,23 +112,11 @@ void tank::drive(float newRotation){
   }
 }
 
-// Update timers
-void tank::update_timers(){
-  // Change timers
-  hurt_timer--;
-  bullet_delay++;
-}
-
-// Update bullets
-void tank::update_bullets(){
-
-}
-
 // Shoot
 void tank::shoot(float rotation, float x, float y) {
   if( bullet_delay > fire_delay_rate ){
     bool magicMODE = key[KEY_LSHIFT];
-    wrld -> AddEntity(new Bullet(wrld, x, y, rotation, fire_speed, true, 1 + num_bullet_bounces + (magicMODE * 10), sample_shot));
+    wrld -> AddEntity(new Bullet(wrld, x, y, rotation, fire_speed, team, 1 + num_bullet_bounces + (magicMODE * 10), sample_shot));
     bullet_delay = 0;
   }
 }
@@ -184,32 +174,50 @@ void tank::putDecal( BITMAP* tempImage){
     drawTankBase( tempImage);*/
 }
 
+
+// Collide
+void tank::Collide(Entity *other) {
+  // Powerup collide
+  if (Powerup* pPowerup = dynamic_cast<Powerup*>(other)) {
+    get_powerup(pPowerup -> GetType());
+    wrld -> RemoveEntity(other);
+  }
+
+  // Bullet collide
+  if (Bullet* pBullet = dynamic_cast<Bullet*>(other)) {
+    if (pBullet -> GetOwner() != team) {
+      health -= 5;
+      wrld -> RemoveEntity(other);
+    }
+  }
+}
+
 // Powerups
-/*void tank::get_powerup( int powerup_id){
-  if( powerup_id == 0){
+void tank::get_powerup(int powerup_id){
+  if (powerup_id == 0) {
     health += 10;
-    if( health > 100)
+    if(health > 100)
       health = 100;
   }
-  else if( powerup_id == 1){
+  else if (powerup_id == 1) {
     max_speed += 0.5;
   }
-  else if( powerup_id == 2){
+  else if (powerup_id == 2) {
     fire_speed += 1;
   }
-  else if( powerup_id == 3){
+  else if (powerup_id == 3) {
     fire_delay_rate -= 1;
-    if( fire_delay_rate < 0)
+    if (fire_delay_rate < 0)
       fire_delay_rate = 0;
   }
-}*/
+}
 
 
 /*****************
    Player Tank
 *****************/
 // Init
-player_tank::player_tank(world *wrld, int x, int y, int type) :
+player_tank::player_tank(World *wrld, int x, int y, int type) :
       tank(wrld, x, y, type){
 
 }
@@ -265,17 +273,13 @@ void player_tank::Update(){
     else
       speed = 0;
   }
-
-  // Update bullets
-  update_timers();
-  update_bullets();
 }
 
 /*****************
     AI Tank
 *****************/
 // Init
-ai_tank::ai_tank(world *wrld, int x, int y, int type) :
+ai_tank::ai_tank(World *wrld, int x, int y, int type) :
   tank(wrld, x, y, type){
 
   destination_x = x;
@@ -342,10 +346,6 @@ void ai_tank::Update(){
   else{
     speed = 0;
   }
-
-  // Update bullets
-  update_timers();
-  update_bullets();
 }
 
 // Ai point choosing

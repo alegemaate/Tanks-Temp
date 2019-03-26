@@ -11,17 +11,18 @@
 #include "vec2.h"
 #include <allegro.h>
 
-class world;
+class World;
 
 class Entity {
   public:
-    Entity(world *wrld, float x, float y);
+    Entity(World *wrld, float x, float y);
     virtual ~Entity();
 
     int GetID();
     float GetX();
     float GetY();
     vec2<float> GetPosition();
+    vec2<float> GetPositionCenter();
 
     int GetWidth();
     int GetHeight();
@@ -48,7 +49,7 @@ class Entity {
     vec2<float> velocity;
 
     // Pointer to game world
-    world *wrld;
+    World *wrld;
 
   private:
     // Unique entity id

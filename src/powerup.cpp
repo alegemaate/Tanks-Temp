@@ -4,7 +4,7 @@
 
 BITMAP* Powerup::images[4] = { nullptr };
 
-Powerup::Powerup(world *wrld, int x, int y, int type) :
+Powerup::Powerup(World *wrld, int x, int y, int type) :
   Entity(wrld, x, y) {
 
   this -> image = nullptr;
@@ -62,4 +62,8 @@ void Powerup::Update() {
 void Powerup::Draw(BITMAP *buffer) {
   if (image)
     draw_sprite(buffer, image, GetX(), GetY());
+}
+
+int Powerup::GetType(){
+  return type;
 }

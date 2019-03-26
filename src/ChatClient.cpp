@@ -8,6 +8,7 @@
 
 #include "StringFunctions.h"
 #include "ChatCommon.h"
+#include "World.h"
 
 void ChatClient::Open( const SteamNetworkingIPAddr &serverAddr ) {
   // Create client and server sockets
@@ -25,10 +26,10 @@ void ChatClient::Open( const SteamNetworkingIPAddr &serverAddr ) {
     cc.FatalError( "Failed to create connection" );
 
   // Create world
-  game_world = new world();
+  game_world = new World();
 }
 
-world* ChatClient::GetWorld() {
+World* ChatClient::GetWorld() {
   if (this -> game_world)
     return this -> game_world;
   return nullptr;
@@ -40,7 +41,7 @@ void ChatClient::Run() {
   PollLocalUserInput();
 
   // Update world
-  game_world -> update();
+  game_world -> Update();
 }
 
 void ChatClient::Close() {
@@ -68,12 +69,12 @@ void ChatClient::PollIncomingMessages() {
     }
     // Barrier
     else if(message.size() == 3 && message.at(0).compare("B") == 0) {
-      game_world -> place_barrier(std::stoi(message.at(1)), std::stoi(message.at(2)), 1);
+      //game_world -> place_barrier(std::stoi(message.at(1)), std::stoi(message.at(2)), 1);
       std::cout << "Placed barrier at " << message.at(1) << " , " << message.at(2) << std::endl;
     }
     // Barrier
     else if(message.size() == 3 && message.at(0).compare("E") == 0) {
-      game_world -> place_barrier(std::stoi(message.at(1)), std::stoi(message.at(2)), 1);
+      //game_world -> place_barrier(std::stoi(message.at(1)), std::stoi(message.at(2)), 1);
       std::cout << "Placed enemy tank at " << message.at(1) << " , " << message.at(2) << std::endl;
     }
 

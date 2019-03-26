@@ -8,13 +8,9 @@
 
 #include <allegro.h>
 
-#include "globals.h"
-#include "world.h"
-
 #include "state.h"
 
-class game : public state
-{
+class game : public state {
   public:
     game();
     ~game();

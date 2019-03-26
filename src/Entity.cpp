@@ -2,7 +2,7 @@
 
 int Entity::free_id = 0;
 
-Entity::Entity(world *wrld, float x, float y) {
+Entity::Entity(World *wrld, float x, float y) {
   this -> wrld = wrld;
   this -> position = vec2<float>(x, y);
   this -> dimensions = vec2<int>(0, 0);
@@ -28,6 +28,10 @@ float Entity::GetY() {
 
 vec2<float> Entity::GetPosition() {
   return position;
+}
+
+vec2<float> Entity::GetPositionCenter() {
+  return vec2<float>(position.x + dimensions.x / 2, position.y + dimensions.y / 2);
 }
 
 int Entity::GetWidth() {

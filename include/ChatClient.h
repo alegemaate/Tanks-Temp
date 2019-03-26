@@ -4,9 +4,7 @@
 #include <steam/steamnetworkingsockets.h>
 #include <steam/isteamnetworkingutils.h>
 
-#include "world.h"
-
-class world;
+class World;
 
 class ChatClient : private ISteamNetworkingSocketsCallbacks {
   public:
@@ -16,7 +14,7 @@ class ChatClient : private ISteamNetworkingSocketsCallbacks {
 
     void Close();
 
-    world *GetWorld();
+    World *GetWorld();
 
   private:
 
@@ -32,7 +30,7 @@ class ChatClient : private ISteamNetworkingSocketsCallbacks {
     virtual void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t *pInfo) override;
 
     // World
-    world *game_world;
+    World *game_world;
 
 };
 

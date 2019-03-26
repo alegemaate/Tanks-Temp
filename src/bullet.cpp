@@ -1,20 +1,22 @@
 #include "Bullet.h"
 
-#include "world.h"
+#include "tools.h"
 
+#include "World.h"
 #include "Particle.h"
 #include "Barrier.h"
 
 // Init
-Bullet::Bullet(world *wrld, float x, float y, float angle, float speed, int ownerID, int health, SAMPLE* sound) :
+Bullet::Bullet(World *wrld, float x, float y, float angle, float speed, int ownerID, int health, SAMPLE* sound) :
   Entity(wrld, x, y) {
   SetVelocity(vec2<float>(-speed*cos(angle), -speed*sin(angle)));
 
   this -> dimensions = vec2<int>(5, 5);
   this -> owner = ownerID;
   this -> shotSound = sound;
-  play_sample(shotSound, 255, 127, random(800,1200), 0);
   this -> health = health;
+
+  play_sample(shotSound, 255, 127, random(800,1200), 0);
 }
 
 Bullet::~Bullet(){
@@ -53,18 +55,23 @@ void Bullet::Collide(Entity *other) {
 
 // Draw image
 void Bullet::Draw(BITMAP* buffer) {
-  if (health > 0){
-    //if( owner == 0){
+  if (health > 0) {
+    if(owner == 0) {
       rectfill(buffer, GetX()    , GetY()    , GetX() + 5, GetY() + 5, makecol(0,0,0));
       rectfill(buffer, GetX() + 1, GetY() + 1, GetX() + 4, GetY() + 4, makecol(255,0,0));
       rectfill(buffer, GetX() + 2, GetY() + 2, GetX() + 3, GetY() + 3, makecol(0,255,0));
-    /*}
-    else{
-      rectfill( tempImage, x, y, x + 5, y + 5, makecol(255,0,0));
-      rectfill( tempImage, x + 1, y + 1, x + 4, y + 4, makecol(255,0,0));
-      rectfill( tempImage, x + 2, y + 2, x + 3, y + 3, makecol(255,0,0));
-    }*/
+    }
+    else {
+      rectfill(buffer, GetX()    , GetY()    , GetX() + 5, GetY() + 5, makecol(255,0,0));
+      rectfill(buffer, GetX() + 1, GetY() + 1, GetX() + 4, GetY() + 4, makecol(255,0,0));
+      rectfill(buffer, GetX() + 2, GetY() + 2, GetX() + 3, GetY() + 3, makecol(255,0,0));
+    }
   }
+}
+
+// Get owner
+int Bullet::GetOwner() {
+  return owner;
 }
 
 // Bounce off wall
@@ -103,7 +110,7 @@ void Bullet::Destroy(){
     else {
       particle = new Particle(GetX(), GetY(), makecol(255, random(0,255), 0),  0, 3, -5, 5, 1, CIRCLE, 10, EXPLODE);
     }
-    wrld -> addParticle(particle);
+    wrld -> AddParticle(particle);
   }
 
   wrld -> RemoveEntity(this);

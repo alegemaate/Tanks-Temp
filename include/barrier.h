@@ -5,9 +5,6 @@
 
 #include "Entity.h"
 
-class world;
-class Entity;
-
 enum barrier_types {
   BARRIER_INDESTRUCTABLE,
   BARRIER_STONE,
@@ -16,7 +13,7 @@ enum barrier_types {
 
 class Barrier : public Entity {
   public:
-    Barrier(world *wrld, float x, float y, int type);
+    Barrier(World *wrld, float x, float y, int type);
     ~Barrier();
 
     virtual void Update() override;
@@ -27,7 +24,7 @@ class Barrier : public Entity {
     void SetType(int type);
     void SetHealth(int health);
     void SetIndestructable(bool indestructable);
-    void Destroy(int x, int y, int velocity, int amount, int life);
+    void Destroy();
 
     int health;
     bool indestructable;

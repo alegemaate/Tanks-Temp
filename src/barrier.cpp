@@ -1,15 +1,13 @@
 #include "Barrier.h"
 
-#include "tools.h"
-#include "world.h"
-
+#include "World.h"
 #include "Bullet.h"
 #include "Powerup.h"
 
 BITMAP* Barrier::images[3] = { nullptr };
 SAMPLE* Barrier::sample_explode = nullptr;
 
-Barrier::Barrier(world *wrld, float x, float y, int type) :
+Barrier::Barrier(World *wrld, float x, float y, int type) :
   Entity(wrld, x, y) {
 
   this -> indestructable = false;
@@ -73,13 +71,8 @@ void Barrier::SetIndestructable(bool indestructable){
 // Update
 void Barrier::Update() {
   if (health <= 0 && !indestructable) {
-    // Drop powerup
-    if (type == BARRIER_CRATE) {
-      wrld -> AddEntity(new Powerup(wrld, GetX(), GetY(), random(0, 4)));
-    }
-
     // Explode
-    Destroy(GetX() + GetWidth() / 2, GetY() + GetHeight() / 2, 6, 100, 30);
+    Destroy();
 
     // Remove
     wrld -> RemoveEntity(this);
@@ -102,24 +95,25 @@ void Barrier::Draw(BITMAP* buffer) {
 }
 
 // Destroy
-void Barrier::Destroy(int x, int y, int velocity, int amount, int life) {
+void Barrier::Destroy() {
+  // Drop powerup
+  if (type == BARRIER_CRATE) {
+    wrld -> AddEntity(new Powerup(wrld, GetX(), GetY(), random(0, 3)));
+  }
+
   // Explode
   play_sample(sample_explode, 255, 127, 1000, 0);
 
-  for(int i = 0; i < amount; i++) {
-    int new_colour = 0;
+  for(int i = 0; i < 100; i++) {
+    // position of colour
+    int random_y = random(0, GetHeight());
+    int random_x = random(0, GetWidth());
 
-    // Make sure not transparent ( they show as white)
-    do {
-      // position of colour
-      int random_y = random(0, GetHeight());
-      int random_x = random(0, GetWidth());
-
-      // New colour
-      new_colour = getpixel(image, random_y, random_x);
-    } while(getr(new_colour) == 255 && getg(new_colour) == 255 && getb(new_colour) == 255);
+    // New colour
+    int new_colour = getpixel(image, random_y, random_x);
 
     // Make particle
-    wrld -> addParticle(new Particle(x, y, new_colour, -velocity, velocity, -velocity, velocity, 1, CIRCLE, life, EXPLODE));
+    if (!(getr(new_colour) == 255 && getg(new_colour) == 255 && getb(new_colour) == 255))
+      wrld -> AddParticle(new Particle(GetX(), GetY(), new_colour, -6, 6, -6, 6, 1, CIRCLE, 30, EXPLODE));
   }
 }

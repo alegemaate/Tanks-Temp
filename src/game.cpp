@@ -1,5 +1,8 @@
 #include "game.h"
 
+#include "globals.h"
+#include "World.h"
+
 // Init state (and game)
 game::game(){
   // Multiplayer
@@ -54,10 +57,10 @@ void game::update(){
 void game::draw(){
   // Draw world
   if (bClient && client.GetWorld()) {
-    client.GetWorld() -> draw(buffer);
+    client.GetWorld() -> Draw(buffer);
   }
   else if (bServer && server.GetWorld()) {
-    server.GetWorld() -> draw(buffer);
+    server.GetWorld() -> Draw(buffer);
   }
 
   // Text

@@ -38,6 +38,7 @@
 		<Unit filename="include/Particle.h" />
 		<Unit filename="include/Powerup.h" />
 		<Unit filename="include/StringFunctions.h" />
+		<Unit filename="include/Timer.h" />
 		<Unit filename="include/button.h" />
 		<Unit filename="include/game.h" />
 		<Unit filename="include/globals.h" />
@@ -59,6 +60,7 @@
 		<Unit filename="src/Particle.cpp" />
 		<Unit filename="src/Powerup.cpp" />
 		<Unit filename="src/StringFunctions.cpp" />
+		<Unit filename="src/Timer.cpp" />
 		<Unit filename="src/button.cpp" />
 		<Unit filename="src/game.cpp" />
 		<Unit filename="src/globals.cpp" />

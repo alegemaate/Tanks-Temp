@@ -16,8 +16,7 @@
 #include "button.h"
 #include "globals.h"
 
-class menu : public state
-{
+class menu : public state {
   public:
     menu();
     ~menu(){};
