@@ -8,6 +8,7 @@
 #include "Barrier.h"
 #include "Powerup.h"
 #include "Entity.h"
+#include "Timer.h"
 
 class World;
 
@@ -17,49 +18,58 @@ enum tank_types {
   TANK_ENEMY
 };
 
+const float RAD_TO_FIX = 40.5845104792;
+
 class tank : public Entity {
   public:
     explicit tank(World *wrld, float x, float y, int type);
     virtual ~tank();
 
-    virtual void SetupTank(int type);
+    void SetupTank(int type);
 
     virtual void Update() override;
     virtual void Draw(BITMAP* buffer) override;
     virtual void Collide(Entity* other) override;
 
-    virtual void putDecal(BITMAP* buffer);
-    void get_powerup(int powerup_id);
+    void DrawDecal();
+    void PickupPowerup(int powerup_id);
 
-    virtual int getCenterX(){ return GetX() + GetWidth()/2; }
-    virtual int getCenterY(){ return GetY() + GetHeight()/2; }
+    int GetCenterX(){ return GetX() + GetWidth()/2; }
+    int GetCenterY(){ return GetY() + GetHeight()/2; }
 
-    virtual void set_map_dimensions(int map_width, int map_height){ this -> map_width = map_width; this -> map_height = map_height;}
+    void SetMapDimensions(int width, int height){ map_dimensions = vec2<int>(width, height); }
 
     static unsigned char num_bullet_bounces;
+
   protected:
+
+    // Update
+    virtual void Drive(float rotation);
+    virtual void Shoot(float rotation, float x, float y);
+    virtual void Destroy(int velocity, int amount, int life);
+
+    // Draw
+    virtual void DrawBase(BITMAP* buffer);
+    virtual void DrawTurret(BITMAP* buffer);
+    virtual void DrawHealthBar(BITMAP* buffer, int x, int y, int width, int height, int border_width);
+
     int health;
-    int initialHealth;
+    int max_health;
     int fire_speed;
-    int fire_delay_rate;
-    int bullet_delay;
+
+    Timer fire_timer;
+    double fire_delay;
 
     int team;
 
-    int map_width, map_height;
+    vec2<int> map_dimensions;
 
-    float rotation_radians_body;
-    float rotation_allegro_body;
-    float rotation_radians_turret;
-    float rotation_allegro_turret;
-    float vector_x;
-    float vector_y;
-    float speed, max_speed;
+    float rotation_body;
+    float rotation_turret;
+    float total_velocity, max_velocity;
 
     bool canMoveX;
     bool canMoveY;
-
-    std::vector<tank*> *otherTanks;
 
     static BITMAP* images[8];
 
@@ -69,16 +79,6 @@ class tank : public Entity {
     BITMAP *image_treads;
 
     static SAMPLE *sample_shot;
-
-    // Update
-    virtual void drive(float rotation);
-    virtual void shoot(float rotation, float x, float y);
-    virtual void explode(int x, int y, int newVelocity, int newAmount, int newLife);
-
-    // Draw
-    virtual void drawTankBase(BITMAP* tempImage);
-    virtual void drawTankTurret(BITMAP* tempImage);
-    virtual void drawHealthBar(BITMAP* tempImage, int x, int y, int newWidth, int newHeight, int newBorderWidth);
 };
 
 class player_tank: public tank{

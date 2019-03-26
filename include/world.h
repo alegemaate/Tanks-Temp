@@ -37,6 +37,8 @@ class World {
     void AddEntity(Entity *entity);
     void RemoveEntity(Entity *entity);
 
+    BITMAP* GetDecalBuffer();
+
     // Map stuff
     static const unsigned char max_map_width = 255;
     static const unsigned char max_map_height = 255;

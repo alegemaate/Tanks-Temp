@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Entity.h"
+#include <iostream>
 
 enum barrier_types {
   BARRIER_INDESTRUCTABLE,

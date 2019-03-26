@@ -13,7 +13,10 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
+#include "vec2.h"
+
 //Collision
+extern bool collision(vec2<float> p_1, vec2<int> d_1, vec2<float> p_2, vec2<int> d_2);
 extern bool collisionAny(int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int yMax1, int yMin2, int yMax2);
 extern bool collisionBottom(int yMin1, int yMax1, int yMin2, int yMax2);
 extern bool collisionTop(int yMin1, int yMax1, int yMin2, int yMax2);

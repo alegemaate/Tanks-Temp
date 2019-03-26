@@ -1,6 +1,16 @@
-#include "../include/tools.h"
+#include "tools.h"
 
 //Collision
+bool collision(vec2<float> p_1, vec2<int> d_1, vec2<float> p_2, vec2<int> d_2) {
+  if (p_1.x < p_2.x + d_2.x &&
+      p_1.x + d_1.x > p_2.x &&
+      p_1.y < p_2.y + d_2.y &&
+      p_1.y + d_1.y > p_2.y){
+    return true;
+  }
+  return false;
+}
+
 bool collisionAny(int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int yMax1, int yMin2, int yMax2){
   if (xMin1 < xMax2 && yMin1 < yMax2 && xMin2 < xMax1 && yMin2 < yMax1){
     return true;

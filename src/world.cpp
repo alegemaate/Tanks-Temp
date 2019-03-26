@@ -88,7 +88,7 @@ void World::SetupTanks() {
   // Player
   int randomStartLocation = random(0, startLocations.size() - 1);
   player_tank *newPlayer = new player_tank(this, startLocations.at(randomStartLocation).x, startLocations.at( randomStartLocation).y, TANK_PLAYER);
-  newPlayer -> set_map_dimensions(map_width * 40, map_height * 40);
+  newPlayer -> SetMapDimensions(map_width * 40, map_height * 40);
   AddEntity(newPlayer);
 
   camera_tank = newPlayer;
@@ -137,6 +137,11 @@ void World::AddParticle(Particle *particle) {
     particles.push_back(particle);
 }
 
+// Get decal buffer
+BITMAP* World::GetDecalBuffer() {
+  return decal_buffer;
+}
+
 // Updates world
 void World::Update() {
   // Update entities
@@ -157,10 +162,11 @@ void World::Update() {
   for (unsigned int i = 0; i < entities.size(); i++) {
     for (unsigned int t = 0; t < entities.size(); t++) {
       if (i < entities.size() && t < entities.size()) {
-        if (collisionAny(entities.at(i) -> GetX(), entities.at(i) -> GetX() + entities.at(i) -> GetWidth() + entities.at(i) -> GetVelocity().x,
-                         entities.at(t) -> GetX(), entities.at(t) -> GetX() + entities.at(t) -> GetWidth() + entities.at(t) -> GetVelocity().x,
-                         entities.at(i) -> GetY(), entities.at(i) -> GetY() + entities.at(i) -> GetHeight() + entities.at(i) -> GetVelocity().y,
-                         entities.at(t) -> GetY(), entities.at(t) -> GetY() + entities.at(t) -> GetHeight() + entities.at(t) -> GetVelocity().y)) {
+        if (entities.at(i) != entities.at(t) &&
+            collision(entities.at(i) -> GetPosition(),
+                      entities.at(i) -> GetDimensions(),
+                      entities.at(t) -> GetPosition(),
+                      entities.at(t) -> GetDimensions())) {
           entities.at(i) -> Collide(entities.at(t));
         }
       }
@@ -198,6 +204,15 @@ void World::Draw(BITMAP *buffer) {
   // Draw particles
   for(unsigned int i = 0; i < particles.size(); i++) {
     particles.at(i) -> Draw(map_buffer);
+  }
+
+  // Draw collision boxes
+  for (unsigned int i = 0; i < entities.size(); i++) {
+    rect(map_buffer, entities.at(i) -> GetX(),
+                     entities.at(i) -> GetY(),
+                     entities.at(i) -> GetX() + entities.at(i) -> GetWidth(),
+                     entities.at(i) -> GetY() + entities.at(i) -> GetHeight(),
+                     makecol(255,0,0));
   }
 
   // Map to buffer
