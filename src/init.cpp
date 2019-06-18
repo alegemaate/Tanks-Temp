@@ -2,6 +2,6 @@
 
 // Init state (and game)
 init::init(){
-  // Goto menu
-  set_next_state( STATE_MENU);
+  // Goto game
+  set_next_state(STATE_MENU);
 }
