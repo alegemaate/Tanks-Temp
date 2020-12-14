@@ -1,21 +1,17 @@
 #include "powerup.h"
 
-powerup::powerup() : powerup( 0, 0, 0, nullptr){
+powerup::powerup() : powerup(0, 0, 0, nullptr) {}
 
+powerup::powerup(int x, int y, int type, BITMAP* image) {
+  this->x = x;
+  this->y = y;
+  this->type = type;
+  this->image = image;
+  this->dead = false;
 }
 
-powerup::powerup( int x, int y, int type, BITMAP *image){
-  this -> x = x;
-  this -> y = y;
-  this -> type = type;
-  this -> image = image;
-  this -> dead = false;
-}
+powerup::~powerup() {}
 
-powerup::~powerup(){
-
-}
-
-void powerup::draw( BITMAP *tempBitmap){
-  draw_sprite( tempBitmap, image, x, y);
+void powerup::draw(BITMAP* tempBitmap) {
+  draw_sprite(tempBitmap, image, x, y);
 }

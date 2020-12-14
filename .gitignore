@@ -1,9 +1,54 @@
-*.o
-*.exe
-Tanks.depend
-*.exe
-*.o
-*.o
-build/Tanks.exe
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Codeblocks files
+*.layout
 *.depend
-Tanks.layout
+
+# =========================
+# Operating System Files
+# =========================
+
+# OSX
+# =========================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must ends with two \r.
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+*.o
+*.res
+*.dll
+*.exe
+build/RobotFlier
+CppCheckResults.xml
+scores.dat
+build/screenshots
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+Makefile

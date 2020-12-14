@@ -1,9 +1,9 @@
 #include "coordinate.h"
 
-coordinate::coordinate(){
-  //ctor
+coordinate::coordinate() {
+  // ctor
 }
 
-coordinate::~coordinate(){
-  //dtor
+coordinate::~coordinate() {
+  // dtor
 }
