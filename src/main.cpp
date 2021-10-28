@@ -1,12 +1,12 @@
 #include <allegro.h>
 
-#include "keyListener.h"
-#include "mouseListener.h"
+#include "./input/keyListener.h"
+#include "./input/mouseListener.h"
 
-#include "game.h"
-#include "init.h"
-#include "menu.h"
-#include "state.h"
+#include "./state/game.h"
+#include "./state/init.h"
+#include "./state/menu.h"
+#include "./state/state.h"
 
 // Input listener classes
 mouseListener m_listener;
@@ -184,15 +184,11 @@ int main() {
         break;
       }
     }
-    if (game_time >= old_time + 1) {  // i.e. a 0.1 second has passed since we
-                                      // last counted the frames{
-      fps -= frames_array[frame_index];  // decrement the fps by the frames done
-                                         // a second ago
-      frames_array[frame_index] =
-          frames_done;     // store the number of frames done this 0.1 second
-      fps += frames_done;  // increment the fps by the newly done frames
-      frame_index = (frame_index + 1) %
-                    10;  // increment the frame index and snap it to 10
+    if (game_time >= old_time + 1) {
+      fps -= frames_array[frame_index];
+      frames_array[frame_index] = frames_done;
+      fps += frames_done;
+      frame_index = (frame_index + 1) % 10;
       frames_done = 0;
       old_time += 1;
     }
