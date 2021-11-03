@@ -1,9 +1,7 @@
-#include "./tools.h"
+#include "tools.h"
 
 #include <loadpng.h>
 #include <cmath>
-#include <fstream>
-#include <sstream>
 
 // Collision
 bool collisionAny(int xMin1,
@@ -48,45 +46,18 @@ bool collisionRight(int xMin1, int xMax1, int xMin2, int xMax2) {
   return false;
 }
 
-// Checks if file exists
-bool fexists(const char* filename) {
-  std::ifstream ifile(filename);
-  return ifile.good();
-}
-
 // Random number generator. Use int random(lowest,highest);
 int random(int min, int max) {
   int lowest = min, highest = max;
   int range = (highest - lowest) + 1;
-  return lowest + int(range * rand() / (RAND_MAX + 1.0));
+  return lowest + static_cast<int>(range * rand() / (RAND_MAX + 1.0));
 }
 
 // Random float
 float randomf(float min, float max) {
   float lowest = min, highest = max;
   float range = (highest - lowest) + 1;
-  return lowest + float(range * rand() / (RAND_MAX + 1.0));
-}
-
-// Convert int to string
-std::string convertIntToString(int number) {
-  std::stringstream ss;
-  ss << number;
-  return ss.str();
-}
-
-// Convert double to string
-std::string convertDoubleToString(double number) {
-  std::stringstream ss;
-  ss << number;
-  return ss.str();
-}
-
-// Convert bool to string
-std::string convertBoolToString(bool boolean) {
-  std::stringstream ss;
-  ss << boolean;
-  return ss.str();
+  return lowest + static_cast<float>(range * rand() / (RAND_MAX + 1.0));
 }
 
 // Finds angle of point 2 relative to point 1
@@ -99,85 +70,45 @@ float find_distance(float x_1, float y_1, float x_2, float y_2) {
   return hypot(x_1 - x_2, y_1 - y_2);
 }
 
-// Fade in
-void highcolor_fade_in(BITMAP* bmp_orig, int speed) {
-  BITMAP* bmp_buff = create_bitmap(SCREEN_W, SCREEN_H);
-  BITMAP* str_orig = create_bitmap(SCREEN_W, SCREEN_H);
-  stretch_sprite(str_orig, bmp_orig, 0, 0, SCREEN_W, SCREEN_H);
-
-  if (speed <= 0)
-    speed = 16;
-
-  for (int a = 0; a < 256; a += speed) {
-    clear(bmp_buff);
-    set_trans_blender(0, 0, 0, a);
-    draw_trans_sprite(bmp_buff, str_orig, 0, 0);
-    vsync();
-    stretch_sprite(screen, bmp_buff, 0, 0, SCREEN_W, SCREEN_H);
-  }
-  stretch_sprite(screen, str_orig, 0, 0, SCREEN_W, SCREEN_H);
-}
-
-// Fade out
-void highcolor_fade_out(int speed) {
-  BITMAP* bmp_buff = create_bitmap(SCREEN_W, SCREEN_H);
-  BITMAP* bmp_orig = create_bitmap(SCREEN_W, SCREEN_H);
-  blit(screen, bmp_orig, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-
-  if (speed <= 0)
-    speed = 16;
-
-  for (int a = 255 - speed; a > 0; a -= speed) {
-    clear(bmp_buff);
-    set_trans_blender(0, 0, 0, a);
-    draw_trans_sprite(bmp_buff, bmp_orig, 0, 0);
-    vsync();
-    stretch_sprite(screen, bmp_buff, 0, 0, SCREEN_W, SCREEN_H);
-  }
-  destroy_bitmap(bmp_orig);
-  rectfill(screen, 0, 0, SCREEN_W, SCREEN_H, makecol(0, 0, 0));
-}
-
 // ERROR REPORTING
-void abort_on_error(const char* message) {
+void abort_on_error(const std::string& message) {
   if (screen != NULL) {
     set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
   }
-  allegro_message("%s.\n %s\n", message, allegro_error);
+  allegro_message("%s.\n %s\n", message.c_str(), allegro_error);
   exit(-1);
 }
 
 // Load bitmap with error checked_array_iterator
-BITMAP* load_bitmap_ex(const char* path) {
-  BITMAP* temp_loader;
-  if (!(temp_loader = load_png(path, NULL)))
-    abort_on_error(("Cannot find image " + std::string(path) +
-                    "\nPlease check your files and try again")
-                       .c_str());
-
-  return temp_loader;
+BITMAP* load_bitmap_ex(const std::string& path) {
+  BITMAP* bitmap = load_png(path.c_str(), NULL);
+  if (!bitmap) {
+    abort_on_error("Cannot find image " + path +
+                   "\nPlease check your files and try again");
+  }
+  return bitmap;
 }
 
 // Load and error check sounds
-SAMPLE* load_sample_ex(const char* path) {
-  SAMPLE* temp_loader;
-  if (!(temp_loader = load_sample(path)))
-    abort_on_error(("Cannot find sound " + std::string(path) +
-                    "\nPlease check your files and try again")
-                       .c_str());
+SAMPLE* load_sample_ex(const std::string& path) {
+  SAMPLE* sample = load_sample(path.c_str());
+  if (!sample) {
+    abort_on_error("Cannot find sound " + path +
+                   "\nPlease check your files and try again");
+  }
 
-  return temp_loader;
+  return sample;
 }
 
 // Load and error check fonts
-FONT* load_font_ex(const char* path) {
-  FONT* temp_loader;
-  if (!(temp_loader = load_font(path, NULL, NULL)))
-    abort_on_error(("Cannot find font " + std::string(path) +
-                    "\nPlease check your files and try again")
-                       .c_str());
+FONT* load_font_ex(const std::string& path) {
+  FONT* font = load_font(path.c_str(), NULL, NULL);
+  if (!font) {
+    abort_on_error("Cannot find font " + path +
+                   "\nPlease check your files and try again");
+  }
 
-  return extract_font_range(temp_loader, ' ', 'z');
+  return extract_font_range(font, ' ', 'z');
 }
 
 // Returns distance 2D

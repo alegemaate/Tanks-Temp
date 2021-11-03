@@ -1,9 +1,11 @@
 #include "menu.h"
 
+#include "../system/ImageRegistry.h"
+
 // Initilizer
-menu::menu() {
+Menu::Menu() {
   // Background image
-  background = load_bitmap_ex("images/menu.png");
+  background = ImageRegistry::getImage("menu-background");
 
   // Buffer
   buffer = create_bitmap(SCREEN_W, SCREEN_H);
@@ -23,7 +25,7 @@ menu::menu() {
 }
 
 // Update routine
-void menu::update() {
+void Menu::update() {
   // Update buttons
   enemies_up.update();
   enemies_down.update();
@@ -39,21 +41,21 @@ void menu::update() {
 
   // Make teams
   if (enemies_up.clicked())
-    game::num_enemies++;
+    Game::num_enemies++;
   if (enemies_down.clicked())
-    game::num_enemies--;
+    Game::num_enemies--;
   if (friends_up.clicked())
-    game::num_friends++;
+    Game::num_friends++;
   if (friends_down.clicked())
-    game::num_friends--;
+    Game::num_friends--;
   if (width_up.clicked())
-    game::map_width++;
+    Game::map_width++;
   if (width_down.clicked())
-    game::map_width--;
+    Game::map_width--;
   if (height_up.clicked())
-    game::map_height++;
+    Game::map_height++;
   if (height_down.clicked())
-    game::map_height--;
+    Game::map_height--;
   if (bounce_up.clicked())
     Tank::num_bullet_bounces++;
   if (bounce_down.clicked())
@@ -65,7 +67,7 @@ void menu::update() {
 }
 
 // Drawing routine
-void menu::draw() {
+void Menu::draw() {
   // Background
   draw_sprite(buffer, background, 0, 0);
 
@@ -84,13 +86,13 @@ void menu::draw() {
 
   // Player nums
   textprintf_centre_ex(buffer, font, 109, 315, makecol(0, 0, 0), -1, "%i",
-                       game::num_friends);
+                       Game::num_friends);
   textprintf_centre_ex(buffer, font, 229, 315, makecol(0, 0, 0), -1, "%i",
-                       game::num_enemies);
+                       Game::num_enemies);
   textprintf_centre_ex(buffer, font, 349, 315, makecol(0, 0, 0), -1, "%i",
-                       game::map_width);
+                       Game::map_width);
   textprintf_centre_ex(buffer, font, 469, 315, makecol(0, 0, 0), -1, "%i",
-                       game::map_height);
+                       Game::map_height);
   textprintf_centre_ex(buffer, font, 589, 315, makecol(0, 0, 0), -1, "%i",
                        Tank::num_bullet_bounces);
 

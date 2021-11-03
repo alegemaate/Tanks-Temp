@@ -10,13 +10,13 @@
 
 #include "../ui/button.h"
 #include "../util/tools.h"
-#include "./game.h"
-#include "./state.h"
+#include "game.h"
+#include "state.h"
 
-class menu : public state {
+class Menu : public State {
  public:
-  menu();
-  ~menu() {}
+  Menu();
+  ~Menu() {}
 
   void update();
   void draw();

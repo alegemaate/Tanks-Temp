@@ -1,18 +1,30 @@
 #include "barrier.h"
 
-Barrier::Barrier(world* world, int x, int y, BITMAP* image, int health)
-    : x(x),
-      y(y),
-      image(image),
+#include "../system/ImageRegistry.h"
+#include "../util/tools.h"
+
+Barrier::Barrier(World* world, Coordinate position, BarrierType type)
+    : position(position),
       worldPointer(world),
-      health(health),
+      type(type),
       indestructable(false),
       exploded(false),
       visible(true) {
+  switch (type) {
+    case BarrierType::BOX:
+      this->image = ImageRegistry::getImage("block-box");
+      this->health = 3;
+      break;
+    case BarrierType::STONE:
+    default:
+      this->image = ImageRegistry::getImage("block-stone");
+      this->health = 20;
+      break;
+  }
+
   this->width = this->image->w;
   this->height = this->image->h;
-
-  sample_explode = load_sample_ex("sfx/explode.wav");
+  this->sample_explode = load_sample_ex("sfx/explode.wav");
 }
 
 Barrier::~Barrier() {
@@ -20,40 +32,41 @@ Barrier::~Barrier() {
 }
 
 // Update
-void Barrier::update(std::vector<Bullet>* bullets) {
+void Barrier::update(std::vector<Bullet*>* bullets) {
   if (health > 0 || indestructable) {
     for (unsigned int i = 0; i < bullets->size(); i++) {
-      if (collisionAny(x, x + width, bullets->at(i).getX(),
-                       bullets->at(i).getX() + 5, y, y + height,
-                       bullets->at(i).getY(), bullets->at(i).getY() + 5)) {
+      if (collisionAny(position.x, position.x + width, bullets->at(i)->getX(),
+                       bullets->at(i)->getX() + 5, position.y,
+                       position.y + height, bullets->at(i)->getY(),
+                       bullets->at(i)->getY() + 5)) {
         if (collisionBottom(
-                bullets->at(i).getY() + bullets->at(i).getYVelocity(),
-                bullets->at(i).getY() + 5, y, y + height)) {
-          bullets->at(i).reverseDirection("y");
-          bullets->at(i).bounce(BOTTOM);
+                bullets->at(i)->getY() + bullets->at(i)->getYVelocity(),
+                bullets->at(i)->getY() + 5, position.y, position.y + height)) {
+          bullets->at(i)->reverseDirection("y");
+          bullets->at(i)->bounce(BOTTOM);
         }
 
         if (collisionTop(
-                bullets->at(i).getY(),
-                bullets->at(i).getY() + 5 + bullets->at(i).getYVelocity(), y,
-                y + height)) {
-          bullets->at(i).reverseDirection("y");
-          bullets->at(i).bounce(TOP);
+                bullets->at(i)->getY(),
+                bullets->at(i)->getY() + 5 + bullets->at(i)->getYVelocity(),
+                position.y, position.y + height)) {
+          bullets->at(i)->reverseDirection("y");
+          bullets->at(i)->bounce(TOP);
         }
 
         if (collisionLeft(
-                bullets->at(i).getX(),
-                bullets->at(i).getX() + 5 + bullets->at(i).getXVelocity(), x,
-                x + width)) {
-          bullets->at(i).reverseDirection("x");
-          bullets->at(i).bounce(LEFT);
+                bullets->at(i)->getX(),
+                bullets->at(i)->getX() + 5 + bullets->at(i)->getXVelocity(),
+                position.x, position.x + width)) {
+          bullets->at(i)->reverseDirection("x");
+          bullets->at(i)->bounce(LEFT);
         }
 
         if (collisionRight(
-                bullets->at(i).getX() + bullets->at(i).getXVelocity(),
-                bullets->at(i).getX() + 5, x, x + width)) {
-          bullets->at(i).reverseDirection("x");
-          bullets->at(i).bounce(RIGHT);
+                bullets->at(i)->getX() + bullets->at(i)->getXVelocity(),
+                bullets->at(i)->getX() + 5, position.x, position.x + width)) {
+          bullets->at(i)->reverseDirection("x");
+          bullets->at(i)->bounce(RIGHT);
         }
 
         if (!indestructable) {
@@ -62,7 +75,7 @@ void Barrier::update(std::vector<Bullet>* bullets) {
       }
     }
   } else if (!exploded) {
-    explode(x + width / 2, y + height / 2, 6, 100, 30);
+    explode(position.x + width / 2, position.y + height / 2, 6, 100, 30);
     exploded = true;
   }
 }
@@ -70,18 +83,8 @@ void Barrier::update(std::vector<Bullet>* bullets) {
 // Draw image
 void Barrier::draw(BITMAP* buffer) {
   if ((health > 0 || indestructable) && visible) {
-    draw_sprite(buffer, image, this->x, this->y);
+    draw_sprite(buffer, image, position.x, position.y);
   }
-}
-
-// Get x
-int Barrier::getX() {
-  return x;
-}
-
-// Get y
-int Barrier::getY() {
-  return y;
 }
 
 // Get width

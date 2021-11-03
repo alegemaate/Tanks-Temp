@@ -3,12 +3,12 @@
 
 #include <vector>
 
-#include "./particle.h"
+#include "particle.h"
 
-class world {
+class World {
  public:
-  world() {}
-  virtual ~world() {}
+  World() {}
+  virtual ~World() {}
 
   void update();
   void draw(BITMAP* buffer);

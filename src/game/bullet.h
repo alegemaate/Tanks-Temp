@@ -15,7 +15,7 @@
 
 class Bullet {
  public:
-  Bullet(world* world,
+  Bullet(World* world,
          float x,
          float y,
          float angle,
@@ -49,7 +49,7 @@ class Bullet {
   float vector_x;
   float vector_y;
 
-  world* worldPointer;
+  World* worldPointer;
 
   bool owner;
   bool pendingErase;

@@ -10,10 +10,10 @@
 
 #include "./state.h"
 
-class init : public state {
+class Init : public State {
  public:
-  init();
-  ~init(){};
+  Init();
+  ~Init(){};
 
   void update(){};
   void draw() {}

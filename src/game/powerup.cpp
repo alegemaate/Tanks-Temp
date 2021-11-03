@@ -1,17 +1,28 @@
 #include "powerup.h"
 
-Powerup::Powerup() : Powerup(0, 0, 0, nullptr) {}
+#include "../system/ImageRegistry.h"
 
-Powerup::Powerup(int x, int y, int type, BITMAP* image) {
-  this->x = x;
-  this->y = y;
-  this->type = type;
-  this->image = image;
-  this->dead = false;
+Powerup::Powerup() : Powerup(0, 0, PowerupType::Health) {}
+
+Powerup::Powerup(int x, int y, PowerupType type)
+    : x(x), y(y), type(type), dead(false) {
+  switch (type) {
+    case PowerupType::Health:
+      imageKey = "powerup-health";
+      break;
+    case PowerupType::Speed:
+      imageKey = "powerup-tank-speed";
+      break;
+    case PowerupType::FireSpeed:
+      imageKey = "powerup-bullet-speed";
+      break;
+    case PowerupType::FireDelay:
+      imageKey = "powerup-bullet-delay";
+      break;
+  }
 }
 
-Powerup::~Powerup() {}
-
-void Powerup::draw(BITMAP* tempBitmap) {
-  draw_sprite(tempBitmap, image, x, y);
+void Powerup::draw(BITMAP* buffer) {
+  BITMAP* image = ImageRegistry::getImage(imageKey);
+  draw_sprite(buffer, image, x, y);
 }

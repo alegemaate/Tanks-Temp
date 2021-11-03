@@ -3,12 +3,12 @@
 #include <algorithm>
 
 // Adds particle to global particle handler
-void world::addParticle(Particle* particle) {
+void World::addParticle(Particle* particle) {
   particles.push_back(particle);
 }
 
 // Updates world
-void world::update() {
+void World::update() {
   // Update particles
   for (auto it = particles.begin(); it != particles.end();) {
     if ((*it)->getDead()) {
@@ -21,7 +21,7 @@ void world::update() {
 }
 
 // Draw world
-void world::draw(BITMAP* buffer) {
+void World::draw(BITMAP* buffer) {
   // Draw particles
   for (auto it = particles.begin(); it != particles.end(); it++) {
     (*it)->draw(buffer);

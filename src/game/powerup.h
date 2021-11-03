@@ -2,33 +2,35 @@
 #define SRC_GAME_POWERUP_H_
 
 #include <allegro.h>
+#include <string>
 
+enum class PowerupType { Health, Speed, FireSpeed, FireDelay };
 class Powerup {
  public:
   Powerup();
-  Powerup(int x, int y, int type, BITMAP* image);
-  virtual ~Powerup();
+  Powerup(int x, int y, PowerupType type);
 
   int getX() { return x; }
   int getY() { return y; }
-  int getWidth() { return image->w; }
-  int getHeight() { return image->h; }
-  int getType() { return type; }
+  int getWidth() { return 40; }
+  int getHeight() { return 40; }
+  PowerupType getType() { return type; }
 
   bool getDead() { return dead; }
 
   void pickup() { dead = true; }
 
-  void draw(BITMAP* tempBitmap);
+  void draw(BITMAP* buffer);
 
  private:
-  BITMAP* image;
-
   int x;
   int y;
-  int type;
+
+  PowerupType type;
 
   bool dead;
+
+  std::string imageKey;
 };
 
 #endif  // SRC_GAME_POWERUP_H_

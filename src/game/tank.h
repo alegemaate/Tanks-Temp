@@ -12,23 +12,20 @@
 
 class Tank {
  public:
-  explicit Tank(world* worldPointer,
+  explicit Tank(World* worldPointer,
                 int x,
                 int y,
                 int hurtTime,
                 int health,
                 int fireSpeed,
                 int fireDelay,
-                float speed,
-                BITMAP* baseImage,
-                BITMAP* turretImage,
-                BITMAP* hurtImage,
-                BITMAP* treadsImage);
+                float speed);
+
   virtual ~Tank();
 
   virtual bool isDead();
 
-  virtual std::vector<Bullet>* getBullets();
+  virtual std::vector<Bullet*>* getBullets();
 
   virtual void update();
   virtual void draw(BITMAP* buffer);
@@ -50,13 +47,13 @@ class Tank {
     map_height = height;
   }
 
-  virtual void checkCollision(std::vector<Bullet>* bullets);
-  virtual void checkCollision(std::vector<Barrier>* barriers);
-  virtual void checkCollision(std::vector<Powerup>* powerups);
+  virtual void checkCollision(std::vector<Bullet*>* bullets);
+  virtual void checkCollision(std::vector<Barrier*>* barriers);
+  virtual void checkCollision(std::vector<Powerup*>* powerups);
 
   virtual void process_enemies(std::vector<Tank*>* otherTanks);
 
-  virtual void get_powerup(int powerupId);
+  virtual void pickupPowerup(PowerupType type);
 
   static unsigned char num_bullet_bounces;
 
@@ -78,7 +75,7 @@ class Tank {
   BITMAP* image_top;
   BITMAP* image_treads;
 
-  world* worldPointer;
+  World* worldPointer;
 
   bool dead;
 
@@ -99,7 +96,7 @@ class Tank {
   bool canMoveX;
   bool canMoveY;
 
-  std::vector<Bullet> bullets;
+  std::vector<Bullet*> bullets;
   std::vector<Tank*>* otherTanks;
 
   SAMPLE* sample_shot;
@@ -121,48 +118,6 @@ class Tank {
                              int width,
                              int height,
                              int border);
-};
-
-class PlayerTank : public Tank {
- public:
-  PlayerTank(world* world,
-             int x,
-             int y,
-             int hurtTime,
-             int health,
-             int fireSpeed,
-             int fireDelay,
-             float speed,
-             BITMAP* baseImage,
-             BITMAP* turretImage,
-             BITMAP* hurtImage,
-             BITMAP* treadsImage);
-  virtual void update();
-
- protected:
-};
-
-class AiTank : public Tank {
- public:
-  AiTank(world* world,
-         int x,
-         int y,
-         int hurtTime,
-         int health,
-         int fireSpeed,
-         int fireDelay,
-         float speed,
-         BITMAP* baseImage,
-         BITMAP* turretImage,
-         BITMAP* hurtImage,
-         BITMAP* treadsImage);
-  virtual void update();
-
- private:
-  float destination_x;
-  float destination_y;
-
-  void update_target();
 };
 
 #endif  // SRC_GAME_TANK_H_

@@ -1,4 +1,4 @@
-#include "./keyListener.h"
+#include "keyListener.h"
 
 bool keyListener::keyPressed[KEY_MAX] = {false};
 bool keyListener::keyReleased[KEY_MAX] = {false};
@@ -27,17 +27,17 @@ void keyListener::update() {
     keyReleased[i] = false;
 
     // Wheres the any key?
-    if ((bool)key[i])
+    if (static_cast<bool>(key[i]))
       anyKeyPressed = true;
 
     // Pressed since last tick?
-    if ((bool)key[i] == true && lastTicksKey[i] == false) {
+    if (static_cast<bool>(key[i]) == true && lastTicksKey[i] == false) {
       keyPressed[i] = true;
       lastKeyPressed = i;
     }
 
     // Released since last tick?
-    if ((bool)key[i] == false && lastTicksKey[i] == true) {
+    if (static_cast<bool>(key[i]) == false && lastTicksKey[i] == true) {
       keyReleased[i] = true;
       lastKeyReleased = i;
     }
@@ -46,7 +46,7 @@ void keyListener::update() {
   // Get new values
   for (int i = 0; i < KEY_MAX; i++) {
     // Key changed
-    if (lastTicksKey[i] != (bool)key[i]) {
+    if (lastTicksKey[i] != static_cast<bool>(key[i])) {
       lastTicksKey[i] = key[i];
     }
   }

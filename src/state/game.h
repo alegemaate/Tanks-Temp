@@ -11,7 +11,9 @@
 #include <cmath>
 #include <vector>
 
+#include "../game/ai-tank.h"
 #include "../game/barrier.h"
+#include "../game/player-tank.h"
 #include "../game/powerup.h"
 #include "../game/tank.h"
 #include "../game/world.h"
@@ -26,10 +28,10 @@
 
 #define number_of_rays 200
 
-class game : public state {
+class Game : public State {
  public:
-  game();
-  ~game();
+  Game();
+  ~Game();
 
   void update();
   void draw();
@@ -53,20 +55,18 @@ class game : public state {
   BITMAP* background;
   BITMAP* cursor;
   BITMAP* blocks[3];
-  BITMAP* powerup_images[4];
-  BITMAP* tank_images[10];
 
   // World
-  world game_world;
+  World game_world;
 
   // Objects
-  std::vector<Barrier> barriers;
+  std::vector<Barrier*> barriers;
   std::vector<Tank*> enemy_tanks;
   std::vector<Tank*> player_tanks;
-  std::vector<Powerup> powerups;
+  std::vector<Powerup*> powerups;
   std::vector<Coordinate> startLocations;
 
-  int map_temp[max_map_width][max_map_height];
+  BarrierType map_temp[max_map_width][max_map_height];
   int map_x, map_y;
 
   int currentRound = 0;

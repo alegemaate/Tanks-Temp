@@ -3,37 +3,38 @@
 
 #include <vector>
 
-#include "../util/tools.h"
+#include "../util/coordinate.h"
 #include "./bullet.h"
+
+enum class BarrierType {
+  NONE,
+  BOX,
+  STONE,
+};
 
 class Barrier {
  public:
-  Barrier(world* world, int x, int y, BITMAP* image, int health);
+  Barrier(World* world, Coordinate position, BarrierType type);
   ~Barrier();
 
-  void update(std::vector<Bullet>* bullets);
+  void update(std::vector<Bullet*>* bullets);
   void draw(BITMAP* image);
-
-  int getX();
-  int getY();
 
   int getWidth();
   int getHeight();
 
-  void setHealth(int health) { this->health = health; }
-
-  void setIndestructable(bool indestructable) {
+  void makeIndestructable(bool indestructable) {
     this->indestructable = indestructable;
   }
 
   bool getDead();
 
- private:
-  int x;
-  int y;
+  Coordinate position;
 
-  BITMAP* image;
-  world* worldPointer;
+ private:
+  World* worldPointer;
+
+  BarrierType type;
 
   int health;
 
@@ -45,6 +46,8 @@ class Barrier {
   int height;
 
   SAMPLE* sample_explode;
+
+  BITMAP* image;
 
   void explode(int x, int y, int velocity, int amount, int life);
 };

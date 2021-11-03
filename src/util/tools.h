@@ -26,40 +26,24 @@ extern float find_distance(float x_1, float y_1, float x_2, float y_2);
 extern int mouseX();
 extern int mouseY();
 
-// Checks if file exists
-extern bool fexists(const char* filename);
-
 // Random number generator
 extern int random(int min, int max);
 extern float randomf(float min, float max);
-
-// Convert int to string
-extern std::string convertIntToString(int number);
-
-// Convert double to string
-extern std::string convertDoubleToString(double number);
-
-// Convert bool to string
-extern std::string convertBoolToString(bool boolean);
-
-// Fade in and out
-extern void highcolor_fade_in(BITMAP* bmp_orig, int speed);
-extern void highcolor_fade_out(int speed);
 
 // Next state
 extern void set_next_state(int state);
 
 // Error reporting
-extern void abort_on_error(const char* message);
+extern void abort_on_error(const std::string& message);
 
 // Load and error check images
-extern BITMAP* load_bitmap_ex(const char* path);
+extern BITMAP* load_bitmap_ex(const std::string& path);
 
 // Load and error check sounds
-extern SAMPLE* load_sample_ex(const char* path);
+extern SAMPLE* load_sample_ex(const std::string& path);
 
 // Load and error check fonts
-extern FONT* load_font_ex(const char* path);
+extern FONT* load_font_ex(const std::string& path);
 
 int distanceTo2D(int x1, int y1, int x2, int y2);
 

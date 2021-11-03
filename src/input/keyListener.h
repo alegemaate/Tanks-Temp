@@ -6,8 +6,8 @@
  * 18/01/2017
  **/
 
-#ifndef KEYLISTENER_H_
-#define KEYLISTENER_H_
+#ifndef SRC_INPUT_KEYLISTENER_H_
+#define SRC_INPUT_KEYLISTENER_H_
 
 #include <allegro.h>
 
@@ -31,4 +31,4 @@ class keyListener {
   static bool lastTicksKey[KEY_MAX];
 };
 
-#endif  // KEYLISTENER_H_
+#endif  // SRC_INPUT_KEYLISTENER_H_

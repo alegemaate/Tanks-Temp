@@ -3,7 +3,7 @@
 #include <cmath>
 
 // Init
-Bullet::Bullet(world* world,
+Bullet::Bullet(World* world,
                float x,
                float y,
                float angle,

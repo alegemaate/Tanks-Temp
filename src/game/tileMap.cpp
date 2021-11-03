@@ -65,10 +65,7 @@ void TileMap::generateMap(unsigned char width, unsigned char height) {
         // Pass 6 (Find start locations)
         else if (pass == 6) {
           if (map_temp[i][t] == 0) {
-            Coordinate startLocation;
-            startLocation.x = i * 40;
-            startLocation.y = t * 40;
-            startLocations.push_back(startLocation);
+            startLocations.push_back(Coordinate(i * 40, t * 40));
           }
         }
         // Pass 7 (create barriers)

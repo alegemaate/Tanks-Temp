@@ -1,4 +1,4 @@
-#include "./state.h"
+#include "state.h"
 
 // State variables
 int stateID;

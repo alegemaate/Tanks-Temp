@@ -1,13 +1,17 @@
 #include "game.h"
 
-unsigned char game::map_width = 20;
-unsigned char game::map_height = 20;
+#include <iostream>
 
-unsigned char game::num_enemies = 5;
-unsigned char game::num_friends = 5;
+#include "../system/ImageRegistry.h"
 
-// Init state (and game)
-game::game() {
+unsigned char Game::map_width = 20;
+unsigned char Game::map_height = 20;
+
+unsigned char Game::num_enemies = 5;
+unsigned char Game::num_friends = 5;
+
+// Init state (and Game)
+Game::Game() {
   // Create buffers
   buffer = create_bitmap(SCREEN_W, SCREEN_H);
 
@@ -21,23 +25,11 @@ game::game() {
   clear_to_color(map_buffer, 0x000000);
 
   // Load images
-  background = load_bitmap_ex("images/background.png");
-  cursor = load_bitmap_ex("images/cursor.png");
-  blocks[0] = load_bitmap_ex("images/block_box_1.png");
-  blocks[1] = load_bitmap_ex("images/block_stone_1.png");
-  blocks[2] = load_bitmap_ex("images/block_box_1.png");
-  powerup_images[0] = load_bitmap_ex("images/powerup_health.png");
-  powerup_images[1] = load_bitmap_ex("images/powerup_tank_speed.png");
-  powerup_images[2] = load_bitmap_ex("images/powerup_bullet_speed.png");
-  powerup_images[3] = load_bitmap_ex("images/powerup_bullet_delay.png");
-  tank_images[0] = load_bitmap_ex("images/tank_treads.png");
-  tank_images[1] = load_bitmap_ex("images/tank_dead.png");
-  tank_images[2] = load_bitmap_ex("images/tank_turret_green.png");
-  tank_images[3] = load_bitmap_ex("images/tank_base_green.png");
-  tank_images[4] = load_bitmap_ex("images/tank_turret_red.png");
-  tank_images[5] = load_bitmap_ex("images/tank_base_red.png");
-  tank_images[6] = load_bitmap_ex("images/tank_turret_blue.png");
-  tank_images[7] = load_bitmap_ex("images/tank_base_blue.png");
+  background = ImageRegistry::getImage("game-background");
+  cursor = ImageRegistry::getImage("cursor");
+  blocks[0] = ImageRegistry::getImage("block-box");
+  blocks[1] = ImageRegistry::getImage("block-stone");
+  blocks[2] = ImageRegistry::getImage("block-box");
 
   // Make a map
   for (unsigned char pass = 0; pass < 8; pass++) {
@@ -45,73 +37,67 @@ game::game() {
       for (unsigned char t = 0; t < map_height; t++) {
         // Pass 0 (Erase)
         if (pass == 0) {
-          map_temp[i][t] = 0;
+          map_temp[i][t] = BarrierType::NONE;
         }
         // Pass 1 (Edges)
         else if (pass == 1) {
           if (i == 0 || t == 0 || i == map_width - 1 || t == map_height - 1) {
-            map_temp[i][t] = 1;
+            map_temp[i][t] = BarrierType::STONE;
           }
         }
         // Pass 2 (Well Placed blocks)
         else if (pass == 2) {
-          if (map_temp[i - 1][t] == 0 && map_temp[i + 1][t] == 0 &&
-              map_temp[i - 1][t + 1] == 0 && map_temp[i + 1][t + 1] == 0 &&
-              map_temp[i - 1][t - 1] == 0 && map_temp[i + 1][t - 1] == 0 &&
-              map_temp[i][t - 1] == 0 && map_temp[i][t + 1] == 0 &&
-              random(0, 2) == 1) {
-            map_temp[i][t] = 1;
+          if (map_temp[i - 1][t] == BarrierType::NONE &&
+              map_temp[i + 1][t] == BarrierType::NONE &&
+              map_temp[i - 1][t + 1] == BarrierType::NONE &&
+              map_temp[i + 1][t + 1] == BarrierType::NONE &&
+              map_temp[i - 1][t - 1] == BarrierType::NONE &&
+              map_temp[i + 1][t - 1] == BarrierType::NONE &&
+              map_temp[i][t - 1] == BarrierType::NONE &&
+              map_temp[i][t + 1] == BarrierType::NONE && random(0, 2) == 1) {
+            map_temp[i][t] = BarrierType::STONE;
           }
         }
         // Pass 3 (Filling)
         else if (pass == 3) {
-          if ((map_temp[i - 1][t] == 1 && map_temp[i + 1][t] == 1) ||
-              (map_temp[i][t - 1] == 1 && map_temp[i][t + 1] == 1)) {
-            map_temp[i][t] = 1;
+          if ((map_temp[i - 1][t] == BarrierType::STONE &&
+               map_temp[i + 1][t] == BarrierType::STONE) ||
+              (map_temp[i][t - 1] == BarrierType::STONE &&
+               map_temp[i][t + 1] == BarrierType::STONE)) {
+            map_temp[i][t] = BarrierType::STONE;
           }
         }
         // Pass 4 (Filling inaccessable areas)
         else if (pass == 4) {
-          if (map_temp[i - 1][t] == 1 && map_temp[i + 1][t] == 1 &&
-              map_temp[i][t - 1] == 1 && map_temp[i][t + 1] == 1) {
-            map_temp[i][t] = 1;
+          if (map_temp[i - 1][t] == BarrierType::STONE &&
+              map_temp[i + 1][t] == BarrierType::STONE &&
+              map_temp[i][t - 1] == BarrierType::STONE &&
+              map_temp[i][t + 1] == BarrierType::STONE) {
+            map_temp[i][t] = BarrierType::STONE;
           }
         }
         // Pass 5 (Boxes!)
         else if (pass == 5) {
-          if (map_temp[i][t] == 0 && random(1, 20) == 1) {
-            map_temp[i][t] = 2;
+          if (map_temp[i][t] == BarrierType::NONE && random(1, 20) == 1) {
+            map_temp[i][t] = BarrierType::BOX;
           }
         }
         // Pass 6 (Find start locations)
         else if (pass == 6) {
-          if (map_temp[i][t] == 0) {
-            Coordinate startLocation;
-            startLocation.x = i * 40;
-            startLocation.y = t * 40;
-            startLocations.push_back(startLocation);
+          if (map_temp[i][t] == BarrierType::NONE) {
+            startLocations.push_back(Coordinate(i * 40, t * 40));
           }
         }
         // Pass 7 (create barriers)
-        else if (pass == 7) {
-          if (map_temp[i][t] == 1 || map_temp[i][t] == 2) {
-            Barrier barrier(&game_world, i * 40, t * 40, blocks[map_temp[i][t]],
-                            0);
+        else if (pass == 7 && map_temp[i][t] != BarrierType::NONE) {
+          auto position = Coordinate(i * 40, t * 40);
+          auto barrier = new Barrier(&game_world, position, map_temp[i][t]);
 
-            // Destroyable
-            bool onEdge =
-                i != 0 && t != 0 && i != map_width - 1 && t != map_height - 1;
-
-            if (map_temp[i][t] == 2) {
-              barrier.setHealth(3);
-            } else if (onEdge) {
-              barrier.setHealth(20);
-            } else {
-              barrier.setIndestructable(true);
-            }
-
-            barriers.push_back(barrier);
+          if (i == 0 || t == 0 || i == map_width - 1 || t == map_height - 1) {
+            barrier->makeIndestructable(true);
           }
+
+          barriers.push_back(barrier);
         }
       }
     }
@@ -121,8 +107,7 @@ game::game() {
   int randomStartLocation = random(0, startLocations.size() - 1);
   PlayerTank* player = new PlayerTank(
       &game_world, startLocations.at(randomStartLocation).x,
-      startLocations.at(randomStartLocation).y, 3, 100, 4, 20, 1,
-      tank_images[3], tank_images[2], tank_images[1], tank_images[0]);
+      startLocations.at(randomStartLocation).y, 3, 100, 4, 20, 1);
 
   player->process_enemies(&enemy_tanks);
   player->set_map_dimensions(map_width * 40, map_height * 40);
@@ -131,11 +116,10 @@ game::game() {
   // Enemies
   for (unsigned char i = 0; i < num_enemies; i++) {
     int randomStartLocation = random(0, startLocations.size() - 1);
-    AiTank* player = new AiTank(
-        &game_world, startLocations.at(randomStartLocation).x,
-        startLocations.at(randomStartLocation).y, 3, random(50, 150),
-        random(1, 4), random(50, 300), random(1, 10) / 10, tank_images[5],
-        tank_images[4], tank_images[1], tank_images[0]);
+    AiTank* player =
+        new AiTank(&game_world, startLocations.at(randomStartLocation).x,
+                   startLocations.at(randomStartLocation).y, 3, random(50, 150),
+                   random(1, 4), random(50, 300), random(1, 10) / 10, true);
 
     player->process_enemies(&player_tanks);
     player->set_map_dimensions(map_width * 40, map_height * 40);
@@ -147,8 +131,7 @@ game::game() {
     int randomStartLocation = random(0, startLocations.size() - 1);
     AiTank* player = new AiTank(
         &game_world, startLocations.at(randomStartLocation).x,
-        startLocations.at(randomStartLocation).y, 3, 100, 4, 20, 1,
-        tank_images[7], tank_images[6], tank_images[1], tank_images[0]);
+        startLocations.at(randomStartLocation).y, 3, 100, 4, 20, 1, false);
 
     player->process_enemies(&enemy_tanks);
     player->set_map_dimensions(map_width * 40, map_height * 40);
@@ -157,29 +140,14 @@ game::game() {
 }
 
 // Clean up
-game::~game() {
+Game::~Game() {
   destroy_bitmap(buffer);
   destroy_bitmap(decal_buffer);
   destroy_bitmap(vision_buffer);
   destroy_bitmap(map_buffer);
-
-  destroy_bitmap(background);
-  destroy_bitmap(cursor);
-
-  destroy_bitmap(blocks[0]);
-  destroy_bitmap(blocks[1]);
-  destroy_bitmap(blocks[2]);
-
-  for (int i = 0; i < 4; i++) {
-    destroy_bitmap(powerup_images[i]);
-  }
-
-  for (int i = 0; i < 8; i++) {
-    destroy_bitmap(tank_images[i]);
-  }
 }
 
-void game::update() {
+void Game::update() {
   // Get joystick input
   poll_joystick();
 
@@ -189,8 +157,9 @@ void game::update() {
   // Move
   for (unsigned int i = 0; i < enemy_tanks.size(); i++) {
     // Update barriers
-    for (unsigned int t = 0; t < barriers.size(); t++)
-      barriers.at(t).update(enemy_tanks.at(i)->getBullets());
+    for (unsigned int t = 0; t < barriers.size(); t++) {
+      barriers.at(t)->update(enemy_tanks.at(i)->getBullets());
+    }
 
     // Update bullets
     for (unsigned int t = 0; t < player_tanks.size(); t++)
@@ -215,7 +184,7 @@ void game::update() {
   for (unsigned int i = 0; i < player_tanks.size(); i++) {
     // Update barriers
     for (unsigned int t = 0; t < barriers.size(); t++)
-      barriers.at(t).update(player_tanks.at(i)->getBullets());
+      barriers.at(t)->update(player_tanks.at(i)->getBullets());
 
     // Update bullets
     for (unsigned int t = 0; t < enemy_tanks.size(); t++)
@@ -240,12 +209,28 @@ void game::update() {
 
   // Remove broken barriers
   for (unsigned int i = 0; i < barriers.size(); i++) {
-    if (barriers.at(i).getDead()) {
+    if (barriers.at(i)->getDead()) {
       // Spawn powerup
       if (random(0, 1) == 0) {
-        int type = random(0, 3);
-        Powerup powerup(barriers.at(i).getX(), barriers.at(i).getY(), type,
-                        powerup_images[type]);
+        int randomType = random(0, 3);
+        PowerupType type = PowerupType::Health;
+        switch (randomType) {
+          case 1:
+            type = PowerupType::Speed;
+            break;
+          case 2:
+            type = PowerupType::FireSpeed;
+            break;
+          case 3:
+            type = PowerupType::FireDelay;
+            break;
+          default:
+          case 0:
+            type = PowerupType::Health;
+            break;
+        }
+        Powerup* powerup = new Powerup(barriers.at(i)->position.x,
+                                       barriers.at(i)->position.y, type);
         powerups.push_back(powerup);
       }
 
@@ -255,7 +240,7 @@ void game::update() {
 
   // Delete powerup
   for (unsigned int i = 0; i < powerups.size(); i++) {
-    if (powerups.at(i).getDead()) {
+    if (powerups.at(i)->getDead()) {
       powerups.erase(powerups.begin() + i);
     }
   }
@@ -274,7 +259,7 @@ void game::update() {
   // Vision buffer
   // Check collision with all boxes!
   /*for( unsigned int i = 0; i < barriers.size(); i++){
-    barriers.at(i).visible = false;
+    barriers.at(i)->visible = false;
   }
 
   for( double q = 0; q < 2 * M_PI; q += ((2 * M_PI) / number_of_rays)){
@@ -298,30 +283,30 @@ void game::update() {
 
         // TOP
         if( t == 0){
-          bar_x_2 = barriers.at(i).getWidth();
+          bar_x_2 = barriers.at(i)->getWidth();
         }
         // RIGHT
         if( t == 1){
-          bar_x_1 = barriers.at(i).getWidth();
-          bar_x_2 = barriers.at(i).getWidth();
-          bar_y_2 = barriers.at(i).getHeight();
+          bar_x_1 = barriers.at(i)->getWidth();
+          bar_x_2 = barriers.at(i)->getWidth();
+          bar_y_2 = barriers.at(i)->getHeight();
         }
         // BOTTOM
         if( t == 2){
-          bar_x_2 = barriers.at(i).getWidth();
-          bar_y_1 = barriers.at(i).getHeight();
-          bar_y_2 = barriers.at(i).getHeight();
+          bar_x_2 = barriers.at(i)->getWidth();
+          bar_y_1 = barriers.at(i)->getHeight();
+          bar_y_2 = barriers.at(i)->getHeight();
         }
         // LEFT
         if( t == 3){
-          bar_y_2 = barriers.at(i).getHeight();
+          bar_y_2 = barriers.at(i)->getHeight();
         }
 
         // Check if ray and side intersect
         if( get_line_intersection( player_tanks.at(0) -> getCenterX(),
-  player_tanks.at(0) -> getCenterY(), point_x, point_y, barriers.at(i).getX()
-  + bar_x_1, barriers.at(i).getY() + bar_y_1, barriers.at(i).getX() +
-  bar_x_2, barriers.at(i).getY() + bar_y_2, &temp_poi_x, &temp_poi_y)){
+  player_tanks.at(0) -> getCenterY(), point_x, point_y, barriers.at(i)->getX()
+  + bar_x_1, barriers.at(i)->getY() + bar_y_1, barriers.at(i)->getX() +
+  bar_x_2, barriers.at(i)->getY() + bar_y_2, &temp_poi_x, &temp_poi_y)){
           // Check if closer match found and if so update POI
           if( distanceTo2D( temp_poi_x, temp_poi_y, player_tanks.at(0) ->
   getCenterX(), player_tanks.at(0) -> getCenterY()) < distanceTo2D( poi_x,
@@ -346,7 +331,7 @@ void game::update() {
   }*/
 }
 
-void game::draw() {
+void Game::draw() {
   // Draw background
   draw_sprite(buffer, background, 0, 0);
 
@@ -371,7 +356,7 @@ void game::draw() {
 
   // Draw barriers
   for (unsigned int i = 0; i < barriers.size(); i++) {
-    barriers.at(i).draw(map_buffer);
+    barriers.at(i)->draw(map_buffer);
   }
 
   // Vision buffer
@@ -380,7 +365,7 @@ void game::draw() {
 
   // Draw powerups
   for (unsigned int i = 0; i < powerups.size(); i++) {
-    powerups.at(i).draw(map_buffer);
+    powerups.at(i)->draw(map_buffer);
   }
 
   // Map to buffer

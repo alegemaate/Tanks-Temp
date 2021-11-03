@@ -13,7 +13,7 @@ mouseListener m_listener;
 keyListener k_listener;
 
 // Current state object
-state* currentState = nullptr;
+State* currentState = nullptr;
 
 // Are we closing?
 bool closing = false;
@@ -61,19 +61,19 @@ void change_state() {
     // Change the state
     switch (nextState) {
       case STATE_INIT:
-        currentState = new init();
+        currentState = new Init();
         break;
       case STATE_GAME:
-        currentState = new game();
+        currentState = new Game();
         break;
       case STATE_MENU:
-        currentState = new menu();
+        currentState = new Menu();
         break;
       case STATE_EXIT:
         closing = true;
         break;
       default:
-        currentState = new game();
+        currentState = new Game();
     }
 
     // Change the current state ID
@@ -153,7 +153,7 @@ void setup() {
 
   // Set the current state ID
   stateID = STATE_INIT;
-  currentState = new init();
+  currentState = new Init();
 }
 
 void update() {
