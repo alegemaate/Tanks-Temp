@@ -1,11 +1,11 @@
-#ifndef SRC_GAME_TILEMAP_H_
-#define SRC_GAME_TILEMAP_H_
+#ifndef SRC_GAME_TILE_MAP_H_
+#define SRC_GAME_TILE_MAP_H_
 
 #include <string>
 #include <vector>
 
 #include "../util/coordinate.h"
-#include "./barrier.h"
+#include "barrier.h"
 
 class TileMap {
  public:
@@ -27,4 +27,4 @@ class TileMap {
   int map_temp[255][255];
 };
 
-#endif  // SRC_GAME_TILEMAP_H_
+#endif  // SRC_GAME_TILE_MAP_H_

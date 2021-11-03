@@ -1,4 +1,4 @@
-#include "tileMap.h"
+#include "tile-map.h"
 
 // Update
 void TileMap::update() {}
