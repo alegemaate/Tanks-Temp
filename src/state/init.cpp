@@ -1,9 +1,9 @@
 #include "init.h"
 
 #include "../system/ImageRegistry.h"
+#include "state-engine.hpp"
 
-// Init state (and game)
-Init::Init() {
+void Init::update() {
   // Load images
   ImageRegistry::loadImage("menu-background", "images/menu.png");
   ImageRegistry::loadImage("game-background", "images/background.png");
@@ -27,5 +27,5 @@ Init::Init() {
   ImageRegistry::loadImage("tank-base-blue", "images/tank_base_blue.png");
 
   // Goto menu
-  set_next_state(STATE_MENU);
+  StateEngine::setNextState(StateId::STATE_MENU);
 }

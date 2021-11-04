@@ -30,9 +30,6 @@ extern int mouseY();
 extern int random(int min, int max);
 extern float randomf(float min, float max);
 
-// Next state
-extern void set_next_state(int state);
-
 // Error reporting
 extern void abort_on_error(const std::string& message);
 

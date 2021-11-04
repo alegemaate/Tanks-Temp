@@ -12,14 +12,8 @@
 
 class Init : public State {
  public:
-  Init();
-  ~Init(){};
-
-  void update(){};
+  void update();
   void draw() {}
-
- protected:
- private:
 };
 
 #endif  // SRC_STATE_INIT_H_
