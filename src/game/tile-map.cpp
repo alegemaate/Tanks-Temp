@@ -1,11 +1,5 @@
 #include "tile-map.h"
 
-// Update
-void TileMap::update() {}
-
-// Draw map to screen
-void TileMap::draw(BITMAP* buffer, int x, int y) {}
-
 // Generate a new map
 void TileMap::generateMap(unsigned char width, unsigned char height) {
   // Assign new width and height

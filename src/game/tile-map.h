@@ -9,12 +9,6 @@
 
 class TileMap {
  public:
-  TileMap() {}
-  virtual ~TileMap() {}
-
-  void update();
-  void draw(BITMAP* buffer, int x, int y);
-
   void generateMap(unsigned char width, unsigned char height);
 
  private:
