@@ -18,19 +18,20 @@ void TileMap::generateMap(unsigned char width, unsigned char height) {
   for (unsigned char pass = 0; pass < passes; pass++) {
     for (unsigned char i = 0; i < this->width; i++) {
       for (unsigned char t = 0; t < this->height; t++) {
-        switch (pass) {
-          auto neighbours = this->getNeighbours(i, t);
+        auto neighbours = this->getNeighbours(i, t);
 
+        switch (pass) {
           // Pass 1 (Edges)
-          case 1:
+          case 1: {
             if (neighbours.n == -1 || neighbours.e == -1 ||
                 neighbours.s == -1 || neighbours.w == -1) {
               tile_map[i][t] = 1;
             }
             break;
+          }
 
           // Pass 2 (Well Placed blocks)
-          case 2:
+          case 2: {
             const bool should_place = random(0, 2) == 1;
 
             if (should_place && neighbours.n == 0 && neighbours.e == 0 &&
@@ -40,36 +41,41 @@ void TileMap::generateMap(unsigned char width, unsigned char height) {
               tile_map[i][t] = 1;
             }
             break;
+          }
 
           // Pass 3 (Filling)
-          case 3:
+          case 3: {
             if ((neighbours.e == 1 && neighbours.w == 1) ||
                 (neighbours.n == 1 && neighbours.s == 1)) {
               tile_map[i][t] = 1;
             }
             break;
+          }
 
           // Pass 4 (Filling inaccessable areas)
-          case 4:
+          case 4: {
             if (neighbours.e == 1 && neighbours.w == 1 && neighbours.n == 1 &&
                 neighbours.s == 1) {
               tile_map[i][t] = 1;
             }
             break;
+          }
 
           // Pass 5 (Boxes!)
-          case 5:
+          case 5: {
             if (tile_map[i][t] == 0 && random(1, 20) == 1) {
               tile_map[i][t] = 2;
             }
             break;
+          }
 
           // Pass 6 (Find start locations)
-          case 6:
+          case 6: {
             if (tile_map[i][t] == 0) {
               start_locations.push_back(Coordinate(i * 40, t * 40));
             }
             break;
+          }
         }
       }
     }
