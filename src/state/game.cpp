@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "../system/ImageRegistry.h"
+#include "state-engine.hpp"
 
 unsigned char Game::map_width = 20;
 unsigned char Game::map_height = 20;
@@ -247,7 +248,7 @@ void Game::update() {
 
   // Game over
   if (key[KEY_SPACE] && (player_tanks.size() == 0 || enemy_tanks.size() == 0)) {
-    set_next_state(STATE_MENU);
+    StateEngine::setNextState(StateId::STATE_MENU);
   }
 
   // Scroll map

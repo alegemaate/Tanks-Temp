@@ -6,14 +6,12 @@
 #include "./state/game.h"
 #include "./state/init.h"
 #include "./state/menu.h"
+#include "./state/state-engine.hpp"
 #include "./state/state.h"
 
 // Input listener classes
 mouseListener m_listener;
 keyListener k_listener;
-
-// Current state object
-State* currentState = nullptr;
 
 // Are we closing?
 bool closing = false;
@@ -44,54 +42,13 @@ void close_button_handler(void) {
 }
 END_OF_FUNCTION(close_button_handler)
 
-// Delete game state and free state resources
-void clean_up() {
-  delete currentState;
-}
-
-// Change game screen
-void change_state() {
-  // If the state needs to be changed
-  if (nextState != STATE_NULL) {
-    // Delete the current state
-    if (nextState != STATE_EXIT) {
-      delete currentState;
-    }
-
-    // Change the state
-    switch (nextState) {
-      case STATE_INIT:
-        currentState = new Init();
-        break;
-      case STATE_GAME:
-        currentState = new Game();
-        break;
-      case STATE_MENU:
-        currentState = new Menu();
-        break;
-      case STATE_EXIT:
-        closing = true;
-        break;
-      default:
-        currentState = new Game();
-    }
-
-    // Change the current state ID
-    stateID = nextState;
-
-    // NULL the next state ID
-    nextState = STATE_NULL;
-  }
-}
-
 // Calibrate joystick
 void calibrateJoystick() {
   for (int i = 0; i < num_joysticks; i++) {
     while (joy[i].flags & JOYFLAG_CALIBRATE) {
-      // AL_CONST char *msg = calibrate_joystick_name(i);
-
-      if ((readkey() & 0xFF) == 27)
+      if ((readkey() & 0xFF) == 27) {
         exit(0);
+      }
 
       if (calibrate_joystick(i) != 0) {
         set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
@@ -99,10 +56,11 @@ void calibrateJoystick() {
         exit(1);
       }
     }
-    if (!(joy[i].stick[0].flags & JOYFLAG_ANALOGUE))
+    if (!(joy[i].stick[0].flags & JOYFLAG_ANALOGUE)) {
       allegro_message(
           "This game only supports analogue joysticks, please unplug and try "
           "again. \n");
+    }
   }
 
   save_joystick_data("joy_config.dat");
@@ -144,28 +102,28 @@ void setup() {
   install_int_ex(game_time_ticker, BPS_TO_TIMER(10));
 
   // FPS STUFF
-  for (int i = 0; i < 10; i++)
+  for (int i = 0; i < 10; i++) {
     frames_array[i] = 0;
+  }
 
   // Close button
   LOCK_FUNCTION(close_button_handler);
   set_close_button_callback(close_button_handler);
 
   // Set the current state ID
-  stateID = STATE_INIT;
-  currentState = new Init();
+  StateEngine::setNextState(StateId::STATE_INIT);
 }
 
 void update() {
   // Change state (if needed)
-  change_state();
+  StateEngine::changeState();
 
   // Update listeners
   m_listener.update();
   k_listener.update();
 
   // Update state
-  currentState->update();
+  StateEngine::update();
 }
 
 int main() {
@@ -174,8 +132,9 @@ int main() {
 
   // FPS Counter
   while (!key[KEY_ESC] && !closing && !joy[0].button[7].b) {
-    while (ticks == 0)
+    while (ticks == 0) {
       rest(1);
+    }
     while (ticks > 0) {
       int old_ticks = ticks;
       update();
@@ -192,7 +151,7 @@ int main() {
       frames_done = 0;
       old_time += 1;
     }
-    currentState->draw();
+    StateEngine::draw();
     frames_done++;
   }
 

@@ -1,6 +1,7 @@
 #include "menu.h"
 
 #include "../system/ImageRegistry.h"
+#include "state-engine.hpp"
 
 // Initilizer
 Menu::Menu() {
@@ -40,30 +41,41 @@ void Menu::update() {
   start.update();
 
   // Make teams
-  if (enemies_up.clicked())
+  if (enemies_up.clicked()) {
     Game::num_enemies++;
-  if (enemies_down.clicked())
+  }
+  if (enemies_down.clicked()) {
     Game::num_enemies--;
-  if (friends_up.clicked())
+  }
+  if (friends_up.clicked()) {
     Game::num_friends++;
-  if (friends_down.clicked())
+  }
+  if (friends_down.clicked()) {
     Game::num_friends--;
-  if (width_up.clicked())
+  }
+  if (width_up.clicked()) {
     Game::map_width++;
-  if (width_down.clicked())
+  }
+  if (width_down.clicked()) {
     Game::map_width--;
-  if (height_up.clicked())
+  }
+  if (height_up.clicked()) {
     Game::map_height++;
-  if (height_down.clicked())
+  }
+  if (height_down.clicked()) {
     Game::map_height--;
-  if (bounce_up.clicked())
+  }
+  if (bounce_up.clicked()) {
     Tank::num_bullet_bounces++;
-  if (bounce_down.clicked())
+  }
+  if (bounce_down.clicked()) {
     Tank::num_bullet_bounces--;
+  }
 
   // Start game
-  if (start.clicked())
-    set_next_state(STATE_GAME);
+  if (start.clicked()) {
+    StateEngine::setNextState(StateId::STATE_GAME);
+  }
 }
 
 // Drawing routine

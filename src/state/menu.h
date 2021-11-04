@@ -21,7 +21,6 @@ class Menu : public State {
   void update();
   void draw();
 
- protected:
  private:
   Button enemies_up;
   Button enemies_down;
