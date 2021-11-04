@@ -6,9 +6,8 @@
 class AiTank : public Tank {
  public:
   AiTank(World* world,
-         int x,
-         int y,
-         int hurtTime,
+         float x,
+         float y,
          int health,
          int fireSpeed,
          int fireDelay,
@@ -21,6 +20,8 @@ class AiTank : public Tank {
   float destination_y;
 
   void update_target();
+  void find_enemy_target();
+  void ai_drive();
 };
 
 #endif  // SRC_GAME_AI_TANK_H_

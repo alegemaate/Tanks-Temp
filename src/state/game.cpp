@@ -1,6 +1,6 @@
 #include "game.h"
 
-#include <iostream>
+#include <algorithm>
 
 #include "../system/ImageRegistry.h"
 #include "state-engine.hpp"
@@ -105,10 +105,11 @@ Game::Game() {
   }
 
   // Player
-  int randomStartLocation = random(0, startLocations.size() - 1);
-  PlayerTank* player = new PlayerTank(
-      &game_world, startLocations.at(randomStartLocation).x,
-      startLocations.at(randomStartLocation).y, 3, 100, 4, 20, 1);
+
+  Coordinate startLocation =
+      startLocations.at(random(0, startLocations.size() - 1));
+  PlayerTank* player = new PlayerTank(&game_world, startLocation.x,
+                                      startLocation.y, 100, 4, 20, 1);
 
   player->process_enemies(&enemy_tanks);
   player->set_map_dimensions(map_width * 40, map_height * 40);
@@ -116,11 +117,10 @@ Game::Game() {
 
   // Enemies
   for (unsigned char i = 0; i < num_enemies; i++) {
-    int randomStartLocation = random(0, startLocations.size() - 1);
+    startLocation = startLocations.at(random(0, startLocations.size() - 1));
     AiTank* player =
-        new AiTank(&game_world, startLocations.at(randomStartLocation).x,
-                   startLocations.at(randomStartLocation).y, 3, random(50, 150),
-                   random(1, 4), random(50, 300), random(1, 10) / 10, true);
+        new AiTank(&game_world, startLocation.x, startLocation.y,
+                   random(50, 150), random(1, 8), random(50, 300), 1, true);
 
     player->process_enemies(&player_tanks);
     player->set_map_dimensions(map_width * 40, map_height * 40);
@@ -129,10 +129,9 @@ Game::Game() {
 
   // Friends
   for (unsigned char i = 0; i < num_friends; i++) {
-    int randomStartLocation = random(0, startLocations.size() - 1);
-    AiTank* player = new AiTank(
-        &game_world, startLocations.at(randomStartLocation).x,
-        startLocations.at(randomStartLocation).y, 3, 100, 4, 20, 1, false);
+    startLocation = startLocations.at(random(0, startLocations.size() - 1));
+    AiTank* player = new AiTank(&game_world, startLocation.x, startLocation.y,
+                                100, 4, 150, 1, false);
 
     player->process_enemies(&enemy_tanks);
     player->set_map_dimensions(map_width * 40, map_height * 40);
@@ -156,65 +155,56 @@ void Game::update() {
   game_world.update();
 
   // Move
-  for (unsigned int i = 0; i < enemy_tanks.size(); i++) {
+  for (auto const& enemy : enemy_tanks) {
     // Update barriers
-    for (unsigned int t = 0; t < barriers.size(); t++) {
-      barriers.at(t)->update(enemy_tanks.at(i)->getBullets());
+    for (auto const& barrier : barriers) {
+      barrier->update(enemy->getBullets());
     }
 
     // Update bullets
-    for (unsigned int t = 0; t < player_tanks.size(); t++)
-      player_tanks.at(t)->checkCollision(enemy_tanks.at(i)->getBullets());
+    for (auto const& player : player_tanks) {
+      player->checkCollision(enemy->getBullets());
+    }
 
     // Collision with barrier
-    enemy_tanks.at(i)->checkCollision(&barriers);
+    enemy->checkCollision(&barriers);
 
     // Collision with powerups
-    enemy_tanks.at(i)->checkCollision(&powerups);
+    enemy->checkCollision(&powerups);
 
     // Update tanks
-    enemy_tanks.at(i)->update();
-
-    // Delete tank
-    if (enemy_tanks.at(i)->isDead()) {
-      // enemy_tanks.at(i) -> putDecal( decal_buffer);
-      delete enemy_tanks[i];
-      enemy_tanks.erase(enemy_tanks.begin() + i);
-    }
+    enemy->update();
   }
-  for (unsigned int i = 0; i < player_tanks.size(); i++) {
+
+  for (auto const& player : player_tanks) {
     // Update barriers
-    for (unsigned int t = 0; t < barriers.size(); t++)
-      barriers.at(t)->update(player_tanks.at(i)->getBullets());
+    for (auto const& barrier : barriers) {
+      barrier->update(player->getBullets());
+    }
 
     // Update bullets
-    for (unsigned int t = 0; t < enemy_tanks.size(); t++)
-      enemy_tanks.at(t)->checkCollision(player_tanks.at(i)->getBullets());
+    for (auto const& enemy : enemy_tanks) {
+      enemy->checkCollision(player->getBullets());
+    }
 
     // Collision with barrier
-    player_tanks.at(i)->checkCollision(&barriers);
+    player->checkCollision(&barriers);
 
     // Collision with powerups
-    player_tanks.at(i)->checkCollision(&powerups);
+    player->checkCollision(&powerups);
 
     // Update tanks
-    player_tanks.at(i)->update();
-
-    // Delete tank
-    if (player_tanks.at(i)->isDead()) {
-      player_tanks.at(i)->putDecal(decal_buffer);
-      delete player_tanks[i];
-      player_tanks.erase(player_tanks.begin() + i);
-    }
+    player->update();
   }
 
   // Remove broken barriers
-  for (unsigned int i = 0; i < barriers.size(); i++) {
-    if (barriers.at(i)->getDead()) {
+  for (auto const& barrier : barriers) {
+    if (barrier->getDead()) {
       // Spawn powerup
       if (random(0, 1) == 0) {
         int randomType = random(0, 3);
         PowerupType type = PowerupType::Health;
+
         switch (randomType) {
           case 1:
             type = PowerupType::Speed;
@@ -230,21 +220,25 @@ void Game::update() {
             type = PowerupType::Health;
             break;
         }
-        Powerup* powerup = new Powerup(barriers.at(i)->position.x,
-                                       barriers.at(i)->position.y, type);
+
+        Powerup* powerup =
+            new Powerup(barrier->position.x, barrier->position.y, type);
         powerups.push_back(powerup);
       }
-
-      barriers.erase(barriers.begin() + i);
     }
   }
 
-  // Delete powerup
-  for (unsigned int i = 0; i < powerups.size(); i++) {
-    if (powerups.at(i)->getDead()) {
-      powerups.erase(powerups.begin() + i);
-    }
-  }
+  // Cleanup barriers
+  barriers.erase(
+      std::remove_if(barriers.begin(), barriers.end(),
+                     [](auto const& barrier) { return barrier->getDead(); }),
+      barriers.end());
+
+  // Cleanup powerups
+  powerups.erase(
+      std::remove_if(powerups.begin(), powerups.end(),
+                     [](auto const& powerup) { return powerup->getDead(); }),
+      powerups.end());
 
   // Game over
   if (key[KEY_SPACE] && (player_tanks.size() == 0 || enemy_tanks.size() == 0)) {
@@ -256,80 +250,6 @@ void Game::update() {
     map_x = player_tanks.at(0)->getCenterX() - buffer->w / 2;
     map_y = player_tanks.at(0)->getCenterY() - buffer->h / 2;
   }
-
-  // Vision buffer
-  // Check collision with all boxes!
-  /*for( unsigned int i = 0; i < barriers.size(); i++){
-    barriers.at(i)->visible = false;
-  }
-
-  for( double q = 0; q < 2 * M_PI; q += ((2 * M_PI) / number_of_rays)){
-    float point_x = (SCREEN_W * 2) * cos(q) + player_tanks.at(0) ->
-  getCenterX(); float point_y = (SCREEN_H * 2) * sin(q) + player_tanks.at(0)
-  -> getCenterY();
-
-    // Closest POI
-    float poi_x = point_x;
-    float poi_y = point_y;
-
-    bool intersection_found = false;
-    int closest_index = -1;
-
-    for( unsigned int i = 0; i < barriers.size(); i++){
-      for( int t = 0; t < 4; t++){
-        float temp_poi_x = -1;
-        float temp_poi_y = -1;
-
-        float bar_x_1 = 0, bar_x_2 = 0, bar_y_1 = 0, bar_y_2 = 0;
-
-        // TOP
-        if( t == 0){
-          bar_x_2 = barriers.at(i)->getWidth();
-        }
-        // RIGHT
-        if( t == 1){
-          bar_x_1 = barriers.at(i)->getWidth();
-          bar_x_2 = barriers.at(i)->getWidth();
-          bar_y_2 = barriers.at(i)->getHeight();
-        }
-        // BOTTOM
-        if( t == 2){
-          bar_x_2 = barriers.at(i)->getWidth();
-          bar_y_1 = barriers.at(i)->getHeight();
-          bar_y_2 = barriers.at(i)->getHeight();
-        }
-        // LEFT
-        if( t == 3){
-          bar_y_2 = barriers.at(i)->getHeight();
-        }
-
-        // Check if ray and side intersect
-        if( get_line_intersection( player_tanks.at(0) -> getCenterX(),
-  player_tanks.at(0) -> getCenterY(), point_x, point_y, barriers.at(i)->getX()
-  + bar_x_1, barriers.at(i)->getY() + bar_y_1, barriers.at(i)->getX() +
-  bar_x_2, barriers.at(i)->getY() + bar_y_2, &temp_poi_x, &temp_poi_y)){
-          // Check if closer match found and if so update POI
-          if( distanceTo2D( temp_poi_x, temp_poi_y, player_tanks.at(0) ->
-  getCenterX(), player_tanks.at(0) -> getCenterY()) < distanceTo2D( poi_x,
-  poi_y, player_tanks.at(0) -> getCenterX(), player_tanks.at(0) ->
-  getCenterY())){ poi_x = temp_poi_x; poi_y = temp_poi_y; intersection_found
-  = true; closest_index = i;
-          }
-        }
-      }
-    }
-
-    // Draw line to closest collision
-    if( intersection_found){
-      //line( vision_buffer, player_tanks.at(0) -> getCenterX(),
-  player_tanks.at(0) -> getCenterY(), poi_x, poi_y, makecol( 255, 255, 255));
-      barriers.at(closest_index).visible = true;
-    }
-
-    // Draw intersection if there is one
-    if( intersection_found && key[KEY_C])
-      ellipse( vision_buffer, poi_x, poi_y, 5, 5, makecol( 255, 0, 0));
-  }*/
 }
 
 void Game::draw() {
@@ -343,30 +263,27 @@ void Game::draw() {
   draw_sprite(map_buffer, decal_buffer, 0, 0);
 
   // Draw tanks
-  for (unsigned int i = 0; i < enemy_tanks.size(); i++) {
-    enemy_tanks.at(i)->draw(map_buffer);
-    enemy_tanks.at(i)->putDecal(decal_buffer);
+  for (auto const& enemy : enemy_tanks) {
+    enemy->draw(map_buffer);
+    enemy->putDecal(decal_buffer);
   }
-  for (unsigned int i = 0; i < player_tanks.size(); i++) {
-    player_tanks.at(i)->draw(map_buffer);
-    player_tanks.at(i)->putDecal(decal_buffer);
+
+  for (auto const& player : player_tanks) {
+    player->draw(map_buffer);
+    player->putDecal(decal_buffer);
   }
 
   // Draw world
   game_world.draw(map_buffer);
 
   // Draw barriers
-  for (unsigned int i = 0; i < barriers.size(); i++) {
-    barriers.at(i)->draw(map_buffer);
+  for (auto const& barrier : barriers) {
+    barrier->draw(map_buffer);
   }
 
-  // Vision buffer
-  // draw_sprite( map_buffer, vision_buffer, 0, 0);
-  // clear_to_color( vision_buffer, 0xFF00FF);
-
   // Draw powerups
-  for (unsigned int i = 0; i < powerups.size(); i++) {
-    powerups.at(i)->draw(map_buffer);
+  for (auto const& powerup : powerups) {
+    powerup->draw(map_buffer);
   }
 
   // Map to buffer

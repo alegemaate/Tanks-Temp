@@ -20,8 +20,8 @@ Particle::Particle() {
 }
 
 // Constructor
-Particle::Particle(int x,
-                   int y,
+Particle::Particle(float x,
+                   float y,
                    int color,
                    float xVeloctyMin,
                    float xVelocityMax,

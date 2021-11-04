@@ -1,22 +1,22 @@
 #include "tank.h"
 
+#include <algorithm>
 #include <cmath>
+#include <vector>
 
 #include "../system/ImageRegistry.h"
 
 unsigned char Tank::num_bullet_bounces = 0;
 
 Tank::Tank(World* worldPointer,
-           int x,
-           int y,
-           int hurtTimer,
+           float x,
+           float y,
            int health,
            int fireSpeed,
            int fireDelay,
            float speed)
     : x(x),
       y(y),
-      hurt_timer(hurtTimer),
       health(health),
       initialHealth(health),
       fire_speed(fireSpeed),
@@ -25,10 +25,8 @@ Tank::Tank(World* worldPointer,
       speed(0),
       worldPointer(worldPointer),
       dead(false),
-      rotation_radians_body(0),
-      rotation_allegro_body(0),
-      rotation_radians_turret(0),
-      rotation_allegro_turret(0),
+      rotation_body(0),
+      rotation_turret(0),
       width(0),
       height(0) {
   // Map size
@@ -53,15 +51,6 @@ Tank::~Tank() {
 
 // Check dead
 bool Tank::isDead() {
-  // Just died
-  if (!dead && (health < 1)) {
-    explode(x + 25, y + 25, 10, 200, 20);
-    play_sample(sample_shot, 255, 127, 500, 0);
-  }
-
-  // Set dead
-  dead = (health < 1);
-
   return dead;
 }
 
@@ -75,6 +64,24 @@ void Tank::explode(int x, int y, int velocity, int amount, int life) {
   }
 }
 
+void Tank::accelerate(bool moving) {
+  if (moving) {
+    if (speed == 0) {
+      speed = 0.2;
+    } else if (speed < max_speed) {
+      speed *= (max_speed * 1.03);
+    } else {
+      speed = max_speed;
+    }
+  } else {
+    if (speed > 0.1) {
+      speed *= 0.95;
+    } else {
+      speed = 0;
+    }
+  }
+}
+
 // Get bullets
 std::vector<Bullet*>* Tank::getBullets() {
   return &bullets;
@@ -82,51 +89,48 @@ std::vector<Bullet*>* Tank::getBullets() {
 
 // Check collision
 void Tank::checkCollision(std::vector<Bullet*>* bullets) {
-  for (unsigned int i = 0; i < bullets->size(); i++) {
-    if (collisionAny(x, x + 50, bullets->at(i)->getX(),
-                     bullets->at(i)->getX() + bullets->at(i)->getXVelocity(), y,
-                     y + 50, bullets->at(i)->getY(),
-                     bullets->at(i)->getY() + bullets->at(i)->getYVelocity())) {
+  for (auto const& bullet : *bullets) {
+    if (collisionAny(x, x + 50, bullet->getX(),
+                     bullet->getX() + bullet->getXVelocity(), y, y + 50,
+                     bullet->getY(), bullet->getY() + bullet->getYVelocity())) {
       health -= 10;
-      bullets->at(i)->destroy();
+      bullet->destroy();
     }
   }
 }
 
 void Tank::checkCollision(std::vector<Barrier*>* barriers) {
-  float guess_vector_x = -speed * cos(rotation_radians_body);
-  float guess_vector_y = -speed * sin(rotation_radians_body);
+  float guess_vector_x = -speed * cos(rotation_body);
+  float guess_vector_y = -speed * sin(rotation_body);
 
   canMoveX = true;
   canMoveY = true;
 
-  for (unsigned int i = 0; i < barriers->size(); i++) {
-    if (collisionAny(
-            x + 2 + guess_vector_x, x + width - 2 + guess_vector_x,
-            barriers->at(i)->position.x,
-            barriers->at(i)->position.x + barriers->at(i)->getWidth(), y + 2,
-            y + height - 2, barriers->at(i)->position.y,
-            barriers->at(i)->position.y + barriers->at(i)->getHeight())) {
+  for (auto const& barrier : *barriers) {
+    if (collisionAny(x + 2 + guess_vector_x, x + width - 2 + guess_vector_x,
+                     barrier->position.x,
+                     barrier->position.x + barrier->getWidth(), y + 2,
+                     y + height - 2, barrier->position.y,
+                     barrier->position.y + barrier->getHeight())) {
       canMoveX = false;
     }
-    if (collisionAny(
-            x + 2, x + width - 2, barriers->at(i)->position.x,
-            barriers->at(i)->position.x + barriers->at(i)->getWidth(),
-            y + 2 + guess_vector_y, y + height - 2 + guess_vector_y,
-            barriers->at(i)->position.y,
-            barriers->at(i)->position.y + barriers->at(i)->getHeight())) {
+    if (collisionAny(x + 2, x + width - 2, barrier->position.x,
+                     barrier->position.x + barrier->getWidth(),
+                     y + 2 + guess_vector_y, y + height - 2 + guess_vector_y,
+                     barrier->position.y,
+                     barrier->position.y + barrier->getHeight())) {
       canMoveY = false;
     }
   }
 }
+
 void Tank::checkCollision(std::vector<Powerup*>* powerups) {
-  for (unsigned int i = 0; i < powerups->size(); i++) {
-    if (collisionAny(x, x + 50, powerups->at(i)->getX(),
-                     powerups->at(i)->getX() + powerups->at(i)->getWidth(), y,
-                     y + 50, powerups->at(i)->getY(),
-                     powerups->at(i)->getY() + powerups->at(i)->getHeight())) {
-      pickupPowerup(powerups->at(i)->getType());
-      powerups->at(i)->pickup();
+  for (auto const& powerup : *powerups) {
+    if (collisionAny(x, x + 50, powerup->getX(),
+                     powerup->getX() + powerup->getWidth(), y, y + 50,
+                     powerup->getY(), powerup->getY() + powerup->getHeight())) {
+      pickupPowerup(powerup->getType());
+      powerup->pickup();
     }
   }
 }
@@ -143,26 +147,18 @@ void Tank::drive(float rotation) {
   }
 }
 
-// Update timers
-void Tank::update_timers() {
-  // Change timers
-  hurt_timer--;
-  bullet_delay++;
-}
-
 // Update bullets
 void Tank::update_bullets() {
   // Update bullets
-  for (unsigned int i = 0; i < bullets.size(); i++) {
-    bullets.at(i)->update();
-    if (bullets.at(i)->getErase())
-      bullets.erase(bullets.begin() + i);
+  for (auto const& bullet : bullets) {
+    bullet->update();
   }
 
   // Erase bullets
-  if (key[KEY_C] || joy[0].button[4].b) {
-    bullets.clear();
-  }
+  bullets.erase(
+      std::remove_if(bullets.begin(), bullets.end(),
+                     [](auto const& bullet) { return bullet->getErase(); }),
+      bullets.end());
 }
 
 // Shoot
@@ -176,29 +172,39 @@ void Tank::shoot(float rotation, float x, float y) {
 }
 
 // Update
-void Tank::update() {}
+void Tank::update() {
+  // Just died
+  if (!dead && (health < 1)) {
+    explode(x + 25, y + 25, 10, 200, 20);
+    play_sample(sample_shot, 255, 127, 500, 0);
+    dead = true;
+  }
+
+  bullet_delay++;
+
+  update_bullets();
+}
 
 // Draw bullets
 void Tank::drawBullets(BITMAP* buffer) {
-  // Draw bullets
-  for (unsigned int i = 0; i < bullets.size(); i++)
-    bullets.at(i)->draw(buffer);
+  for (auto const& bullet : bullets) {
+    bullet->draw(buffer);
+  }
 }
 
 // Draw Tank
 void Tank::drawTankBase(BITMAP* buffer) {
   // Hurt image for player
-  if (health <= 0) {
-    rotate_sprite(buffer, image_hurt, x, y, itofix(rotation_allegro_body));
+  if (dead) {
+    rotate_sprite(buffer, image_hurt, x, y, radToFix(rotation_body));
   } else {
-    rotate_sprite(buffer, image_base, x, y, itofix(rotation_allegro_body));
+    rotate_sprite(buffer, image_base, x, y, radToFix(rotation_body));
   }
 }
 
 // Draw turret
 void Tank::drawTankTurret(BITMAP* buffer) {
-  // Turret
-  rotate_sprite(buffer, image_top, x, y, itofix(rotation_allegro_turret));
+  rotate_sprite(buffer, image_top, x, y, radToFix(rotation_turret));
 }
 
 // Draw health
@@ -208,12 +214,13 @@ void Tank::drawHealthBar(BITMAP* buffer,
                          int width,
                          int height,
                          int border) {
-  // Health Bar
+  float healthPercent =
+      static_cast<float>(health) / static_cast<float>(initialHealth);
+
   rectfill(buffer, x, y, x + width, y + height, makecol(0, 0, 0));
   rectfill(buffer, x + border, y + border, x + width - border,
            y + height - border, makecol(255, 0, 0));
-  rectfill(buffer, x + border, y + border,
-           x + (((float)health / (float)initialHealth) * width) - border,
+  rectfill(buffer, x + border, y + border, x + (healthPercent * width) - border,
            y + height - border, makecol(0, 255, 0));
 }
 
@@ -230,25 +237,18 @@ void Tank::draw(BITMAP* buffer) {
     drawTankTurret(buffer);
 
     // Health bar
-    if (health < initialHealth)
+    if (health < initialHealth) {
       drawHealthBar(buffer, x - 5, y - 10, 50, 6, 1);
+    }
   }
 }
 
 // Put decals
 void Tank::putDecal(BITMAP* buffer) {
-  if (!dead && speed > 0)
-    rotate_sprite(buffer, image_treads, x + width / 2, y,
-                  itofix(rotation_allegro_body));
-  else if (dead)
-    drawTankBase(buffer);
-}
-
-// Health
-void Tank::giveHealth(int healthAmount) {
-  health += healthAmount;
-  if (health > initialHealth)
-    health = initialHealth;
+  if (!dead && speed > 0) {
+    rotate_sprite(buffer, image_treads, getCenterX(), y,
+                  radToFix(rotation_body));
+  }
 }
 
 // Powerups

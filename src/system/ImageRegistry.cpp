@@ -1,7 +1,6 @@
 #include "ImageRegistry.h"
 
 #include <loadpng.h>
-#include <iostream>
 
 #include "../util/tools.h"
 

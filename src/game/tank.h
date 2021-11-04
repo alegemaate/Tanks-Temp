@@ -13,9 +13,8 @@
 class Tank {
  public:
   explicit Tank(World* worldPointer,
-                int x,
-                int y,
-                int hurtTime,
+                float x,
+                float y,
                 int health,
                 int fireSpeed,
                 int fireDelay,
@@ -31,13 +30,11 @@ class Tank {
   virtual void draw(BITMAP* buffer);
   virtual void putDecal(BITMAP* buffer);
 
-  virtual void giveHealth(int healthAmount);
+  virtual float getX() { return x; }
+  virtual float getY() { return y; }
 
-  virtual int getX() { return x; }
-  virtual int getY() { return y; }
-
-  virtual int getCenterX() { return x + width / 2; }
-  virtual int getCenterY() { return y + height / 2; }
+  virtual float getCenterX() { return x + width / 2.0f; }
+  virtual float getCenterY() { return y + height / 2.0f; }
 
   virtual int getHeight() { return width; }
   virtual int getWidth() { return height; }
@@ -61,7 +58,6 @@ class Tank {
   float x;
   float y;
 
-  int hurt_timer;
   int health;
   int initialHealth;
   int fire_speed;
@@ -79,10 +75,8 @@ class Tank {
 
   bool dead;
 
-  float rotation_radians_body;
-  float rotation_allegro_body;
-  float rotation_radians_turret;
-  float rotation_allegro_turret;
+  float rotation_body;
+  float rotation_turret;
 
   int bullet_delay;
 
@@ -96,28 +90,32 @@ class Tank {
   bool canMoveX;
   bool canMoveY;
 
-  std::vector<Bullet*> bullets;
   std::vector<Tank*>* otherTanks;
+
+  // Update
+  void drive(float rotation);
+  void shoot(float rotation, float x, float y);
+  void accelerate(bool moving);
+
+ private:
+  std::vector<Bullet*> bullets;
 
   SAMPLE* sample_shot;
 
   // Update
-  virtual void drive(float rotation);
-  virtual void shoot(float rotation, float x, float y);
-  virtual void update_bullets();
-  virtual void update_timers();
-  virtual void explode(int x, int y, int velocity, int amount, int life);
+  void update_bullets();
+  void explode(int x, int y, int velocity, int amount, int life);
 
   // Draw
-  virtual void drawBullets(BITMAP* buffer);
-  virtual void drawTankBase(BITMAP* buffer);
-  virtual void drawTankTurret(BITMAP* buffer);
-  virtual void drawHealthBar(BITMAP* buffer,
-                             int x,
-                             int y,
-                             int width,
-                             int height,
-                             int border);
+  void drawBullets(BITMAP* buffer);
+  void drawTankBase(BITMAP* buffer);
+  void drawTankTurret(BITMAP* buffer);
+  void drawHealthBar(BITMAP* buffer,
+                     int x,
+                     int y,
+                     int width,
+                     int height,
+                     int border);
 };
 
 #endif  // SRC_GAME_TANK_H_

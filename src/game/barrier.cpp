@@ -34,39 +34,36 @@ Barrier::~Barrier() {
 // Update
 void Barrier::update(std::vector<Bullet*>* bullets) {
   if (health > 0 || indestructable) {
-    for (unsigned int i = 0; i < bullets->size(); i++) {
-      if (collisionAny(position.x, position.x + width, bullets->at(i)->getX(),
-                       bullets->at(i)->getX() + 5, position.y,
-                       position.y + height, bullets->at(i)->getY(),
-                       bullets->at(i)->getY() + 5)) {
-        if (collisionBottom(
-                bullets->at(i)->getY() + bullets->at(i)->getYVelocity(),
-                bullets->at(i)->getY() + 5, position.y, position.y + height)) {
-          bullets->at(i)->reverseDirection("y");
-          bullets->at(i)->bounce(BOTTOM);
+    for (auto const& bullet : *bullets) {
+      if (collisionAny(position.x, position.x + width, bullet->getX(),
+                       bullet->getX() + 5, position.y, position.y + height,
+                       bullet->getY(), bullet->getY() + 5)) {
+        if (collisionBottom(bullet->getY() + bullet->getYVelocity(),
+                            bullet->getY() + 5, position.y,
+                            position.y + height)) {
+          bullet->reverseDirection("y");
+          bullet->bounce(BOTTOM);
         }
 
-        if (collisionTop(
-                bullets->at(i)->getY(),
-                bullets->at(i)->getY() + 5 + bullets->at(i)->getYVelocity(),
-                position.y, position.y + height)) {
-          bullets->at(i)->reverseDirection("y");
-          bullets->at(i)->bounce(TOP);
+        if (collisionTop(bullet->getY(),
+                         bullet->getY() + 5 + bullet->getYVelocity(),
+                         position.y, position.y + height)) {
+          bullet->reverseDirection("y");
+          bullet->bounce(TOP);
         }
 
-        if (collisionLeft(
-                bullets->at(i)->getX(),
-                bullets->at(i)->getX() + 5 + bullets->at(i)->getXVelocity(),
-                position.x, position.x + width)) {
-          bullets->at(i)->reverseDirection("x");
-          bullets->at(i)->bounce(LEFT);
+        if (collisionLeft(bullet->getX(),
+                          bullet->getX() + 5 + bullet->getXVelocity(),
+                          position.x, position.x + width)) {
+          bullet->reverseDirection("x");
+          bullet->bounce(LEFT);
         }
 
-        if (collisionRight(
-                bullets->at(i)->getX() + bullets->at(i)->getXVelocity(),
-                bullets->at(i)->getX() + 5, position.x, position.x + width)) {
-          bullets->at(i)->reverseDirection("x");
-          bullets->at(i)->bounce(RIGHT);
+        if (collisionRight(bullet->getX() + bullet->getXVelocity(),
+                           bullet->getX() + 5, position.x,
+                           position.x + width)) {
+          bullet->reverseDirection("x");
+          bullet->bounce(RIGHT);
         }
 
         if (!indestructable) {
