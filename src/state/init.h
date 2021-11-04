@@ -12,7 +12,7 @@
 
 class Init : public State {
  public:
-  void update();
+  void update() override;
   void draw() {}
 };
 

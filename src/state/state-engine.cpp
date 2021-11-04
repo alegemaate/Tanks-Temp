@@ -8,7 +8,7 @@
 // State variables
 StateId StateEngine::state_id = StateId::STATE_NULL;
 StateId StateEngine::next_state = StateId::STATE_NULL;
-State* StateEngine::current_state = nullptr;
+std::unique_ptr<State> StateEngine::current_state = nullptr;
 
 // Set next state
 void StateEngine::setNextState(StateId state_id) {
@@ -31,19 +31,19 @@ void StateEngine::changeState() {
 
   // Delete the current state
   if (next_state != StateId::STATE_EXIT) {
-    delete current_state;
+    current_state.reset();
   }
 
   // Change the state
   switch (next_state) {
     case StateId::STATE_INIT:
-      current_state = new Init();
+      current_state = std::make_unique<Init>();
       break;
     case StateId::STATE_GAME:
-      current_state = new Game();
+      current_state = std::make_unique<Game>();
       break;
     case StateId::STATE_MENU:
-      current_state = new Menu();
+      current_state = std::make_unique<Menu>();
       break;
     case StateId::STATE_EXIT:
     case StateId::STATE_NULL:
