@@ -9,6 +9,7 @@
 #include <allegro.h>
 #include <time.h>
 #include <cmath>
+#include <memory>
 #include <vector>
 
 #include "../game/ai-tank.h"
@@ -63,7 +64,7 @@ class Game : public State {
   std::vector<Barrier*> barriers;
   std::vector<Tank*> enemy_tanks;
   std::vector<Tank*> player_tanks;
-  std::vector<Powerup*> powerups;
+  std::vector<std::unique_ptr<Powerup>> powerups;
   std::vector<Coordinate> startLocations;
 
   BarrierType map_temp[max_map_width][max_map_height];

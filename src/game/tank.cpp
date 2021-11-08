@@ -124,8 +124,9 @@ void Tank::checkCollision(std::vector<Barrier*>* barriers) {
   }
 }
 
-void Tank::checkCollision(std::vector<Powerup*>* powerups) {
-  for (auto const& powerup : *powerups) {
+void Tank::checkCollision(
+    const std::vector<std::unique_ptr<Powerup>>& powerups) {
+  for (auto const& powerup : powerups) {
     if (collisionAny(x, x + 50, powerup->getX(),
                      powerup->getX() + powerup->getWidth(), y, y + 50,
                      powerup->getY(), powerup->getY() + powerup->getHeight())) {

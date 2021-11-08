@@ -2,6 +2,7 @@
 #define SRC_GAME_TANK_H_
 
 #include <allegro.h>
+#include <memory>
 #include <vector>
 
 #include "./barrier.h"
@@ -46,7 +47,8 @@ class Tank {
 
   virtual void checkCollision(std::vector<Bullet*>* bullets);
   virtual void checkCollision(std::vector<Barrier*>* barriers);
-  virtual void checkCollision(std::vector<Powerup*>* powerups);
+  virtual void checkCollision(
+      const std::vector<std::unique_ptr<Powerup>>& powerups);
 
   virtual void process_enemies(std::vector<Tank*>* otherTanks);
 

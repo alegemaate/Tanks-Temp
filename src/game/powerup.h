@@ -10,17 +10,17 @@ class Powerup {
   Powerup();
   Powerup(int x, int y, PowerupType type);
 
-  int getX() { return x; }
-  int getY() { return y; }
-  int getWidth() { return 40; }
-  int getHeight() { return 40; }
-  PowerupType getType() { return type; }
+  int getX() const { return x; }
+  int getY() const { return y; }
+  int getWidth() const { return 40; }
+  int getHeight() const { return 40; }
+  PowerupType getType() const { return type; }
 
-  bool getDead() { return dead; }
+  bool getDead() const { return dead; }
 
   void pickup() { dead = true; }
 
-  void draw(BITMAP* buffer);
+  void draw(BITMAP* buffer) const;
 
  private:
   int x;

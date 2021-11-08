@@ -170,7 +170,7 @@ void Game::update() {
     enemy->checkCollision(&barriers);
 
     // Collision with powerups
-    enemy->checkCollision(&powerups);
+    enemy->checkCollision(powerups);
 
     // Update tanks
     enemy->update();
@@ -191,7 +191,7 @@ void Game::update() {
     player->checkCollision(&barriers);
 
     // Collision with powerups
-    player->checkCollision(&powerups);
+    player->checkCollision(powerups);
 
     // Update tanks
     player->update();
@@ -221,9 +221,8 @@ void Game::update() {
             break;
         }
 
-        Powerup* powerup =
-            new Powerup(barrier->position.x, barrier->position.y, type);
-        powerups.push_back(powerup);
+        powerups.emplace_back(
+            new Powerup(barrier->position.x, barrier->position.y, type));
       }
     }
   }
