@@ -99,14 +99,15 @@ void Tank::checkCollision(std::vector<Bullet*>* bullets) {
   }
 }
 
-void Tank::checkCollision(std::vector<Barrier*>* barriers) {
+void Tank::checkCollision(
+    const std::vector<std::unique_ptr<Barrier>>& barriers) {
   float guess_vector_x = -speed * cos(rotation_body);
   float guess_vector_y = -speed * sin(rotation_body);
 
   canMoveX = true;
   canMoveY = true;
 
-  for (auto const& barrier : *barriers) {
+  for (auto const& barrier : barriers) {
     if (collisionAny(x + 2 + guess_vector_x, x + width - 2 + guess_vector_x,
                      barrier->position.x,
                      barrier->position.x + barrier->getWidth(), y + 2,

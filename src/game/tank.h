@@ -46,7 +46,8 @@ class Tank {
   }
 
   virtual void checkCollision(std::vector<Bullet*>* bullets);
-  virtual void checkCollision(std::vector<Barrier*>* barriers);
+  virtual void checkCollision(
+      const std::vector<std::unique_ptr<Barrier>>& barriers);
   virtual void checkCollision(
       const std::vector<std::unique_ptr<Powerup>>& powerups);
 

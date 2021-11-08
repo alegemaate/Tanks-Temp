@@ -61,7 +61,7 @@ class Game : public State {
   World game_world;
 
   // Objects
-  std::vector<Barrier*> barriers;
+  std::vector<std::unique_ptr<Barrier>> barriers;
   std::vector<Tank*> enemy_tanks;
   std::vector<Tank*> player_tanks;
   std::vector<std::unique_ptr<Powerup>> powerups;

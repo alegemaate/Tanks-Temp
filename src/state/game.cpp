@@ -98,7 +98,7 @@ Game::Game() {
             barrier->makeIndestructable(true);
           }
 
-          barriers.push_back(barrier);
+          barriers.emplace_back(barrier);
         }
       }
     }
@@ -167,7 +167,7 @@ void Game::update() {
     }
 
     // Collision with barrier
-    enemy->checkCollision(&barriers);
+    enemy->checkCollision(barriers);
 
     // Collision with powerups
     enemy->checkCollision(powerups);
@@ -188,7 +188,7 @@ void Game::update() {
     }
 
     // Collision with barrier
-    player->checkCollision(&barriers);
+    player->checkCollision(barriers);
 
     // Collision with powerups
     player->checkCollision(powerups);
