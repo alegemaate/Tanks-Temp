@@ -1,5 +1,9 @@
 # Tanks
+![sonarcloud](https://sonarcloud.io/api/project_badges/measure?project=alegemaate_Tanks&metric=code_smells)
+![sonarcloud](https://sonarcloud.io/api/project_badges/measure?project=alegemaate_Tanks&metric=bugs)
+
 A 2D, top down, tank fighting game built using Allegro 4
+
 
 ![image](https://user-images.githubusercontent.com/9920336/140231515-f7908323-4cda-44f5-91cb-4cbe48ccdb20.png)
 
