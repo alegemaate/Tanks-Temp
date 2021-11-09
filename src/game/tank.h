@@ -21,6 +21,8 @@ class Tank {
                 int fireDelay,
                 float speed);
 
+  virtual ~Tank() = default;
+
   virtual bool isDead();
 
   virtual std::vector<Bullet*>* getBullets();
@@ -104,7 +106,7 @@ class Tank {
 
   // Update
   void update_bullets();
-  void explode(float x, float y, int velocity, int amount, int life);
+  void explode(float x, float y, float velocity, int amount, int life);
 
   // Draw
   void drawBullets(BITMAP* buffer) const;

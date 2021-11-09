@@ -10,16 +10,9 @@
 class Button {
  public:
   // Constructor
-  Button(int x,
-         int y,
-         const std::string& text,
-         FONT* button_font,
-         int width = 10,
-         int height = 10,
-         int padding_x = 10,
-         int padding_y = 10);
+  Button(int x, int y, const std::string& text, FONT* button_font);
 
-  Button();
+  Button() = default;
 
   // Silly Allan! You gotta return padding times two, because there's two sides
   // of padding I gotchu tho, fixed up and respaced buttons in the menu. No
@@ -38,19 +31,19 @@ class Button {
 
  private:
   // Variables
-  int x;
-  int y;
+  int x = 0;
+  int y = 0;
   int width;
   int height;
-  int padding_x;
-  int padding_y;
-  std::string text;
+  int padding_x = 10;
+  int padding_y = 10;
+  std::string text = "";
 
   bool hovering = false;
   bool visible = true;
 
   // Font
-  FONT* button_font;
+  FONT* button_font = nullptr;
 };
 
 #endif  // SRC_UI_BUTTON_H_

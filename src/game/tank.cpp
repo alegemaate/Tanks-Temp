@@ -36,7 +36,7 @@ bool Tank::isDead() {
 }
 
 // Explode
-void Tank::explode(float x, float y, int velocity, int amount, int life) {
+void Tank::explode(float x, float y, float velocity, int amount, int life) {
   for (int i = 0; i < amount; i++) {
     auto* particle = new Particle(
         x, y, makecol(255, random(0, 255), 0), -velocity, velocity, -velocity,
@@ -160,7 +160,7 @@ void Tank::shoot(float rotation, float x, float y) {
 void Tank::update() {
   // Just died
   if (!dead && (health < 1)) {
-    explode(x + 25, y + 25, 10, 200, 20);
+    explode(x + 25.0f, y + 25.0f, 10.0f, 200, 20);
     play_sample(sample_shot, 255, 127, 500, 0);
     dead = true;
   }

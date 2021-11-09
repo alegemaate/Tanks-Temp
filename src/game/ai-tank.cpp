@@ -87,8 +87,8 @@ void AiTank::update_target() {
   bool cantMove = !canMoveX && !canMoveY;
 
   if (distanceToTarget < 10 || cantMove) {
-    destination_x = random(0, map_width);
-    destination_y = random(0, map_height);
+    destination_x = static_cast<float>(random(0, map_width));
+    destination_y = static_cast<float>(random(0, map_height));
   }
 }
 

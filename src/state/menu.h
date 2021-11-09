@@ -16,7 +16,6 @@
 class Menu : public State {
  public:
   Menu();
-  ~Menu() override {}
 
   void update() override;
   void draw() override;

@@ -1,30 +1,9 @@
 #include "button.h"
 
-// Defaults
-Button::Button() {
-  this->x = 0;
-  this->y = 0;
-  this->text = "";
-  this->button_font = nullptr;
-
-  padding_x = 10;
-  padding_y = 10;
-}
-
 // Constructor
-Button::Button(int x,
-               int y,
-               const std::string& text,
-               FONT* button_font,
-               int width,
-               int height,
-               int padding_x,
-               int padding_y)
-    : x(x), y(y), padding_x(padding_x), padding_y(padding_y), text(text) {
-  if (!setFont(button_font)) {
-    this->width = width;
-    this->height = height;
-  }
+Button::Button(int x, int y, const std::string& text, FONT* button_font)
+    : x(x), y(y), text(text) {
+  setFont(button_font);
 }
 
 // Set new font

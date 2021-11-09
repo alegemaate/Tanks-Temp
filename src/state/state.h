@@ -10,7 +10,7 @@
 class State {
  public:
   // Deconstructor
-  virtual ~State() {}
+  virtual ~State() = default;
 
   // Draw to screen
   virtual void draw() = 0;
