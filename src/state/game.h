@@ -68,7 +68,7 @@ class Game : public State {
   std::vector<Coordinate> startLocations;
 
   BarrierType map_temp[max_map_width][max_map_height];
-  int map_x, map_y;
+  float map_x, map_y;
 
   int currentRound = 0;
 };

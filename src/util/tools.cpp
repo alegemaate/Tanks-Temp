@@ -153,5 +153,6 @@ char get_line_intersection(float p0_x,
 }
 
 int radToFix(float radians) {
-  return itofix(radians * 40.5845104792);
+  int i_rad = static_cast<int>(radians * 40.5845104792);
+  return itofix(i_rad);
 }

@@ -17,7 +17,7 @@ class Barrier {
   Barrier(World* world, Coordinate position, BarrierType type);
   ~Barrier();
 
-  void update(std::vector<Bullet*>* bullets);
+  void update(const std::vector<Bullet*>* bullets);
   void draw(BITMAP* image);
 
   int getWidth();

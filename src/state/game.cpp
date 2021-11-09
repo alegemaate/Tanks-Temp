@@ -108,8 +108,8 @@ Game::Game() {
 
   Coordinate startLocation =
       startLocations.at(random(0, startLocations.size() - 1));
-  PlayerTank* player = new PlayerTank(&game_world, startLocation.x,
-                                      startLocation.y, 100, 4, 20, 1);
+  auto* player = new PlayerTank(&game_world, startLocation.x, startLocation.y,
+                                100, 4, 20, 1);
 
   player->process_enemies(&enemy_tanks);
   player->set_map_dimensions(map_width * 40, map_height * 40);
@@ -118,7 +118,7 @@ Game::Game() {
   // Enemies
   for (unsigned char i = 0; i < num_enemies; i++) {
     startLocation = startLocations.at(random(0, startLocations.size() - 1));
-    AiTank* player =
+    auto* player =
         new AiTank(&game_world, startLocation.x, startLocation.y,
                    random(50, 150), random(1, 8), random(50, 300), 1, true);
 
@@ -199,31 +199,28 @@ void Game::update() {
 
   // Remove broken barriers
   for (auto const& barrier : barriers) {
-    if (barrier->getDead()) {
-      // Spawn powerup
-      if (random(0, 1) == 0) {
-        int randomType = random(0, 3);
-        PowerupType type = PowerupType::Health;
+    if (barrier->getDead() && random(0, 1) == 0) {
+      int randomType = random(0, 3);
+      PowerupType type = PowerupType::Health;
 
-        switch (randomType) {
-          case 1:
-            type = PowerupType::Speed;
-            break;
-          case 2:
-            type = PowerupType::FireSpeed;
-            break;
-          case 3:
-            type = PowerupType::FireDelay;
-            break;
-          default:
-          case 0:
-            type = PowerupType::Health;
-            break;
-        }
-
-        powerups.emplace_back(
-            new Powerup(barrier->position.x, barrier->position.y, type));
+      switch (randomType) {
+        case 1:
+          type = PowerupType::Speed;
+          break;
+        case 2:
+          type = PowerupType::FireSpeed;
+          break;
+        case 3:
+          type = PowerupType::FireDelay;
+          break;
+        default:
+        case 0:
+          type = PowerupType::Health;
+          break;
       }
+
+      powerups.emplace_back(
+          new Powerup(barrier->position.x, barrier->position.y, type));
     }
   }
 
@@ -246,8 +243,10 @@ void Game::update() {
 
   // Scroll map
   if (player_tanks.size() > 0) {
-    map_x = player_tanks.at(0)->getCenterX() - buffer->w / 2.0f;
-    map_y = player_tanks.at(0)->getCenterY() - buffer->h / 2.0f;
+    map_x =
+        player_tanks.at(0)->getCenterX() - static_cast<float>(buffer->w) / 2.0f;
+    map_y =
+        player_tanks.at(0)->getCenterY() - static_cast<float>(buffer->h) / 2.0f;
   }
 }
 

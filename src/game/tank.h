@@ -37,9 +37,6 @@ class Tank {
   virtual float getCenterX() { return x + width / 2.0f; }
   virtual float getCenterY() { return y + height / 2.0f; }
 
-  virtual int getHeight() { return width; }
-  virtual int getWidth() { return height; }
-
   virtual void set_map_dimensions(int width, int height) {
     map_width = width;
     map_height = height;
@@ -78,21 +75,21 @@ class Tank {
 
   bool dead;
 
-  float rotation_body;
-  float rotation_turret;
+  float rotation_body = 0;
+  float rotation_turret = 0;
 
-  int bullet_delay;
+  int bullet_delay = 0;
 
   float width;
   float height;
 
   int map_width, map_height;
 
-  float vector_x;
-  float vector_y;
+  float vector_x = 0;
+  float vector_y = 0;
 
-  bool canMoveX;
-  bool canMoveY;
+  bool canMoveX = true;
+  bool canMoveY = true;
 
   std::vector<Tank*>* otherTanks;
 
@@ -111,7 +108,7 @@ class Tank {
   void explode(float x, float y, int velocity, int amount, int life);
 
   // Draw
-  void drawBullets(BITMAP* buffer);
+  void drawBullets(BITMAP* buffer) const;
   void drawTankBase(BITMAP* buffer);
   void drawTankTurret(BITMAP* buffer);
   void drawHealthBar(BITMAP* buffer,
@@ -119,7 +116,7 @@ class Tank {
                      float y,
                      int width,
                      int height,
-                     int border);
+                     int border) const;
 };
 
 #endif  // SRC_GAME_TANK_H_

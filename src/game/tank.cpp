@@ -25,21 +25,11 @@ Tank::Tank(World* worldPointer,
       speed(0),
       worldPointer(worldPointer),
       dead(false),
-      rotation_body(0),
-      rotation_turret(0),
       width(0),
       height(0) {
   // Map size
   map_width = SCREEN_W;
   map_height = SCREEN_H;
-
-  bullet_delay = 0;
-
-  vector_x = 0;
-  vector_y = 0;
-
-  canMoveX = true;
-  canMoveY = true;
 
   sample_shot = load_sample_ex("sfx/fire.wav");
 }
@@ -188,7 +178,7 @@ void Tank::update() {
 }
 
 // Draw bullets
-void Tank::drawBullets(BITMAP* buffer) {
+void Tank::drawBullets(BITMAP* buffer) const {
   for (auto* const& bullet : bullets) {
     bullet->draw(buffer);
   }
@@ -215,7 +205,7 @@ void Tank::drawHealthBar(BITMAP* buffer,
                          float y,
                          int width,
                          int height,
-                         int border) {
+                         int border) const {
   float healthPercent =
       static_cast<float>(health) / static_cast<float>(initialHealth);
 
