@@ -72,7 +72,7 @@ void Barrier::update(std::vector<Bullet*>* bullets) {
       }
     }
   } else if (!exploded) {
-    explode(position.x + width / 2, position.y + height / 2, 6, 100, 30);
+    explode(position.x + width / 2.0f, position.y + height / 2.0f, 6, 100, 30);
     exploded = true;
   }
 }

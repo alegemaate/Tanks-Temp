@@ -83,7 +83,8 @@ class Tank {
 
   int bullet_delay;
 
-  int width, height;
+  float width;
+  float height;
 
   int map_width, map_height;
 
@@ -114,8 +115,8 @@ class Tank {
   void drawTankBase(BITMAP* buffer);
   void drawTankTurret(BITMAP* buffer);
   void drawHealthBar(BITMAP* buffer,
-                     int x,
-                     int y,
+                     float x,
+                     float y,
                      int width,
                      int height,
                      int border);

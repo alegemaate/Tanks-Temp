@@ -42,8 +42,8 @@ class Barrier {
   bool exploded;
   bool visible;
 
-  int width;
-  int height;
+  float width;
+  float height;
 
   SAMPLE* sample_explode;
 

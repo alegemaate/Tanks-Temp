@@ -31,7 +31,8 @@ void PlayerTank::update() {
   }
 
   // Shoot
-  rotation_turret = find_angle(SCREEN_W / 2, SCREEN_H / 2, mouse_x, mouse_y);
+  rotation_turret =
+      find_angle(SCREEN_W / 2.0f, SCREEN_H / 2.0f, mouse_x, mouse_y);
 
   if (joy[0].stick[0].axis[0].pos != 0 || joy[0].stick[0].axis[1].pos != 0) {
     rotation_turret =
@@ -46,11 +47,11 @@ void PlayerTank::update() {
 
   // Rotate with keys
   if (key[KEY_A] || key[KEY_LEFT]) {
-    rotation_body -= 0.03;
+    rotation_body -= 0.03f;
   }
 
   if (key[KEY_D] || key[KEY_RIGHT]) {
-    rotation_body += 0.03;
+    rotation_body += 0.03f;
   }
 
   // Drive

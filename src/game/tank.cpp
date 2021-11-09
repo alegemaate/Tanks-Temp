@@ -211,8 +211,8 @@ void Tank::drawTankTurret(BITMAP* buffer) {
 
 // Draw health
 void Tank::drawHealthBar(BITMAP* buffer,
-                         int x,
-                         int y,
+                         float x,
+                         float y,
                          int width,
                          int height,
                          int border) {

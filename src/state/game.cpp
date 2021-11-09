@@ -246,8 +246,8 @@ void Game::update() {
 
   // Scroll map
   if (player_tanks.size() > 0) {
-    map_x = player_tanks.at(0)->getCenterX() - buffer->w / 2;
-    map_y = player_tanks.at(0)->getCenterY() - buffer->h / 2;
+    map_x = player_tanks.at(0)->getCenterX() - buffer->w / 2.0f;
+    map_y = player_tanks.at(0)->getCenterY() - buffer->h / 2.0f;
   }
 }
 
