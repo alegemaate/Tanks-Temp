@@ -22,21 +22,12 @@ Tank::Tank(World* worldPointer,
       fire_speed(fireSpeed),
       fire_delay_rate(fireDelay),
       max_speed(speed),
-      speed(0),
-      worldPointer(worldPointer),
-      dead(false),
-      width(0),
-      height(0) {
+      worldPointer(worldPointer) {
   // Map size
   map_width = SCREEN_W;
   map_height = SCREEN_H;
 
   sample_shot = load_sample_ex("sfx/fire.wav");
-}
-
-// Delete
-Tank::~Tank() {
-  //  destroy_sample(sample_shot);
 }
 
 // Check dead
@@ -47,24 +38,24 @@ bool Tank::isDead() {
 // Explode
 void Tank::explode(float x, float y, int velocity, int amount, int life) {
   for (int i = 0; i < amount; i++) {
-    Particle* particle =
-        new Particle(x, y, makecol(255, random(0, 255), 0), -velocity, velocity,
-                     -velocity, velocity, 1, CIRCLE, life, EXPLODE);
+    auto* particle = new Particle(
+        x, y, makecol(255, random(0, 255), 0), -velocity, velocity, -velocity,
+        velocity, 1, ParticleType::CIRCLE, life, ParticleBehaviour::EXPLODE);
     worldPointer->addParticle(particle);
   }
 }
 
 void Tank::accelerate(bool moving) {
   if (moving) {
-    if (speed == 0) {
-      speed = 0.2;
+    if (speed < 0.1f) {
+      speed = 0.2f;
     } else if (speed < max_speed) {
-      speed *= (max_speed * 1.03);
+      speed *= (max_speed * 1.03f);
     } else {
       speed = max_speed;
     }
   } else {
-    if (speed > 0.1) {
+    if (speed > 0.1f) {
       speed *= 0.95f;
     } else {
       speed = 0;
@@ -99,17 +90,17 @@ void Tank::checkCollision(
 
   for (auto const& barrier : barriers) {
     if (collisionAny(x + 2 + guess_vector_x, x + width - 2 + guess_vector_x,
-                     barrier->position.x,
-                     barrier->position.x + barrier->getWidth(), y + 2,
-                     y + height - 2, barrier->position.y,
-                     barrier->position.y + barrier->getHeight())) {
+                     barrier->getPosition().x,
+                     barrier->getPosition().x + barrier->getWidth(), y + 2,
+                     y + height - 2, barrier->getPosition().y,
+                     barrier->getPosition().y + barrier->getHeight())) {
       canMoveX = false;
     }
-    if (collisionAny(x + 2, x + width - 2, barrier->position.x,
-                     barrier->position.x + barrier->getWidth(),
+    if (collisionAny(x + 2, x + width - 2, barrier->getPosition().x,
+                     barrier->getPosition().x + barrier->getWidth(),
                      y + 2 + guess_vector_y, y + height - 2 + guess_vector_y,
-                     barrier->position.y,
-                     barrier->position.y + barrier->getHeight())) {
+                     barrier->getPosition().y,
+                     barrier->getPosition().y + barrier->getHeight())) {
       canMoveY = false;
     }
   }
@@ -156,8 +147,10 @@ void Tank::update_bullets() {
 // Shoot
 void Tank::shoot(float rotation, float x, float y) {
   if (bullet_delay > fire_delay_rate) {
-    Bullet* bullet = new Bullet(worldPointer, x, y, rotation, fire_speed,
-                                1 + num_bullet_bounces, sample_shot);
+    play_sample(sample_shot, 255, 127, random(800, 1200), 0);
+
+    auto* bullet = new Bullet(worldPointer, x, y, rotation, fire_speed,
+                              1 + num_bullet_bounces);
     bullets.push_back(bullet);
     bullet_delay = 0;
   }
@@ -246,21 +239,25 @@ void Tank::putDecal(BITMAP* buffer) {
 // Powerups
 void Tank::pickupPowerup(PowerupType type) {
   switch (type) {
-    case PowerupType::Health:
+    case PowerupType::HEALTH:
       health += 10;
-      if (health > 100)
+      if (health > 100) {
         health = 100;
+      }
       break;
-    case PowerupType::Speed:
-      max_speed += 0.5;
+    case PowerupType::SPEED:
+      max_speed += 0.5f;
       break;
-    case PowerupType::FireSpeed:
+    case PowerupType::FIRE_SPEED:
       fire_speed += 1;
       break;
-    case PowerupType::FireDelay:
+    case PowerupType::FIRE_DELAY:
       fire_delay_rate -= 1;
-      if (fire_delay_rate < 0)
+      if (fire_delay_rate < 0) {
         fire_delay_rate = 0;
+      }
+      break;
+    default:
       break;
   }
 }

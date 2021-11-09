@@ -4,18 +4,12 @@
 #include "../util/tools.h"
 
 Barrier::Barrier(World* world, Coordinate position, BarrierType type)
-    : position(position),
-      worldPointer(world),
-      type(type),
-      indestructable(false),
-      exploded(false),
-      visible(true) {
+    : position(position), worldPointer(world) {
   switch (type) {
     case BarrierType::BOX:
       this->image = ImageRegistry::getImage("block-box");
       this->health = 3;
       break;
-    case BarrierType::STONE:
     default:
       this->image = ImageRegistry::getImage("block-stone");
       this->health = 20;
@@ -50,27 +44,27 @@ void Barrier::update(const std::vector<Bullet*>* bullets) {
                           bullet->getY() + 5, position.y,
                           position.y + height)) {
         bullet->reverseDirection("y");
-        bullet->bounce(BOTTOM);
+        bullet->bounce(BounceDirection::BOTTOM);
       }
 
       if (collisionTop(bullet->getY(),
                        bullet->getY() + 5 + bullet->getYVelocity(), position.y,
                        position.y + height)) {
         bullet->reverseDirection("y");
-        bullet->bounce(TOP);
+        bullet->bounce(BounceDirection::TOP);
       }
 
       if (collisionLeft(bullet->getX(),
                         bullet->getX() + 5 + bullet->getXVelocity(), position.x,
                         position.x + width)) {
         bullet->reverseDirection("x");
-        bullet->bounce(LEFT);
+        bullet->bounce(BounceDirection::LEFT);
       }
 
       if (collisionRight(bullet->getX() + bullet->getXVelocity(),
                          bullet->getX() + 5, position.x, position.x + width)) {
         bullet->reverseDirection("x");
-        bullet->bounce(RIGHT);
+        bullet->bounce(BounceDirection::RIGHT);
       }
 
       if (!indestructable) {
@@ -88,18 +82,22 @@ void Barrier::draw(BITMAP* buffer) {
 }
 
 // Get width
-int Barrier::getWidth() {
+int Barrier::getWidth() const {
   return width;
 }
 
 // Get height
-int Barrier::getHeight() {
+int Barrier::getHeight() const {
   return height;
 }
 
 // Check if needs cleanup
-bool Barrier::getDead() {
+bool Barrier::getDead() const {
   return !indestructable && health <= 0;
+}
+
+Coordinate Barrier::getPosition() const {
+  return this->position;
 }
 
 // Explode
@@ -121,9 +119,9 @@ void Barrier::explode(float x, float y, int velocity, int amount, int life) {
     } while (getr(color) == 255 && getg(color) == 255 && getb(color) == 255);
 
     // Make particle
-    Particle* particle =
+    auto* particle =
         new Particle(x, y, color, -velocity, velocity, -velocity, velocity, 1,
-                     CIRCLE, life, EXPLODE);
+                     ParticleType::CIRCLE, life, ParticleBehaviour::EXPLODE);
 
     worldPointer->addParticle(particle);
   }

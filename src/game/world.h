@@ -7,11 +7,8 @@
 
 class World {
  public:
-  World() {}
-  virtual ~World() {}
-
   void update();
-  void draw(BITMAP* buffer);
+  void draw(BITMAP* buffer) const;
 
   void addParticle(Particle* particle);
 

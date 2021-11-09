@@ -22,13 +22,12 @@ void TileMap::generateMap(unsigned char width, unsigned char height) {
 
         switch (pass) {
           // Pass 1 (Edges)
-          case 1: {
+          case 1:
             if (neighbours.n == -1 || neighbours.e == -1 ||
                 neighbours.s == -1 || neighbours.w == -1) {
               tile_map[i][t] = 1;
             }
             break;
-          }
 
           // Pass 2 (Well Placed blocks)
           case 2: {
@@ -76,6 +75,9 @@ void TileMap::generateMap(unsigned char width, unsigned char height) {
             }
             break;
           }
+
+          default:
+            break;
         }
       }
     }

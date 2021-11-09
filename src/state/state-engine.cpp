@@ -44,9 +44,7 @@ void StateEngine::changeState() {
     case StateId::STATE_MENU:
       current_state = std::make_unique<Menu>();
       break;
-    case StateId::STATE_EXIT:
-    case StateId::STATE_NULL:
-      // closing = true;
+    default:
       break;
   }
 

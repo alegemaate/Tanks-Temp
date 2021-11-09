@@ -7,54 +7,45 @@
 #include "./particle.h"
 #include "./world.h"
 
-#define TOP 0
-#define BOTTOM 1
-#define LEFT 2
-#define RIGHT 3
-#define TANK 4
+enum class BounceDirection {
+  NONE,
+  TOP,
+  BOTTOM,
+  LEFT,
+  RIGHT,
+};
 
 class Bullet {
  public:
-  Bullet(World* world,
-         float x,
-         float y,
-         float angle,
-         float speed,
-         int health,
-         SAMPLE* sound);
-  ~Bullet();
+  Bullet(World* world, float x, float y, float angle, float speed, int health);
 
-  bool getErase();
+  bool getErase() const;
   void update();
-  void draw(BITMAP* buffer);
+  void draw(BITMAP* buffer) const;
 
-  float getX();
-  float getY();
+  float getX() const;
+  float getY() const;
 
-  float getYVelocity();
-  float getXVelocity();
+  float getYVelocity() const;
+  float getXVelocity() const;
 
-  void bounce(int direction);
+  void bounce(BounceDirection direction);
   void destroy();
 
-  void reverseDirection(std::string direction);
+  void reverseDirection(const std::string& direction);
 
- protected:
  private:
-  int health;
-  int incidenceDirection;
+  World* worldPointer;
 
   float x;
   float y;
   float vector_x;
   float vector_y;
 
-  World* worldPointer;
+  int health;
+  BounceDirection incidenceDirection = BounceDirection::NONE;
 
-  bool owner;
-  bool pendingErase;
-
-  SAMPLE* shotSound;
+  bool pendingErase = false;
 };
 
 #endif  // SRC_GAME_BULLET_H_

@@ -2,22 +2,21 @@
 
 #include "../system/ImageRegistry.h"
 
-Powerup::Powerup() : Powerup(0, 0, PowerupType::Health) {}
-
-Powerup::Powerup(float x, float y, PowerupType type)
-    : x(x), y(y), type(type), dead(false) {
+Powerup::Powerup(float x, float y, PowerupType type) : x(x), y(y), type(type) {
   switch (type) {
-    case PowerupType::Health:
+    case PowerupType::HEALTH:
       imageKey = "powerup-health";
       break;
-    case PowerupType::Speed:
+    case PowerupType::SPEED:
       imageKey = "powerup-tank-speed";
       break;
-    case PowerupType::FireSpeed:
+    case PowerupType::FIRE_SPEED:
       imageKey = "powerup-bullet-speed";
       break;
-    case PowerupType::FireDelay:
+    case PowerupType::FIRE_DELAY:
       imageKey = "powerup-bullet-delay";
+      break;
+    default:
       break;
   }
 }

@@ -16,10 +16,10 @@
 class Menu : public State {
  public:
   Menu();
-  ~Menu() {}
+  ~Menu() override {}
 
-  void update();
-  void draw();
+  void update() override;
+  void draw() override;
 
  private:
   Button enemies_up;

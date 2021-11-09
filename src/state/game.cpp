@@ -28,9 +28,6 @@ Game::Game() {
   // Load images
   background = ImageRegistry::getImage("game-background");
   cursor = ImageRegistry::getImage("cursor");
-  blocks[0] = ImageRegistry::getImage("block-box");
-  blocks[1] = ImageRegistry::getImage("block-stone");
-  blocks[2] = ImageRegistry::getImage("block-box");
 
   // Make a map
   for (unsigned char pass = 0; pass < 8; pass++) {
@@ -92,7 +89,7 @@ Game::Game() {
         // Pass 7 (create barriers)
         else if (pass == 7 && map_temp[i][t] != BarrierType::NONE) {
           auto position = Coordinate(i * 40, t * 40);
-          auto barrier = new Barrier(&game_world, position, map_temp[i][t]);
+          auto* barrier = new Barrier(&game_world, position, map_temp[i][t]);
 
           if (i == 0 || t == 0 || i == map_width - 1 || t == map_height - 1) {
             barrier->makeIndestructable(true);
@@ -130,8 +127,8 @@ Game::Game() {
   // Friends
   for (unsigned char i = 0; i < num_friends; i++) {
     startLocation = startLocations.at(random(0, startLocations.size() - 1));
-    AiTank* player = new AiTank(&game_world, startLocation.x, startLocation.y,
-                                100, 4, 150, 1, false);
+    auto* player = new AiTank(&game_world, startLocation.x, startLocation.y,
+                              100, 4, 150, 1, false);
 
     player->process_enemies(&enemy_tanks);
     player->set_map_dimensions(map_width * 40, map_height * 40);
@@ -201,26 +198,25 @@ void Game::update() {
   for (auto const& barrier : barriers) {
     if (barrier->getDead() && random(0, 1) == 0) {
       int randomType = random(0, 3);
-      PowerupType type = PowerupType::Health;
+      PowerupType type = PowerupType::HEALTH;
 
       switch (randomType) {
         case 1:
-          type = PowerupType::Speed;
+          type = PowerupType::SPEED;
           break;
         case 2:
-          type = PowerupType::FireSpeed;
+          type = PowerupType::FIRE_SPEED;
           break;
         case 3:
-          type = PowerupType::FireDelay;
+          type = PowerupType::FIRE_DELAY;
           break;
         default:
-        case 0:
-          type = PowerupType::Health;
+          type = PowerupType::HEALTH;
           break;
       }
 
-      powerups.emplace_back(
-          new Powerup(barrier->position.x, barrier->position.y, type));
+      powerups.emplace_back(new Powerup(barrier->getPosition().x,
+                                        barrier->getPosition().y, type));
     }
   }
 
@@ -237,12 +233,12 @@ void Game::update() {
       powerups.end());
 
   // Game over
-  if (key[KEY_SPACE] && (player_tanks.size() == 0 || enemy_tanks.size() == 0)) {
+  if (key[KEY_SPACE] && (player_tanks.empty() || enemy_tanks.empty())) {
     StateEngine::setNextState(StateId::STATE_MENU);
   }
 
   // Scroll map
-  if (player_tanks.size() > 0) {
+  if (!player_tanks.empty()) {
     map_x =
         player_tanks.at(0)->getCenterX() - static_cast<float>(buffer->w) / 2.0f;
     map_y =
@@ -291,9 +287,9 @@ void Game::draw() {
   textprintf_ex(buffer, font, 20, 20, makecol(0, 0, 0), makecol(255, 255, 255),
                 "Round: %i", currentRound);
   textprintf_ex(buffer, font, 20, 35, makecol(0, 0, 0), makecol(255, 255, 255),
-                "Team BLUE: %i", player_tanks.size());
+                "Team BLUE: %u", player_tanks.size());
   textprintf_ex(buffer, font, 20, 50, makecol(0, 0, 0), makecol(255, 255, 255),
-                "Team RED: %i", enemy_tanks.size());
+                "Team RED: %u", enemy_tanks.size());
 
   // Cursor
   draw_sprite(buffer, cursor, mouse_x - 10, mouse_y - 10);

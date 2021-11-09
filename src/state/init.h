@@ -13,7 +13,9 @@
 class Init : public State {
  public:
   void update() override;
-  void draw() {}
+  void draw() override {
+    // No draw method
+  }
 };
 
 #endif  // SRC_STATE_INIT_H_
