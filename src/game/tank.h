@@ -21,7 +21,7 @@ class Tank {
                 int fireDelay,
                 float speed);
 
-  virtual ~Tank();
+  virtual ~Tank(){};
 
   virtual bool isDead();
 
@@ -64,7 +64,7 @@ class Tank {
   int fire_delay_rate;
 
   float max_speed;
-  float speed;
+  float speed = 0;
 
   BITMAP* image_base;
   BITMAP* image_hurt;
@@ -73,17 +73,18 @@ class Tank {
 
   World* worldPointer;
 
-  bool dead;
+  bool dead = false;
 
   float rotation_body = 0;
   float rotation_turret = 0;
 
   int bullet_delay = 0;
 
-  float width;
-  float height;
+  float width = 0;
+  float height = 0;
 
-  int map_width, map_height;
+  int map_width;
+  int map_height;
 
   float vector_x = 0;
   float vector_y = 0;

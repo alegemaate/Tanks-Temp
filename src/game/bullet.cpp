@@ -8,99 +8,96 @@ Bullet::Bullet(World* world,
                float y,
                float angle,
                float speed,
-               int health,
-               SAMPLE* sound) {
-  this->worldPointer = world;
-  this->x = x;
-  this->y = y;
+               int health)
+    : worldPointer(world), x(x), y(y), health(health) {
   this->vector_x = -speed * cosf(angle);
   this->vector_y = -speed * sinf(angle);
-  this->shotSound = sound;
-  play_sample(shotSound, 255, 127, random(800, 1200), 0);
-  this->pendingErase = false;
-  this->health = health;
 }
 
-Bullet::~Bullet() {}
-
-bool Bullet::getErase() {
+bool Bullet::getErase() const {
   return pendingErase;
 }
 
 // Reverse specified vector
-void Bullet::reverseDirection(std::string direction) {
-  if (direction == "x")
+void Bullet::reverseDirection(const std::string& direction) {
+  if (direction == "x") {
     vector_x = -vector_x;
-  else if (direction == "y")
+  } else if (direction == "y") {
     vector_y = -vector_y;
-  else {
+  } else {
     vector_y = -vector_y;
     vector_x = -vector_x;
   }
 }
 
 // Get coordinates
-float Bullet::getX() {
+float Bullet::getX() const {
   return x;
 }
-float Bullet::getY() {
+
+float Bullet::getY() const {
   return y;
 }
 
 // Bounce off wall
-void Bullet::bounce(int direction) {
+void Bullet::bounce(BounceDirection direction) {
   health--;
   incidenceDirection = direction;
 
-  if (health <= 0)
+  if (health <= 0) {
     destroy();
+  }
 }
 
 // Destroy
 void Bullet::destroy() {
   // Has it already died?
-  if (!pendingErase) {
-    // Make sure health is 0
-    health = 0;
-
-    // Make explosion
-    for (int i = 0; i < 100; i++) {
-      Particle* particle;
-      int color = makecol(255, random(0, 255), 0);
-
-      switch (incidenceDirection) {
-        case (BOTTOM):
-          particle =
-              new Particle(x, y, color, -5, 5, 0, 3, 1, CIRCLE, 10, EXPLODE);
-          break;
-        case (TOP):
-          particle =
-              new Particle(x, y, color, -5, 5, -3, 0, 1, CIRCLE, 10, EXPLODE);
-          break;
-        case (LEFT):
-          particle =
-              new Particle(x, y, color, -3, 0, -5, 5, 1, CIRCLE, 10, EXPLODE);
-          break;
-        default:
-          particle =
-              new Particle(x, y, color, 0, 3, -5, 5, 1, CIRCLE, 10, EXPLODE);
-          break;
-      }
-
-      worldPointer->addParticle(particle);
-    }
+  if (pendingErase) {
+    return;
   }
 
-  // Die
+  // Make sure health is 0
+  health = 0;
   pendingErase = true;
+
+  // Make explosion
+  for (int i = 0; i < 100; i++) {
+    Particle* particle = nullptr;
+    int color = makecol(255, random(0, 255), 0);
+
+    switch (incidenceDirection) {
+      case BounceDirection::BOTTOM:
+        particle =
+            new Particle(x, y, color, -5, 5, 0, 3, 1, ParticleType::CIRCLE, 10,
+                         ParticleBehaviour::EXPLODE);
+        break;
+      case BounceDirection::TOP:
+        particle =
+            new Particle(x, y, color, -5, 5, -3, 0, 1, ParticleType::CIRCLE, 10,
+                         ParticleBehaviour::EXPLODE);
+        break;
+      case BounceDirection::LEFT:
+        particle =
+            new Particle(x, y, color, -3, 0, -5, 5, 1, ParticleType::CIRCLE, 10,
+                         ParticleBehaviour::EXPLODE);
+        break;
+      default:
+        particle =
+            new Particle(x, y, color, 0, 3, -5, 5, 1, ParticleType::CIRCLE, 10,
+                         ParticleBehaviour::EXPLODE);
+        break;
+    }
+
+    worldPointer->addParticle(particle);
+  }
 }
 
 // Return velocities
-float Bullet::getXVelocity() {
+float Bullet::getXVelocity() const {
   return vector_x;
 }
 
-float Bullet::getYVelocity() {
+float Bullet::getYVelocity() const {
   return vector_y;
 }
 
@@ -119,7 +116,7 @@ void Bullet::update() {
 }
 
 // Draw image
-void Bullet::draw(BITMAP* buffer) {
+void Bullet::draw(BITMAP* buffer) const {
   if (health > 0) {
     rectfill(buffer, x, y, x + 5, y + 5, makecol(0, 0, 0));
     rectfill(buffer, x + 1, y + 1, x + 4, y + 4, makecol(255, 0, 0));

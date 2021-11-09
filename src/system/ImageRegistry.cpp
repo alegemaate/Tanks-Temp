@@ -18,7 +18,7 @@ void ImageRegistry::loadImage(const std::string& key, const std::string& path) {
 }
 
 BITMAP* ImageRegistry::getImage(const std::string& key) {
-  auto image = ImageRegistry::images[key];
+  auto* image = ImageRegistry::images[key];
 
   if (!image) {
     abort_on_error(("Cannot find image " + key).c_str());

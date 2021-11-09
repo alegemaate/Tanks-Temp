@@ -1,5 +1,7 @@
 #include <allegro.h>
 
+#include <array>
+
 #include "./input/keyListener.h"
 #include "./input/mouseListener.h"
 
@@ -10,8 +12,8 @@
 #include "./state/state.h"
 
 // Input listener classes
-mouseListener m_listener;
-keyListener k_listener;
+MouseListener m_listener;
+KeyListener k_listener;
 
 // Are we closing?
 bool closing = false;
@@ -22,7 +24,7 @@ int fps;
 int frames_done;
 int old_time;
 const int updates_per_second = 120;
-int frames_array[10];
+std::array<int, 10> frames_array;
 int frame_index = 0;
 
 void ticker() {
@@ -90,7 +92,7 @@ void setup() {
   set_window_title("Tanks!");
 
   // Create random number generator
-  srand(time(NULL));
+  srand(time(nullptr));
 
   // Setup for FPS system
   LOCK_VARIABLE(ticks);

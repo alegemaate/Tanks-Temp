@@ -12,7 +12,8 @@ class PlayerTank : public Tank {
              int fireSpeed,
              int fireDelay,
              float speed);
-  virtual void update();
+
+  void update() override;
 };
 
 #endif  // SRC_GAME_PLAYER_TANK_H_

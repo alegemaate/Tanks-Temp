@@ -13,7 +13,8 @@ class AiTank : public Tank {
          int fireDelay,
          float speed,
          bool enemy);
-  virtual void update();
+
+  void update() override;
 
  private:
   float destination_x;

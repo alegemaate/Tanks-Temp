@@ -1,24 +1,5 @@
 #include "particle.h"
 
-// Default Constructor
-Particle::Particle() {
-  x = 0;
-  y = 0;
-
-  color = makecol(255, 255, 255);
-
-  size = 1;
-  type = 0;
-  behaviour = 0;
-
-  life = 0;
-
-  xVelocity = 0;
-  yVelocity = 0;
-
-  dead = false;
-}
-
 // Constructor
 Particle::Particle(float x,
                    float y,
@@ -28,17 +9,16 @@ Particle::Particle(float x,
                    float yVelocityMin,
                    float yVelocityMax,
                    int size,
-                   int type,
+                   ParticleType type,
                    int life,
-                   int behaviour)
+                   ParticleBehaviour behaviour)
     : x(x),
       y(y),
       color(color),
       size(size),
       type(type),
-      behaviour(behaviour),
       life(life),
-      dead(false) {
+      behaviour(behaviour) {
   this->xVelocity = randomf(xVeloctyMin, xVelocityMax);
   this->yVelocity = randomf(yVelocityMin, yVelocityMax);
 
@@ -54,7 +34,7 @@ Particle::Particle(float x,
 // Logic
 void Particle::logic() {
   // Behaviour
-  if (behaviour == EXPLODE) {
+  if (behaviour == ParticleBehaviour::EXPLODE) {
     x += xVelocity;
     y += yVelocity;
     xVelocity -= xVelocity / 10;
@@ -71,33 +51,42 @@ void Particle::logic() {
 }
 
 // Check death
-bool Particle::getDead() {
+bool Particle::getDead() const {
   return dead;
 }
 
 // Draw
-void Particle::draw(BITMAP* buffer) {
+void Particle::draw(BITMAP* buffer) const {
   switch (type) {
-    case (PIXEL):
+    case ParticleType::PIXEL:
       putpixel(buffer, x, y, color);
       break;
-    case (SQUARE):
+    case ParticleType::SQUARE:
       rectfill(buffer, x, y, x + size, y + size, color);
       break;
-    case (CIRCLE):
+    case ParticleType::CIRCLE:
       circlefill(buffer, x, y, size, color);
       break;
-    case (RANDOM):
-      switch (random(0, 3)) {
-        case 0:
-          putpixel(buffer, x, y, color);
-          break;
-        case 1:
-          circlefill(buffer, x, y, size, color);
-          break;
-        case 2:
-          rectfill(buffer, x, y, x + size, y + size, color);
-          break;
-      }
+    case ParticleType::RANDOM:
+      drawRandom(buffer);
+      break;
+    default:
+      break;
+  }
+}
+
+void Particle::drawRandom(BITMAP* buffer) const {
+  switch (random(0, 3)) {
+    case 0:
+      putpixel(buffer, x, y, color);
+      break;
+    case 1:
+      circlefill(buffer, x, y, size, color);
+      break;
+    case 2:
+      rectfill(buffer, x, y, x + size, y + size, color);
+      break;
+    default:
+      break;
   }
 }

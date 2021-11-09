@@ -8,6 +8,7 @@
 
 #include <allegro.h>
 #include <time.h>
+#include <array>
 #include <cmath>
 #include <memory>
 #include <vector>
@@ -27,15 +28,13 @@
 #define M_PI 3.14159265358979323846264338327
 #endif
 
-#define number_of_rays 200
-
 class Game : public State {
  public:
   Game();
-  ~Game();
+  ~Game() override;
 
-  void update();
-  void draw();
+  void update() override;
+  void draw() override;
 
   // Map stuff
   static const unsigned char max_map_width = 255;
@@ -55,7 +54,6 @@ class Game : public State {
   BITMAP* vision_buffer;
   BITMAP* background;
   BITMAP* cursor;
-  BITMAP* blocks[3];
 
   // World
   World game_world;
@@ -67,8 +65,10 @@ class Game : public State {
   std::vector<std::unique_ptr<Powerup>> powerups;
   std::vector<Coordinate> startLocations;
 
-  BarrierType map_temp[max_map_width][max_map_height];
-  float map_x, map_y;
+  std::array<std::array<BarrierType, max_map_height>, max_map_width> map_temp;
+
+  float map_x;
+  float map_y;
 
   int currentRound = 0;
 };

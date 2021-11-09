@@ -1,19 +1,23 @@
 #ifndef SRC_GAME_PARTICLE_H_
 #define SRC_GAME_PARTICLE_H_
 
-#define CIRCLE 0
-#define SQUARE 1
-#define PIXEL 2
-#define RANDOM 3
-
-#define EXPLODE 4
-
 #include <allegro.h>
 #include "../util/tools.h"
 
+enum class ParticleType {
+  CIRCLE,
+  SQUARE,
+  PIXEL,
+  RANDOM,
+};
+
+enum class ParticleBehaviour {
+  NONE,
+  EXPLODE,
+};
+
 class Particle {
  public:
-  Particle();
   Particle(float x,
            float y,
            int color,
@@ -22,30 +26,33 @@ class Particle {
            float yMin,
            float yMax,
            int size,
-           int type,
+           ParticleType type,
            int life,
-           int behavior);
+           ParticleBehaviour behavior);
 
   void logic();
-  void draw(BITMAP* buffer);
 
-  bool getDead();
+  void draw(BITMAP* buffer) const;
+
+  bool getDead() const;
 
  private:
+  void drawRandom(BITMAP* buffer) const;
+
   float x;
   float y;
 
   int color;
 
   int size;
-  int type;
+  ParticleType type;
   int life;
-  int behaviour;
-
-  bool dead;
+  ParticleBehaviour behaviour;
 
   float xVelocity;
   float yVelocity;
+
+  bool dead = false;
 };
 
 #endif  // SRC_GAME_PARTICLE_H_

@@ -20,27 +20,27 @@ class Barrier {
   void update(const std::vector<Bullet*>* bullets);
   void draw(BITMAP* image);
 
-  int getWidth();
-  int getHeight();
+  int getWidth() const;
+  int getHeight() const;
 
   void makeIndestructable(bool indestructable) {
     this->indestructable = indestructable;
   }
 
-  bool getDead();
+  bool getDead() const;
 
-  Coordinate position;
+  Coordinate getPosition();
 
  private:
-  World* worldPointer;
+  Coordinate position;
 
-  BarrierType type;
+  World* worldPointer;
 
   int health;
 
-  bool indestructable;
-  bool exploded;
-  bool visible;
+  bool indestructable = false;
+  bool exploded = false;
+  bool visible = true;
 
   float width;
   float height;

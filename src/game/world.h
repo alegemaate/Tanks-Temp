@@ -7,9 +7,6 @@
 
 class World {
  public:
-  World() {}
-  virtual ~World() {}
-
   void update();
   void draw(BITMAP* buffer);
 

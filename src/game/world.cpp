@@ -9,21 +9,20 @@ void World::addParticle(Particle* particle) {
 
 // Updates world
 void World::update() {
-  // Update particles
-  for (auto it = particles.begin(); it != particles.end();) {
-    if ((*it)->getDead()) {
-      it = particles.erase(it);
-    } else {
-      (*it)->logic();
-      it++;
-    }
+  for (auto* const& particle : particles) {
+    particle->logic();
   }
+
+  particles.erase(
+      std::remove_if(particles.begin(), particles.end(),
+                     [](auto* const& particle) { return particle->getDead(); }),
+      particles.end());
 }
 
 // Draw world
 void World::draw(BITMAP* buffer) {
   // Draw particles
-  for (auto it = particles.begin(); it != particles.end(); it++) {
-    (*it)->draw(buffer);
+  for (auto* const& particle : particles) {
+    particle->draw(buffer);
   }
 }

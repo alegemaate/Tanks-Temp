@@ -4,10 +4,9 @@
 #include <allegro.h>
 #include <string>
 
-enum class PowerupType { Health, Speed, FireSpeed, FireDelay };
+enum class PowerupType { HEALTH, SPEED, FIRE_SPEED, FIRE_DELAY };
 class Powerup {
  public:
-  Powerup();
   Powerup(float x, float y, PowerupType type);
 
   float getX() const { return x; }
@@ -28,7 +27,7 @@ class Powerup {
 
   PowerupType type;
 
-  bool dead;
+  bool dead = false;
 
   std::string imageKey;
 };

@@ -10,20 +10,16 @@
 #ifndef SRC_INPUT_MOUSELISTENER_H_
 #define SRC_INPUT_MOUSELISTENER_H_
 
-#define MAX_MOUSE_BUTTONS 3
+const int MAX_MOUSE_BUTTONS = 3;
 
-class mouseListener {
+class MouseListener {
  public:
-  mouseListener();
-  virtual ~mouseListener();
-
-  void update();
+  void update() const;
 
   static unsigned char mouse_button;
   static unsigned char mouse_pressed;
   static unsigned char mouse_released;
 
- protected:
  private:
   static unsigned char mouse_old;
 };
