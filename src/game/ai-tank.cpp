@@ -27,8 +27,8 @@ AiTank::AiTank(World* world,
   this->destination_x = x;
   this->destination_y = y;
 
-  this->width = image_base->w;
-  this->height = image_base->h;
+  this->width = static_cast<float>(image_base->w);
+  this->height = static_cast<float>(image_base->h);
 }
 
 // Update

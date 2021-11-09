@@ -55,7 +55,7 @@ bool Tank::isDead() {
 }
 
 // Explode
-void Tank::explode(int x, int y, int velocity, int amount, int life) {
+void Tank::explode(float x, float y, int velocity, int amount, int life) {
   for (int i = 0; i < amount; i++) {
     Particle* particle =
         new Particle(x, y, makecol(255, random(0, 255), 0), -velocity, velocity,
@@ -75,7 +75,7 @@ void Tank::accelerate(bool moving) {
     }
   } else {
     if (speed > 0.1) {
-      speed *= 0.95;
+      speed *= 0.95f;
     } else {
       speed = 0;
     }
@@ -101,8 +101,8 @@ void Tank::checkCollision(std::vector<Bullet*>* bullets) {
 
 void Tank::checkCollision(
     const std::vector<std::unique_ptr<Barrier>>& barriers) {
-  float guess_vector_x = -speed * cos(rotation_body);
-  float guess_vector_y = -speed * sin(rotation_body);
+  float guess_vector_x = -speed * cosf(rotation_body);
+  float guess_vector_y = -speed * sinf(rotation_body);
 
   canMoveX = true;
   canMoveY = true;
@@ -140,11 +140,11 @@ void Tank::checkCollision(
 // Move around
 void Tank::drive(float rotation) {
   if (canMoveX) {
-    vector_x = -speed * cos(rotation);
+    vector_x = -speed * cosf(rotation);
     x += vector_x;
   }
   if (canMoveY) {
-    vector_y = -speed * sin(rotation);
+    vector_y = -speed * sinf(rotation);
     y += vector_y;
   }
 }

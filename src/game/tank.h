@@ -108,7 +108,7 @@ class Tank {
 
   // Update
   void update_bullets();
-  void explode(int x, int y, int velocity, int amount, int life);
+  void explode(float x, float y, int velocity, int amount, int life);
 
   // Draw
   void drawBullets(BITMAP* buffer);

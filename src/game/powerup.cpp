@@ -4,7 +4,7 @@
 
 Powerup::Powerup() : Powerup(0, 0, PowerupType::Health) {}
 
-Powerup::Powerup(int x, int y, PowerupType type)
+Powerup::Powerup(float x, float y, PowerupType type)
     : x(x), y(y), type(type), dead(false) {
   switch (type) {
     case PowerupType::Health:

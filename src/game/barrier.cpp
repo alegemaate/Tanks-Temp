@@ -22,8 +22,8 @@ Barrier::Barrier(World* world, Coordinate position, BarrierType type)
       break;
   }
 
-  this->width = this->image->w;
-  this->height = this->image->h;
+  this->width = static_cast<float>(this->image->w);
+  this->height = static_cast<float>(this->image->h);
   this->sample_explode = load_sample_ex("sfx/explode.wav");
 }
 
@@ -100,7 +100,7 @@ bool Barrier::getDead() {
 }
 
 // Explode
-void Barrier::explode(int x, int y, int velocity, int amount, int life) {
+void Barrier::explode(float x, float y, int velocity, int amount, int life) {
   // Explode
   play_sample(sample_explode, 255, 127, 1000, 0);
 

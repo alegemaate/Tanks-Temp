@@ -49,7 +49,7 @@ class Barrier {
 
   BITMAP* image;
 
-  void explode(int x, int y, int velocity, int amount, int life);
+  void explode(float x, float y, int velocity, int amount, int life);
 };
 
 #endif  // SRC_GAME_BARRIER_H_
