@@ -23,5 +23,5 @@ Powerup::Powerup(float x, float y, PowerupType type) : x(x), y(y), type(type) {
 
 void Powerup::draw(BITMAP* buffer) const {
   BITMAP* image = ImageRegistry::getImage(imageKey);
-  draw_sprite(buffer, image, x, y);
+  draw_sprite(buffer, image, static_cast<int>(x), static_cast<int>(y));
 }

@@ -3,6 +3,8 @@
 #include <loadpng.h>
 #include <cmath>
 
+#include "random.h"
+
 // Collision
 bool collisionAny(float xMin1,
                   float xMax1,
@@ -48,24 +50,22 @@ bool collisionRight(float xMin1, float xMax1, float xMin2, float xMax2) {
 
 // Random number generator
 int random(int min, int max) {
-  int range = (max - min) + 1;
-  return min + static_cast<int>(range * rand() / (RAND_MAX + 1.0f));
+  return Random::randomInt(min, max);
 }
 
 // Random float
 float randomf(float min, float max) {
-  float range = (max - min) + 1;
-  return min + static_cast<float>(range * rand() / (RAND_MAX + 1.0f));
+  return Random::randomFloat(min, max);
 }
 
 // Finds angle of point 2 relative to point 1
 float find_angle(float x_1, float y_1, float x_2, float y_2) {
-  return atan2(y_1 - y_2, x_1 - x_2);
+  return atan2f(y_1 - y_2, x_1 - x_2);
 }
 
 // Finds distance between 2 points
 float find_distance(float x_1, float y_1, float x_2, float y_2) {
-  return hypot(x_1 - x_2, y_1 - y_2);
+  return hypotf(x_1 - x_2, y_1 - y_2);
 }
 
 // ERROR REPORTING

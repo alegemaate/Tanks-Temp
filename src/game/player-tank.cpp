@@ -18,8 +18,8 @@ PlayerTank::PlayerTank(World* world,
   this->image_top = ImageRegistry::getImage("tank-turret-green");
   this->image_base = ImageRegistry::getImage("tank-base-green");
 
-  this->width = image_base->w;
-  this->height = image_base->h;
+  this->width = static_cast<float>(image_base->w);
+  this->height = static_cast<float>(image_base->h);
 }
 
 // Update
@@ -31,14 +31,16 @@ void PlayerTank::update() {
   }
 
   // Shoot
-  rotation_turret =
-      find_angle(SCREEN_W / 2.0f, SCREEN_H / 2.0f, mouse_x, mouse_y);
+  rotation_turret = find_angle(
+      static_cast<float>(SCREEN_W) / 2.0f, static_cast<float>(SCREEN_H) / 2.0f,
+      static_cast<float>(mouse_x), static_cast<float>(mouse_y));
 
   if (joy[0].stick[0].axis[0].pos != 0 || joy[0].stick[0].axis[1].pos != 0) {
-    rotation_turret =
-        find_angle(getCenterX() - 2, getCenterY() - 2,
-                   (joy[0].stick[0].axis[0].pos) + (getCenterX() - 2),
-                   (joy[0].stick[0].axis[1].pos) + (getCenterY() - 2));
+    rotation_turret = find_angle(
+        getCenterX() - 2.0f, getCenterY() - 2.0f,
+        static_cast<float>(joy[0].stick[0].axis[0].pos) + (getCenterX() - 2.0f),
+        static_cast<float>(joy[0].stick[0].axis[1].pos) +
+            (getCenterY() - 2.0f));
   }
 
   if (key[KEY_SPACE] || mouse_b & 1 || joy[0].button[1].b) {
@@ -58,9 +60,10 @@ void PlayerTank::update() {
   if (mouse_b & 2) {
     rotation_body = rotation_turret;
   } else if (joy[0].button[0].b) {
-    rotation_body = find_angle(getCenterX(), getCenterY(),
-                               (joy[0].stick[0].axis[0].pos) + (getCenterX()),
-                               (joy[0].stick[0].axis[1].pos) + (getCenterY()));
+    rotation_body = find_angle(
+        getCenterX(), getCenterY(),
+        static_cast<float>(joy[0].stick[0].axis[0].pos) + getCenterX(),
+        static_cast<float>(joy[0].stick[0].axis[1].pos) + getCenterY());
   }
 
   drive(rotation_body);

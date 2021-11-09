@@ -25,7 +25,7 @@ int frames_done;
 int old_time;
 const int updates_per_second = 120;
 std::array<int, 10> frames_array;
-int frame_index = 0;
+unsigned int frame_index = 0;
 
 void ticker() {
   ticks += 1;
@@ -91,9 +91,6 @@ void setup() {
 
   // Window Title
   set_window_title("Tanks!");
-
-  // Create random number generator
-  srand(time(nullptr));
 
   // Setup for FPS system
   LOCK_VARIABLE(ticks);
