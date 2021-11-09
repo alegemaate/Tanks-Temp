@@ -13,8 +13,8 @@ Bullet::Bullet(World* world,
   this->worldPointer = world;
   this->x = x;
   this->y = y;
-  this->vector_x = -speed * cos(angle);
-  this->vector_y = -speed * sin(angle);
+  this->vector_x = -speed * cosf(angle);
+  this->vector_y = -speed * sinf(angle);
   this->shotSound = sound;
   play_sample(shotSound, 255, 127, random(800, 1200), 0);
   this->pendingErase = false;

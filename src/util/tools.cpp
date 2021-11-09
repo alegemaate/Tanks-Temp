@@ -4,42 +4,42 @@
 #include <cmath>
 
 // Collision
-bool collisionAny(int xMin1,
-                  int xMax1,
-                  int xMin2,
-                  int xMax2,
-                  int yMin1,
-                  int yMax1,
-                  int yMin2,
-                  int yMax2) {
+bool collisionAny(float xMin1,
+                  float xMax1,
+                  float xMin2,
+                  float xMax2,
+                  float yMin1,
+                  float yMax1,
+                  float yMin2,
+                  float yMax2) {
   if (xMin1 < xMax2 && yMin1 < yMax2 && xMin2 < xMax1 && yMin2 < yMax1) {
     return true;
   }
   return false;
 }
 
-bool collisionBottom(int yMin1, int yMax1, int yMin2, int yMax2) {
+bool collisionBottom(float yMin1, float yMax1, float yMin2, float yMax2) {
   if (yMax1 > yMax2 && yMin1 < yMax2) {
     return true;
   }
   return false;
 }
 
-bool collisionTop(int yMin1, int yMax1, int yMin2, int yMax2) {
+bool collisionTop(float yMin1, float yMax1, float yMin2, float yMax2) {
   if (yMax1 > yMin2 && yMin1 < yMin2) {
     return true;
   }
   return false;
 }
 
-bool collisionLeft(int xMin1, int xMax1, int xMin2, int xMax2) {
+bool collisionLeft(float xMin1, float xMax1, float xMin2, float xMax2) {
   if (xMax1 > xMin2 && xMin1 < xMin2) {
     return true;
   }
   return false;
 }
 
-bool collisionRight(int xMin1, int xMax1, int xMin2, int xMax2) {
+bool collisionRight(float xMin1, float xMax1, float xMin2, float xMax2) {
   if (xMax1 > xMax2 && xMin1 < xMax2) {
     return true;
   }
@@ -112,7 +112,7 @@ FONT* load_font_ex(const std::string& path) {
 }
 
 // Returns distance 2D
-int distanceTo2D(int x1, int y1, int x2, int y2) {
+int distanceTo2D(float x1, float y1, float x2, float y2) {
   return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 }
 
@@ -150,4 +150,9 @@ char get_line_intersection(float p0_x,
   }
 
   return 0;  // No collision
+}
+
+int radToFix(float radians) {
+  int i_rad = static_cast<int>(radians * 40.5845104792);
+  return itofix(i_rad);
 }

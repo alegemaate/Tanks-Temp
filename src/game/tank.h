@@ -2,6 +2,7 @@
 #define SRC_GAME_TANK_H_
 
 #include <allegro.h>
+#include <memory>
 #include <vector>
 
 #include "./barrier.h"
@@ -13,9 +14,8 @@
 class Tank {
  public:
   explicit Tank(World* worldPointer,
-                int x,
-                int y,
-                int hurtTime,
+                float x,
+                float y,
                 int health,
                 int fireSpeed,
                 int fireDelay,
@@ -31,16 +31,11 @@ class Tank {
   virtual void draw(BITMAP* buffer);
   virtual void putDecal(BITMAP* buffer);
 
-  virtual void giveHealth(int healthAmount);
+  virtual float getX() { return x; }
+  virtual float getY() { return y; }
 
-  virtual int getX() { return x; }
-  virtual int getY() { return y; }
-
-  virtual int getCenterX() { return x + width / 2; }
-  virtual int getCenterY() { return y + height / 2; }
-
-  virtual int getHeight() { return width; }
-  virtual int getWidth() { return height; }
+  virtual float getCenterX() { return x + width / 2.0f; }
+  virtual float getCenterY() { return y + height / 2.0f; }
 
   virtual void set_map_dimensions(int width, int height) {
     map_width = width;
@@ -48,8 +43,10 @@ class Tank {
   }
 
   virtual void checkCollision(std::vector<Bullet*>* bullets);
-  virtual void checkCollision(std::vector<Barrier*>* barriers);
-  virtual void checkCollision(std::vector<Powerup*>* powerups);
+  virtual void checkCollision(
+      const std::vector<std::unique_ptr<Barrier>>& barriers);
+  virtual void checkCollision(
+      const std::vector<std::unique_ptr<Powerup>>& powerups);
 
   virtual void process_enemies(std::vector<Tank*>* otherTanks);
 
@@ -61,7 +58,6 @@ class Tank {
   float x;
   float y;
 
-  int hurt_timer;
   int health;
   int initialHealth;
   int fire_speed;
@@ -79,45 +75,48 @@ class Tank {
 
   bool dead;
 
-  float rotation_radians_body;
-  float rotation_allegro_body;
-  float rotation_radians_turret;
-  float rotation_allegro_turret;
+  float rotation_body = 0;
+  float rotation_turret = 0;
 
-  int bullet_delay;
+  int bullet_delay = 0;
 
-  int width, height;
+  float width;
+  float height;
 
   int map_width, map_height;
 
-  float vector_x;
-  float vector_y;
+  float vector_x = 0;
+  float vector_y = 0;
 
-  bool canMoveX;
-  bool canMoveY;
+  bool canMoveX = true;
+  bool canMoveY = true;
 
-  std::vector<Bullet*> bullets;
   std::vector<Tank*>* otherTanks;
+
+  // Update
+  void drive(float rotation);
+  void shoot(float rotation, float x, float y);
+  void accelerate(bool moving);
+
+ private:
+  std::vector<Bullet*> bullets;
 
   SAMPLE* sample_shot;
 
   // Update
-  virtual void drive(float rotation);
-  virtual void shoot(float rotation, float x, float y);
-  virtual void update_bullets();
-  virtual void update_timers();
-  virtual void explode(int x, int y, int velocity, int amount, int life);
+  void update_bullets();
+  void explode(float x, float y, int velocity, int amount, int life);
 
   // Draw
-  virtual void drawBullets(BITMAP* buffer);
-  virtual void drawTankBase(BITMAP* buffer);
-  virtual void drawTankTurret(BITMAP* buffer);
-  virtual void drawHealthBar(BITMAP* buffer,
-                             int x,
-                             int y,
-                             int width,
-                             int height,
-                             int border);
+  void drawBullets(BITMAP* buffer) const;
+  void drawTankBase(BITMAP* buffer);
+  void drawTankTurret(BITMAP* buffer);
+  void drawHealthBar(BITMAP* buffer,
+                     float x,
+                     float y,
+                     int width,
+                     int height,
+                     int border) const;
 };
 
 #endif  // SRC_GAME_TANK_H_

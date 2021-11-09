@@ -22,8 +22,8 @@ Barrier::Barrier(World* world, Coordinate position, BarrierType type)
       break;
   }
 
-  this->width = this->image->w;
-  this->height = this->image->h;
+  this->width = static_cast<float>(this->image->w);
+  this->height = static_cast<float>(this->image->h);
   this->sample_explode = load_sample_ex("sfx/explode.wav");
 }
 
@@ -32,57 +32,57 @@ Barrier::~Barrier() {
 }
 
 // Update
-void Barrier::update(std::vector<Bullet*>* bullets) {
-  if (health > 0 || indestructable) {
-    for (unsigned int i = 0; i < bullets->size(); i++) {
-      if (collisionAny(position.x, position.x + width, bullets->at(i)->getX(),
-                       bullets->at(i)->getX() + 5, position.y,
-                       position.y + height, bullets->at(i)->getY(),
-                       bullets->at(i)->getY() + 5)) {
-        if (collisionBottom(
-                bullets->at(i)->getY() + bullets->at(i)->getYVelocity(),
-                bullets->at(i)->getY() + 5, position.y, position.y + height)) {
-          bullets->at(i)->reverseDirection("y");
-          bullets->at(i)->bounce(BOTTOM);
-        }
+void Barrier::update(const std::vector<Bullet*>* bullets) {
+  if (health <= 0 && !exploded) {
+    explode(position.x + width / 2.0f, position.y + height / 2.0f, 6, 100, 30);
+    exploded = true;
+  }
 
-        if (collisionTop(
-                bullets->at(i)->getY(),
-                bullets->at(i)->getY() + 5 + bullets->at(i)->getYVelocity(),
-                position.y, position.y + height)) {
-          bullets->at(i)->reverseDirection("y");
-          bullets->at(i)->bounce(TOP);
-        }
+  if (health <= 0) {
+    return;
+  }
 
-        if (collisionLeft(
-                bullets->at(i)->getX(),
-                bullets->at(i)->getX() + 5 + bullets->at(i)->getXVelocity(),
-                position.x, position.x + width)) {
-          bullets->at(i)->reverseDirection("x");
-          bullets->at(i)->bounce(LEFT);
-        }
+  for (auto* const& bullet : *bullets) {
+    if (collisionAny(position.x, position.x + width, bullet->getX(),
+                     bullet->getX() + 5, position.y, position.y + height,
+                     bullet->getY(), bullet->getY() + 5)) {
+      if (collisionBottom(bullet->getY() + bullet->getYVelocity(),
+                          bullet->getY() + 5, position.y,
+                          position.y + height)) {
+        bullet->reverseDirection("y");
+        bullet->bounce(BOTTOM);
+      }
 
-        if (collisionRight(
-                bullets->at(i)->getX() + bullets->at(i)->getXVelocity(),
-                bullets->at(i)->getX() + 5, position.x, position.x + width)) {
-          bullets->at(i)->reverseDirection("x");
-          bullets->at(i)->bounce(RIGHT);
-        }
+      if (collisionTop(bullet->getY(),
+                       bullet->getY() + 5 + bullet->getYVelocity(), position.y,
+                       position.y + height)) {
+        bullet->reverseDirection("y");
+        bullet->bounce(TOP);
+      }
 
-        if (!indestructable) {
-          health -= 1;
-        }
+      if (collisionLeft(bullet->getX(),
+                        bullet->getX() + 5 + bullet->getXVelocity(), position.x,
+                        position.x + width)) {
+        bullet->reverseDirection("x");
+        bullet->bounce(LEFT);
+      }
+
+      if (collisionRight(bullet->getX() + bullet->getXVelocity(),
+                         bullet->getX() + 5, position.x, position.x + width)) {
+        bullet->reverseDirection("x");
+        bullet->bounce(RIGHT);
+      }
+
+      if (!indestructable) {
+        health -= 1;
       }
     }
-  } else if (!exploded) {
-    explode(position.x + width / 2, position.y + height / 2, 6, 100, 30);
-    exploded = true;
   }
 }
 
 // Draw image
 void Barrier::draw(BITMAP* buffer) {
-  if ((health > 0 || indestructable) && visible) {
+  if (health > 0 && visible) {
     draw_sprite(buffer, image, position.x, position.y);
   }
 }
@@ -103,7 +103,7 @@ bool Barrier::getDead() {
 }
 
 // Explode
-void Barrier::explode(int x, int y, int velocity, int amount, int life) {
+void Barrier::explode(float x, float y, int velocity, int amount, int life) {
   // Explode
   play_sample(sample_explode, 255, 127, 1000, 0);
 

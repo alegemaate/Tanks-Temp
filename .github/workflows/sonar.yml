@@ -23,7 +23,7 @@ jobs:
       - name: Restore Analysis Cache
         uses: actions/cache@v2
         with:
-          path: ${{ env.BUILD_WRAPPER_OUT_DIR }}
+          path: ${{ env.ANALYSIS_CACHE_DIR }}
           key: ${{ runner.os }}-analysis-cache
 
       - name: Set up JDK 11

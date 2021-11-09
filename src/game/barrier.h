@@ -17,7 +17,7 @@ class Barrier {
   Barrier(World* world, Coordinate position, BarrierType type);
   ~Barrier();
 
-  void update(std::vector<Bullet*>* bullets);
+  void update(const std::vector<Bullet*>* bullets);
   void draw(BITMAP* image);
 
   int getWidth();
@@ -42,14 +42,14 @@ class Barrier {
   bool exploded;
   bool visible;
 
-  int width;
-  int height;
+  float width;
+  float height;
 
   SAMPLE* sample_explode;
 
   BITMAP* image;
 
-  void explode(int x, int y, int velocity, int amount, int life);
+  void explode(float x, float y, int velocity, int amount, int life);
 };
 
 #endif  // SRC_GAME_BARRIER_H_

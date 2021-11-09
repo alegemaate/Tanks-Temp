@@ -8,23 +8,23 @@ enum class PowerupType { Health, Speed, FireSpeed, FireDelay };
 class Powerup {
  public:
   Powerup();
-  Powerup(int x, int y, PowerupType type);
+  Powerup(float x, float y, PowerupType type);
 
-  int getX() { return x; }
-  int getY() { return y; }
-  int getWidth() { return 40; }
-  int getHeight() { return 40; }
-  PowerupType getType() { return type; }
+  float getX() const { return x; }
+  float getY() const { return y; }
+  float getWidth() const { return 40.0f; }
+  float getHeight() const { return 40.0f; }
+  PowerupType getType() const { return type; }
 
-  bool getDead() { return dead; }
+  bool getDead() const { return dead; }
 
   void pickup() { dead = true; }
 
-  void draw(BITMAP* buffer);
+  void draw(BITMAP* buffer) const;
 
  private:
-  int x;
-  int y;
+  float x;
+  float y;
 
   PowerupType type;
 

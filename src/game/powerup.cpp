@@ -4,7 +4,7 @@
 
 Powerup::Powerup() : Powerup(0, 0, PowerupType::Health) {}
 
-Powerup::Powerup(int x, int y, PowerupType type)
+Powerup::Powerup(float x, float y, PowerupType type)
     : x(x), y(y), type(type), dead(false) {
   switch (type) {
     case PowerupType::Health:
@@ -22,7 +22,7 @@ Powerup::Powerup(int x, int y, PowerupType type)
   }
 }
 
-void Powerup::draw(BITMAP* buffer) {
+void Powerup::draw(BITMAP* buffer) const {
   BITMAP* image = ImageRegistry::getImage(imageKey);
   draw_sprite(buffer, image, x, y);
 }

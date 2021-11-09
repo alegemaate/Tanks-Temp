@@ -6,16 +6,13 @@
 class PlayerTank : public Tank {
  public:
   PlayerTank(World* world,
-             int x,
-             int y,
-             int hurtTime,
+             float x,
+             float y,
              int health,
              int fireSpeed,
              int fireDelay,
              float speed);
   virtual void update();
-
- protected:
 };
 
 #endif  // SRC_GAME_PLAYER_TANK_H_

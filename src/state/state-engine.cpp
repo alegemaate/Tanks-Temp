@@ -1,6 +1,5 @@
 #include "state-engine.hpp"
 
-#include <iostream>
 #include "game.h"
 #include "init.h"
 #include "menu.h"

@@ -14,8 +14,8 @@
 class Particle {
  public:
   Particle();
-  Particle(int x,
-           int y,
+  Particle(float x,
+           float y,
            int color,
            float xMin,
            float xMax,
