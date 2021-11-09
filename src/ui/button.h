@@ -34,7 +34,7 @@ class Button {
   void update();
 
   // Draw
-  void draw(BITMAP* tempBitmap);
+  void draw(BITMAP* tempBitmap) const;
 
  private:
   // Variables
@@ -44,14 +44,13 @@ class Button {
   int height;
   int padding_x;
   int padding_y;
+  std::string text;
 
   bool hovering = false;
   bool visible = true;
 
   // Font
   FONT* button_font;
-
-  std::string text;
 };
 
 #endif  // SRC_UI_BUTTON_H_

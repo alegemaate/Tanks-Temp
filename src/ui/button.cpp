@@ -20,7 +20,7 @@ Button::Button(int x,
                int height,
                int padding_x,
                int padding_y)
-    : x(x), y(y), text(text), padding_x(padding_x), padding_y(padding_y) {
+    : x(x), y(y), padding_x(padding_x), padding_y(padding_y), text(text) {
   if (!setFont(button_font)) {
     this->width = width;
     this->height = height;
@@ -50,7 +50,7 @@ bool Button::clicked() const {
 }
 
 // Draw
-void Button::draw(BITMAP* tempBitmap) {
+void Button::draw(BITMAP* tempBitmap) const {
   if (visible) {
     // Backdrop
     const int c_element = hovering ? 220 : 200;

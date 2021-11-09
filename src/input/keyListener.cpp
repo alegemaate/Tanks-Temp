@@ -15,7 +15,7 @@ void KeyListener::update() const {
   anyKeyPressed = false;
 
   // Check key just pressed
-  for (int i = 0; i < KEY_MAX; i++) {
+  for (unsigned long i = 0; i < KEY_MAX; i++) {
     // Clear old values
     keyPressed[i] = false;
     keyReleased[i] = false;
@@ -39,7 +39,7 @@ void KeyListener::update() const {
   }
 
   // Get new values
-  for (int i = 0; i < KEY_MAX; i++) {
+  for (unsigned long i = 0; i < KEY_MAX; i++) {
     // Key changed
     if (lastTicksKey[i] != static_cast<bool>(key[i])) {
       lastTicksKey[i] = key[i];

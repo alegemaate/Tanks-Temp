@@ -46,8 +46,6 @@ class Bullet {
   BounceDirection incidenceDirection = BounceDirection::NONE;
 
   bool pendingErase = false;
-
-  SAMPLE* shotSound;
 };
 
 #endif  // SRC_GAME_BULLET_H_

@@ -287,9 +287,9 @@ void Game::draw() {
   textprintf_ex(buffer, font, 20, 20, makecol(0, 0, 0), makecol(255, 255, 255),
                 "Round: %i", currentRound);
   textprintf_ex(buffer, font, 20, 35, makecol(0, 0, 0), makecol(255, 255, 255),
-                "Team BLUE: %i", player_tanks.size());
+                "Team BLUE: %u", player_tanks.size());
   textprintf_ex(buffer, font, 20, 50, makecol(0, 0, 0), makecol(255, 255, 255),
-                "Team RED: %i", enemy_tanks.size());
+                "Team RED: %u", enemy_tanks.size());
 
   // Cursor
   draw_sprite(buffer, cursor, mouse_x - 10, mouse_y - 10);

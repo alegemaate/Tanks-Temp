@@ -49,13 +49,13 @@ bool collisionRight(float xMin1, float xMax1, float xMin2, float xMax2) {
 // Random number generator
 int random(int min, int max) {
   int range = (max - min) + 1;
-  return min + static_cast<int>(range * rand() / (RAND_MAX + 1.0));
+  return min + static_cast<int>(range * rand() / (RAND_MAX + 1.0f));
 }
 
 // Random float
 float randomf(float min, float max) {
   float range = (max - min) + 1;
-  return min + static_cast<float>(range * rand() / (RAND_MAX + 1.0));
+  return min + static_cast<float>(range * rand() / (RAND_MAX + 1.0f));
 }
 
 // Finds angle of point 2 relative to point 1

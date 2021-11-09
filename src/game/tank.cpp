@@ -47,15 +47,15 @@ void Tank::explode(float x, float y, int velocity, int amount, int life) {
 
 void Tank::accelerate(bool moving) {
   if (moving) {
-    if (speed == 0) {
-      speed = 0.2;
+    if (speed < 0.1f) {
+      speed = 0.2f;
     } else if (speed < max_speed) {
-      speed *= (max_speed * 1.03);
+      speed *= (max_speed * 1.03f);
     } else {
       speed = max_speed;
     }
   } else {
-    if (speed > 0.1) {
+    if (speed > 0.1f) {
       speed *= 0.95f;
     } else {
       speed = 0;
@@ -246,7 +246,7 @@ void Tank::pickupPowerup(PowerupType type) {
       }
       break;
     case PowerupType::SPEED:
-      max_speed += 0.5;
+      max_speed += 0.5f;
       break;
     case PowerupType::FIRE_SPEED:
       fire_speed += 1;

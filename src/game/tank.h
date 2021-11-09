@@ -21,8 +21,6 @@ class Tank {
                 int fireDelay,
                 float speed);
 
-  virtual ~Tank(){};
-
   virtual bool isDead();
 
   virtual std::vector<Bullet*>* getBullets();

@@ -29,7 +29,7 @@ class Barrier {
 
   bool getDead() const;
 
-  Coordinate getPosition();
+  Coordinate getPosition() const;
 
  private:
   Coordinate position;

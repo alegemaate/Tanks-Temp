@@ -96,7 +96,7 @@ bool Barrier::getDead() const {
   return !indestructable && health <= 0;
 }
 
-Coordinate Barrier::getPosition() {
+Coordinate Barrier::getPosition() const {
   return this->position;
 }
 

@@ -23,11 +23,11 @@ Particle::Particle(float x,
   this->yVelocity = randomf(yVelocityMin, yVelocityMax);
 
   // No unmoving
-  if (xVelocity == 0) {
-    this->xVelocity = 0.1;
+  if (xVelocity < 0.1f && xVelocity > -0.1f) {
+    this->xVelocity = 0.1f;
   }
-  if (yVelocity == 0) {
-    this->yVelocity = 0.1;
+  if (yVelocity < 0.1f && yVelocity > -0.1f) {
+    this->yVelocity = 0.1f;
   }
 }
 

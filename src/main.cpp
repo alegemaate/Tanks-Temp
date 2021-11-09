@@ -12,8 +12,8 @@
 #include "./state/state.h"
 
 // Input listener classes
-MouseListener m_listener;
-KeyListener k_listener;
+const MouseListener m_listener;
+const KeyListener k_listener;
 
 // Are we closing?
 bool closing = false;
@@ -28,13 +28,13 @@ std::array<int, 10> frames_array;
 int frame_index = 0;
 
 void ticker() {
-  ticks++;
+  ticks += 1;
 }
 END_OF_FUNCTION(ticker)
 
 volatile int game_time = 0;
 void game_time_ticker() {
-  game_time++;
+  game_time += 1;
 }
 END_OF_FUNCTION(game_time_ticker)
 
@@ -45,17 +45,15 @@ void close_button_handler(void) {
 END_OF_FUNCTION(close_button_handler)
 
 // Calibrate joystick
-void calibrateJoystick() {
+bool calibrateJoystick() {
   for (int i = 0; i < num_joysticks; i++) {
     while (joy[i].flags & JOYFLAG_CALIBRATE) {
       if ((readkey() & 0xFF) == 27) {
-        exit(0);
+        return false;
       }
 
       if (calibrate_joystick(i) != 0) {
-        set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-        allegro_message("Error calibrating joystick!\n");
-        exit(1);
+        return false;
       }
     }
     if (!(joy[i].stick[0].flags & JOYFLAG_ANALOGUE)) {
@@ -66,6 +64,7 @@ void calibrateJoystick() {
   }
 
   save_joystick_data("joy_config.dat");
+  return true;
 }
 
 // Setup game
@@ -79,7 +78,9 @@ void setup() {
   // Setup joystick
   if (!load_joystick_data("joy_config.dat")) {
     install_joystick(JOY_TYPE_AUTODETECT);
-    calibrateJoystick();
+    if (!calibrateJoystick()) {
+      abort_on_error("Could not configure joystick");
+    };
   }
 
   set_color_depth(32);
@@ -104,7 +105,7 @@ void setup() {
   install_int_ex(game_time_ticker, BPS_TO_TIMER(10));
 
   // FPS STUFF
-  for (int i = 0; i < 10; i++) {
+  for (unsigned long i = 0; i < 10; i++) {
     frames_array[i] = 0;
   }
 
@@ -140,7 +141,7 @@ int main() {
     while (ticks > 0) {
       int old_ticks = ticks;
       update();
-      ticks--;
+      ticks -= 1;
       if (old_ticks <= ticks) {
         break;
       }
