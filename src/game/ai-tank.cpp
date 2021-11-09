@@ -50,7 +50,7 @@ void AiTank::find_enemy_target() {
   float closest_enemy_y = destination_y;
   bool found_enemy = false;
 
-  for (auto const& tank : *otherTanks) {
+  for (auto* const& tank : *otherTanks) {
     if (!tank->isDead()) {
       float enemy_x = tank->getX() + tank->getCenterX();
       float enemy_y = tank->getY() + tank->getCenterY();

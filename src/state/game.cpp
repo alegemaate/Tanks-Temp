@@ -155,14 +155,14 @@ void Game::update() {
   game_world.update();
 
   // Move
-  for (auto const& enemy : enemy_tanks) {
+  for (auto* const& enemy : enemy_tanks) {
     // Update barriers
     for (auto const& barrier : barriers) {
       barrier->update(enemy->getBullets());
     }
 
     // Update bullets
-    for (auto const& player : player_tanks) {
+    for (auto* const& player : player_tanks) {
       player->checkCollision(enemy->getBullets());
     }
 
@@ -176,14 +176,14 @@ void Game::update() {
     enemy->update();
   }
 
-  for (auto const& player : player_tanks) {
+  for (auto* const& player : player_tanks) {
     // Update barriers
     for (auto const& barrier : barriers) {
       barrier->update(player->getBullets());
     }
 
     // Update bullets
-    for (auto const& enemy : enemy_tanks) {
+    for (auto* const& enemy : enemy_tanks) {
       enemy->checkCollision(player->getBullets());
     }
 
@@ -262,12 +262,12 @@ void Game::draw() {
   draw_sprite(map_buffer, decal_buffer, 0, 0);
 
   // Draw tanks
-  for (auto const& enemy : enemy_tanks) {
+  for (auto* const& enemy : enemy_tanks) {
     enemy->draw(map_buffer);
     enemy->putDecal(decal_buffer);
   }
 
-  for (auto const& player : player_tanks) {
+  for (auto* const& player : player_tanks) {
     player->draw(map_buffer);
     player->putDecal(decal_buffer);
   }

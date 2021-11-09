@@ -89,7 +89,7 @@ std::vector<Bullet*>* Tank::getBullets() {
 
 // Check collision
 void Tank::checkCollision(std::vector<Bullet*>* bullets) {
-  for (auto const& bullet : *bullets) {
+  for (auto* const& bullet : *bullets) {
     if (collisionAny(x, x + 50, bullet->getX(),
                      bullet->getX() + bullet->getXVelocity(), y, y + 50,
                      bullet->getY(), bullet->getY() + bullet->getYVelocity())) {
@@ -152,14 +152,14 @@ void Tank::drive(float rotation) {
 // Update bullets
 void Tank::update_bullets() {
   // Update bullets
-  for (auto const& bullet : bullets) {
+  for (auto* const& bullet : bullets) {
     bullet->update();
   }
 
   // Erase bullets
   bullets.erase(
       std::remove_if(bullets.begin(), bullets.end(),
-                     [](auto const& bullet) { return bullet->getErase(); }),
+                     [](auto* const& bullet) { return bullet->getErase(); }),
       bullets.end());
 }
 
@@ -189,7 +189,7 @@ void Tank::update() {
 
 // Draw bullets
 void Tank::drawBullets(BITMAP* buffer) {
-  for (auto const& bullet : bullets) {
+  for (auto* const& bullet : bullets) {
     bullet->draw(buffer);
   }
 }

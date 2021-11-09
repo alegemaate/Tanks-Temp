@@ -34,7 +34,7 @@ Barrier::~Barrier() {
 // Update
 void Barrier::update(std::vector<Bullet*>* bullets) {
   if (health > 0 || indestructable) {
-    for (auto const& bullet : *bullets) {
+    for (auto* const& bullet : *bullets) {
       if (collisionAny(position.x, position.x + width, bullet->getX(),
                        bullet->getX() + 5, position.y, position.y + height,
                        bullet->getY(), bullet->getY() + 5)) {
