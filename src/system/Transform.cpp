@@ -38,6 +38,6 @@ void C_Transform::addY(float y) {
   position.y += y;
 }
 
-const Coordinate& C_Transform::GetPosition() const {
+const Coordinate& C_Transform::getPosition() const {
   return position;
 }

@@ -6,7 +6,7 @@
 
 class C_Transform : public Component {
  public:
-  C_Transform(GameObject* owner);
+  explicit C_Transform(GameObject* owner);
 
   void setPosition(float x, float y);
   void setPosition(const Coordinate& pos);
@@ -20,7 +20,7 @@ class C_Transform : public Component {
   void addX(float x);
   void addY(float y);
 
-  const Coordinate& GetPosition() const;
+  const Coordinate& getPosition() const;
 
  private:
   Coordinate position;
