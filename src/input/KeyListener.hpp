@@ -16,7 +16,7 @@ class KeyListener {
  public:
   static bool anyKeyPressed;
 
-  void update() const;
+  static void update();
 
   static std::array<bool, KEY_MAX> keyPressed;
   static std::array<bool, KEY_MAX> keyReleased;

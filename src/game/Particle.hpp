@@ -12,7 +12,6 @@ enum class ParticleType {
 };
 
 enum class ParticleBehaviour {
-  NONE,
   EXPLODE,
 };
 
@@ -21,7 +20,7 @@ class Particle {
   Particle(float x,
            float y,
            int color,
-           float xMin,
+           float xVelocityMin,
            float xMax,
            float yMin,
            float yMax,

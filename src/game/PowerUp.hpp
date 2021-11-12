@@ -4,17 +4,17 @@
 #include <allegro.h>
 #include <string>
 
-enum class PowerupType { HEALTH, SPEED, FIRE_SPEED, FIRE_DELAY };
+enum class PowerUpType { HEALTH, SPEED, FIRE_SPEED, FIRE_DELAY };
 
-class Powerup {
+class PowerUp {
  public:
-  Powerup(float x, float y, PowerupType type);
+  PowerUp(float x, float y, PowerUpType type);
 
   float getX() const { return x; }
   float getY() const { return y; }
-  float getWidth() const { return 40.0f; }
-  float getHeight() const { return 40.0f; }
-  PowerupType getType() const { return type; }
+  static float getWidth() { return 40.0f; }
+  static float getHeight() { return 40.0f; }
+  PowerUpType getType() const { return type; }
 
   bool getDead() const { return dead; }
 
@@ -26,7 +26,7 @@ class Powerup {
   float x;
   float y;
 
-  PowerupType type;
+  PowerUpType type;
 
   bool dead = false;
 

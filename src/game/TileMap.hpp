@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "../util/coordinate.h"
+#include "../util/Vec2.hpp"
 #include "Barrier.hpp"
 
 struct TileMapNeighbours {
@@ -20,17 +20,16 @@ struct TileMapNeighbours {
 
 class TileMap {
  public:
-  void generateMap(unsigned char width, unsigned char height);
+  void generateMap(unsigned char mapWidth, unsigned char mapHeight);
 
  private:
-  TileMapNeighbours getNeighbours(const unsigned char x,
-                                  const unsigned char y) const;
+  TileMapNeighbours getNeighbours(unsigned char x, unsigned char y) const;
 
   unsigned char width;
   unsigned char height;
 
   std::vector<Barrier> barriers;
-  std::vector<Coordinate> start_locations;
+  std::vector<Vec2<int>> start_locations;
 
   std::vector<std::vector<int>> tile_map;
 };

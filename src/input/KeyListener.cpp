@@ -8,31 +8,31 @@ int KeyListener::lastKeyReleased = -1;
 bool KeyListener::anyKeyPressed = false;
 
 // Check those keys!
-void KeyListener::update() const {
+void KeyListener::update() {
   // Reset last key
   lastKeyPressed = -1;
   lastKeyReleased = -1;
   anyKeyPressed = false;
 
   // Check key just pressed
-  for (unsigned long i = 0; i < KEY_MAX; i++) {
+  for (int i = 0; i < KEY_MAX; i++) {
     // Clear old values
     keyPressed[i] = false;
     keyReleased[i] = false;
 
-    // Wheres the any key?
+    // Where's the any key?
     if (static_cast<bool>(key[i])) {
       anyKeyPressed = true;
     }
 
     // Pressed since last tick?
-    if (static_cast<bool>(key[i]) == true && lastTicksKey[i] == false) {
+    if (static_cast<bool>(key[i]) && !lastTicksKey[i]) {
       keyPressed[i] = true;
       lastKeyPressed = i;
     }
 
     // Released since last tick?
-    if (static_cast<bool>(key[i]) == false && lastTicksKey[i] == true) {
+    if (!static_cast<bool>(key[i]) && lastTicksKey[i]) {
       keyReleased[i] = true;
       lastKeyReleased = i;
     }

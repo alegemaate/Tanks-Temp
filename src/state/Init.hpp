@@ -8,7 +8,7 @@
 
 #include <allegro.h>
 
-#include "./state.h"
+#include "./State.h"
 
 class Init : public State {
  public:

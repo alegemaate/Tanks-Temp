@@ -7,7 +7,7 @@ class GameObject;
 
 class Component {
  public:
-  Component(GameObject* owner) : owner(owner) {}
+  explicit Component(GameObject* owner) : owner(owner) {}
 
   virtual void awake(){};
 

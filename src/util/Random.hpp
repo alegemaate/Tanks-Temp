@@ -5,9 +5,9 @@
 
 class Random {
  public:
-  static float randomFloat(const float min, const float max);
+  static float randomFloat(float min, float max);
 
-  static int randomInt(const int min, const int max);
+  static int random(int min, int max);
 
  private:
   /// Random number generator

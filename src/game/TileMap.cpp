@@ -1,13 +1,14 @@
 #include "TileMap.hpp"
+#include "../util/Random.hpp"
 
 // Generate a new map
-void TileMap::generateMap(unsigned char width, unsigned char height) {
-  // Assign new width and height
-  this->width = width;
-  this->height = height;
+void TileMap::generateMap(unsigned char mapWidth, unsigned char mapHeight) {
+  // Assign new mapWidth and mapHeight
+  width = mapWidth;
+  height = mapHeight;
 
   // Setup map
-  for (unsigned char i = 0; i < this->width; i++) {
+  for (unsigned char i = 0; i < width; i++) {
     std::vector<int> row(width, 0);
     tile_map.push_back(row);
   }
@@ -16,8 +17,8 @@ void TileMap::generateMap(unsigned char width, unsigned char height) {
 
   // Make a map
   for (unsigned char pass = 0; pass < passes; pass++) {
-    for (unsigned char i = 0; i < this->width; i++) {
-      for (unsigned char t = 0; t < this->height; t++) {
+    for (unsigned char i = 0; i < width; i++) {
+      for (unsigned char t = 0; t < height; t++) {
         auto neighbours = this->getNeighbours(i, t);
 
         switch (pass) {
@@ -31,7 +32,7 @@ void TileMap::generateMap(unsigned char width, unsigned char height) {
 
           // Pass 2 (Well Placed blocks)
           case 2: {
-            const bool should_place = random(0, 2) == 1;
+            const bool should_place = Random::random(0, 2) == 1;
 
             if (should_place && neighbours.n == 0 && neighbours.e == 0 &&
                 neighbours.s == 0 && neighbours.w == 0 && neighbours.ne == 0 &&
@@ -51,7 +52,7 @@ void TileMap::generateMap(unsigned char width, unsigned char height) {
             break;
           }
 
-          // Pass 4 (Filling inaccessable areas)
+          // Pass 4 (Filling inaccessible areas)
           case 4: {
             if (neighbours.e == 1 && neighbours.w == 1 && neighbours.n == 1 &&
                 neighbours.s == 1) {
@@ -62,7 +63,7 @@ void TileMap::generateMap(unsigned char width, unsigned char height) {
 
           // Pass 5 (Boxes!)
           case 5: {
-            if (tile_map[i][t] == 0 && random(1, 20) == 1) {
+            if (tile_map[i][t] == 0 && Random::random(1, 20) == 1) {
               tile_map[i][t] = 2;
             }
             break;
@@ -71,7 +72,7 @@ void TileMap::generateMap(unsigned char width, unsigned char height) {
           // Pass 6 (Find start locations)
           case 6: {
             if (tile_map[i][t] == 0) {
-              start_locations.push_back(Coordinate(i * 40, t * 40));
+              start_locations.emplace_back(i * 40, t * 40);
             }
             break;
           }
@@ -86,7 +87,7 @@ void TileMap::generateMap(unsigned char width, unsigned char height) {
 
 TileMapNeighbours TileMap::getNeighbours(const unsigned char x,
                                          const unsigned char y) const {
-  TileMapNeighbours neighbours;
+  TileMapNeighbours neighbours{};
 
   const bool n_safe = y > 0;
   const bool s_safe = y < height - 1;

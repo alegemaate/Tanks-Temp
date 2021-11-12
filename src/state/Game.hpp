@@ -7,22 +7,20 @@
 #define SRC_STATE_GAME_H_
 
 #include <allegro.h>
-#include <time.h>
 #include <array>
-#include <cmath>
 #include <memory>
 #include <vector>
 
 #include "../game/AiTank.hpp"
 #include "../game/Barrier.hpp"
 #include "../game/PlayerTank.hpp"
-#include "../game/Powerup.hpp"
+#include "../game/PowerUp.hpp"
 #include "../game/Tank.hpp"
 #include "../game/World.hpp"
-#include "../util/coordinate.h"
+#include "../util/Vec2.hpp"
 #include "../util/tools.h"
 
-#include "./state.h"
+#include "./State.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846264338327
@@ -37,9 +35,6 @@ class Game : public State {
   void draw() override;
 
   // Map stuff
-  static const unsigned char max_map_width = 255;
-  static const unsigned char max_map_height = 255;
-
   static unsigned char map_width;
   static unsigned char map_height;
 
@@ -62,13 +57,11 @@ class Game : public State {
   std::vector<std::unique_ptr<Barrier>> barriers;
   std::vector<Tank*> enemy_tanks;
   std::vector<Tank*> player_tanks;
-  std::vector<std::unique_ptr<Powerup>> powerups;
-  std::vector<Coordinate> startLocations;
+  std::vector<std::unique_ptr<PowerUp>> power_ups;
+  std::vector<Vec2<float>> startLocations;
 
-  std::array<std::array<BarrierType, max_map_height>, max_map_width> map_temp;
-
-  float map_x;
-  float map_y;
+  float map_x = 0;
+  float map_y = 0;
 
   int currentRound = 0;
 };

@@ -1,18 +1,18 @@
 #ifndef SRC_SYSTEM_TRANSFORM_H_
 #define SRC_SYSTEM_TRANSFORM_H_
 
-#include "../util/coordinate.h"
-#include "Component.h"
+#include "../util/Vec2.hpp"
+#include "Component.hpp"
 
 class C_Transform : public Component {
  public:
   explicit C_Transform(GameObject* owner);
 
   void setPosition(float x, float y);
-  void setPosition(const Coordinate& pos);
+  void setPosition(const Vec2<float>& pos);
 
   void addPosition(float x, float y);
-  void addPosition(Coordinate pos);
+  void addPosition(const Vec2<float>& pos);
 
   void setX(float x);
   void setY(float y);
@@ -20,9 +20,9 @@ class C_Transform : public Component {
   void addX(float x);
   void addY(float y);
 
-  const Coordinate& getPosition() const;
+  const Vec2<float>& getPosition() const;
 
  private:
-  Coordinate position;
+  Vec2<float> position;
 };
 #endif /* SRC_SYSTEM_TRANSFORM_H_ */

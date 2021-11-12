@@ -9,9 +9,8 @@
 #include <allegro.h>
 
 #include "../ui/Button.hpp"
-#include "../util/tools.h"
 #include "Game.hpp"
-#include "state.h"
+#include "State.h"
 
 class Menu : public State {
  public:

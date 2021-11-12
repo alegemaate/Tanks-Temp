@@ -9,7 +9,7 @@
 
 class State {
  public:
-  // Deconstructor
+  // Deconstruct
   virtual ~State() = default;
 
   // Draw to screen

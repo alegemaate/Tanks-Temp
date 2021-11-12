@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../system/ImageRegistry.h"
+#include "../system/ImageRegistry.hpp"
 
 // Init
 PlayerTank::PlayerTank(World* world,

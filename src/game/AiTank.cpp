@@ -1,6 +1,7 @@
 #include "AiTank.hpp"
 
-#include "../system/ImageRegistry.h"
+#include "../system/ImageRegistry.hpp"
+#include "../util/Random.hpp"
 
 // Init
 AiTank::AiTank(World* world,
@@ -72,7 +73,7 @@ void AiTank::find_enemy_target() {
     float distanceToEnemy =
         find_distance(x, y, closest_enemy_x, closest_enemy_y);
 
-    if (random(0, 10) == 0 && distanceToEnemy < 500) {
+    if (Random::random(0, 10) == 0 && distanceToEnemy < 500) {
       shoot(rotation_turret, x + 23, y + 23);
     }
   } else {
@@ -87,8 +88,8 @@ void AiTank::update_target() {
   bool cantMove = !canMoveX && !canMoveY;
 
   if (distanceToTarget < 10 || cantMove) {
-    destination_x = static_cast<float>(random(0, map_width));
-    destination_y = static_cast<float>(random(0, map_height));
+    destination_x = static_cast<float>(Random::random(0, map_width));
+    destination_y = static_cast<float>(Random::random(0, map_height));
   }
 }
 

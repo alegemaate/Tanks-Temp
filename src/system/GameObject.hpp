@@ -5,8 +5,8 @@
 #include <memory>
 #include <vector>
 
-#include "Component.h"
-#include "Transform.h"
+#include "Component.hpp"
+#include "Transform.hpp"
 
 class GameObject {
  public:
@@ -26,9 +26,9 @@ class GameObject {
   std::shared_ptr<T> addComponent() {
     static_assert(std::is_base_of<Component, T>::value,
                   "T must derive from Component");
-    for (auto& exisitingComponent : components) {
-      if (std::dynamic_pointer_cast<T>(exisitingComponent)) {
-        return std::dynamic_pointer_cast<T>(exisitingComponent);
+    for (auto& existingComponent : components) {
+      if (std::dynamic_pointer_cast<T>(existingComponent)) {
+        return std::dynamic_pointer_cast<T>(existingComponent);
       }
     }
 
@@ -41,9 +41,9 @@ class GameObject {
   std::shared_ptr<T> getComponent() {
     static_assert(std::is_base_of<Component, T>::value,
                   "T must derive from Component");
-    for (auto& exisitingComponent : components) {
-      if (std::dynamic_pointer_cast<T>(exisitingComponent)) {
-        return std::dynamic_pointer_cast<T>(exisitingComponent);
+    for (auto& existingComponent : components) {
+      if (std::dynamic_pointer_cast<T>(existingComponent)) {
+        return std::dynamic_pointer_cast<T>(existingComponent);
       }
     }
 

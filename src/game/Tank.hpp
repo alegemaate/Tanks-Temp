@@ -6,9 +6,9 @@
 #include <vector>
 
 #include "./Barrier.hpp"
-#include "./Bullet.h"
+#include "./Bullet.hpp"
 #include "./Particle.hpp"
-#include "./Powerup.hpp"
+#include "./PowerUp.hpp"
 #include "./World.hpp"
 
 class Tank {
@@ -37,20 +37,20 @@ class Tank {
   virtual float getCenterX() { return x + width / 2.0f; }
   virtual float getCenterY() { return y + height / 2.0f; }
 
-  virtual void set_map_dimensions(int width, int height) {
-    map_width = width;
-    map_height = height;
+  virtual void set_map_dimensions(int mWidth, int mHeight) {
+    map_width = mWidth;
+    map_height = mHeight;
   }
 
-  virtual void checkCollision(std::vector<Bullet*>* bullets);
+  virtual void checkCollision(std::vector<Bullet*>* enemyBullets);
   virtual void checkCollision(
       const std::vector<std::unique_ptr<Barrier>>& barriers);
   virtual void checkCollision(
-      const std::vector<std::unique_ptr<Powerup>>& powerups);
+      const std::vector<std::unique_ptr<PowerUp>>& power_ups);
 
   virtual void process_enemies(std::vector<Tank*>* otherTanks);
 
-  virtual void pickupPowerup(PowerupType type);
+  virtual void pickupPowerUp(PowerUpType type);
 
   static unsigned char num_bullet_bounces;
 
@@ -96,7 +96,7 @@ class Tank {
 
   // Update
   void drive(float rotation);
-  void shoot(float rotation, float x, float y);
+  void shoot(float rotation, float targetX, float targetY);
   void accelerate(bool moving);
 
  private:
@@ -106,7 +106,7 @@ class Tank {
 
   // Update
   void update_bullets();
-  void explode(float x, float y, float velocity, int amount, int life);
+  void explode();
 
   // Draw
   void drawBullets(BITMAP* buffer) const;

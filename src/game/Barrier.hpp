@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "../util/coordinate.h"
-#include "./Bullet.h"
+#include "../util/Vec2.hpp"
+#include "./Bullet.hpp"
 
 enum class BarrierType {
   NONE,
@@ -14,33 +14,32 @@ enum class BarrierType {
 
 class Barrier {
  public:
-  Barrier(World* world, Coordinate position, BarrierType type);
+  Barrier(World* world, const Vec2<float>& position, BarrierType type);
   ~Barrier();
 
   void update(const std::vector<Bullet*>* bullets);
   void draw(BITMAP* image);
 
-  int getWidth() const;
-  int getHeight() const;
+  float getWidth() const;
+  float getHeight() const;
 
-  void makeIndestructable(bool indestructable) {
-    this->indestructable = indestructable;
+  void makeIndestructible(bool isIndestructable) {
+    indestructible = isIndestructable;
   }
 
   bool getDead() const;
 
-  Coordinate getPosition() const;
+  Vec2<float> getPosition() const;
 
  private:
-  Coordinate position;
+  Vec2<float> position;
 
   World* worldPointer;
 
   int health;
 
-  bool indestructable = false;
+  bool indestructible = false;
   bool exploded = false;
-  bool visible = true;
 
   float width;
   float height;
@@ -49,7 +48,7 @@ class Barrier {
 
   BITMAP* image;
 
-  void explode(float x, float y, int velocity, int amount, int life);
+  void explode();
 };
 
 #endif  // SRC_GAME_BARRIER_H_

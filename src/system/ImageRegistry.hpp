@@ -7,8 +7,8 @@
 
 class ImageRegistry {
  public:
-  static void loadImage(const std::string& key, const std::string& path);
-  static BITMAP* getImage(const std::string& key);
+  static void loadImage(const std::string& imageKey, const std::string& path);
+  static BITMAP* getImage(const std::string& imageKey);
 
  private:
   static std::map<std::string, BITMAP*> images;

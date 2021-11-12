@@ -4,7 +4,8 @@
 #include <cmath>
 #include <vector>
 
-#include "../system/ImageRegistry.h"
+#include "../system/ImageRegistry.hpp"
+#include "../util/Random.hpp"
 
 unsigned char Tank::num_bullet_bounces = 0;
 
@@ -22,6 +23,10 @@ Tank::Tank(World* worldPointer,
       fire_speed(fireSpeed),
       fire_delay_rate(fireDelay),
       max_speed(speed),
+      image_base(nullptr),
+      image_hurt(nullptr),
+      image_top(nullptr),
+      image_treads(nullptr),
       worldPointer(worldPointer) {
   // Map size
   map_width = SCREEN_W;
@@ -36,11 +41,12 @@ bool Tank::isDead() {
 }
 
 // Explode
-void Tank::explode(float x, float y, float velocity, int amount, int life) {
-  for (int i = 0; i < amount; i++) {
+void Tank::explode() {
+  for (int i = 0; i < 200; i++) {
     auto* particle = new Particle(
-        x, y, makecol(255, random(0, 255), 0), -velocity, velocity, -velocity,
-        velocity, 1, ParticleType::CIRCLE, life, ParticleBehaviour::EXPLODE);
+        getCenterX(), getCenterY(), makecol(255, Random::random(0, 255), 0),
+        -10.0f, 10.0f, -10.0f, 10.0f, 1, ParticleType::CIRCLE, 20,
+        ParticleBehaviour::EXPLODE);
     worldPointer->addParticle(particle);
   }
 }
@@ -69,8 +75,8 @@ std::vector<Bullet*>* Tank::getBullets() {
 }
 
 // Check collision
-void Tank::checkCollision(std::vector<Bullet*>* bullets) {
-  for (auto* const& bullet : *bullets) {
+void Tank::checkCollision(std::vector<Bullet*>* enemyBullets) {
+  for (auto* const& bullet : *enemyBullets) {
     if (collisionAny(x, x + 50, bullet->getX(),
                      bullet->getX() + bullet->getXVelocity(), y, y + 50,
                      bullet->getY(), bullet->getY() + bullet->getYVelocity())) {
@@ -107,13 +113,14 @@ void Tank::checkCollision(
 }
 
 void Tank::checkCollision(
-    const std::vector<std::unique_ptr<Powerup>>& powerups) {
-  for (auto const& powerup : powerups) {
-    if (collisionAny(x, x + 50, powerup->getX(),
-                     powerup->getX() + powerup->getWidth(), y, y + 50,
-                     powerup->getY(), powerup->getY() + powerup->getHeight())) {
-      pickupPowerup(powerup->getType());
-      powerup->pickup();
+    const std::vector<std::unique_ptr<PowerUp>>& power_ups) {
+  for (auto const& power_up : power_ups) {
+    if (collisionAny(x, x + 50, power_up->getX(),
+                     power_up->getX() + power_up->getWidth(), y, y + 50,
+                     power_up->getY(),
+                     power_up->getY() + power_up->getHeight())) {
+      pickupPowerUp(power_up->getType());
+      power_up->pickup();
     }
   }
 }
@@ -145,12 +152,12 @@ void Tank::update_bullets() {
 }
 
 // Shoot
-void Tank::shoot(float rotation, float x, float y) {
+void Tank::shoot(float rotation, float targetX, float targetY) {
   if (bullet_delay > fire_delay_rate) {
-    play_sample(sample_shot, 255, 127, random(800, 1200), 0);
+    play_sample(sample_shot, 255, 127, Random::random(800, 1200), 0);
 
-    auto* bullet = new Bullet(worldPointer, x, y, rotation, fire_speed,
-                              1 + num_bullet_bounces);
+    auto* bullet = new Bullet(worldPointer, targetX, targetY, rotation,
+                              fire_speed, 1 + num_bullet_bounces);
     bullets.push_back(bullet);
     bullet_delay = 0;
   }
@@ -160,7 +167,7 @@ void Tank::shoot(float rotation, float x, float y) {
 void Tank::update() {
   // Just died
   if (!dead && (health < 1)) {
-    explode(x + 25.0f, y + 25.0f, 10.0f, 200, 20);
+    explode();
     play_sample(sample_shot, 255, 127, 500, 0);
     dead = true;
   }
@@ -236,22 +243,22 @@ void Tank::putDecal(BITMAP* buffer) {
   }
 }
 
-// Powerups
-void Tank::pickupPowerup(PowerupType type) {
+// Power ups
+void Tank::pickupPowerUp(PowerUpType type) {
   switch (type) {
-    case PowerupType::HEALTH:
+    case PowerUpType::HEALTH:
       health += 10;
       if (health > 100) {
         health = 100;
       }
       break;
-    case PowerupType::SPEED:
+    case PowerUpType::SPEED:
       max_speed += 0.5f;
       break;
-    case PowerupType::FIRE_SPEED:
+    case PowerUpType::FIRE_SPEED:
       fire_speed += 1;
       break;
-    case PowerupType::FIRE_DELAY:
+    case PowerUpType::FIRE_DELAY:
       fire_delay_rate -= 1;
       if (fire_delay_rate < 0) {
         fire_delay_rate = 0;

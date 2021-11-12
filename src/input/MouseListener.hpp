@@ -14,7 +14,7 @@ const int MAX_MOUSE_BUTTONS = 3;
 
 class MouseListener {
  public:
-  void update() const;
+  static void update();
 
   static unsigned char mouse_button;
   static unsigned char mouse_pressed;

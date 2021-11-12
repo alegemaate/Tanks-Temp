@@ -1,4 +1,5 @@
-#include "./Bullet.h"
+#include "./Bullet.hpp"
+#include "../util/Random.hpp"
 
 #include <cmath>
 
@@ -62,8 +63,8 @@ void Bullet::destroy() {
 
   // Make explosion
   for (int i = 0; i < 100; i++) {
-    Particle* particle = nullptr;
-    int color = makecol(255, random(0, 255), 0);
+    Particle* particle;
+    int color = makecol(255, Random::random(0, 255), 0);
 
     switch (incidenceDirection) {
       case BounceDirection::BOTTOM:
@@ -117,9 +118,14 @@ void Bullet::update() {
 
 // Draw image
 void Bullet::draw(BITMAP* buffer) const {
+  int x_int = static_cast<int>(x);
+  int y_int = static_cast<int>(y);
+
   if (health > 0) {
-    rectfill(buffer, x, y, x + 5, y + 5, makecol(0, 0, 0));
-    rectfill(buffer, x + 1, y + 1, x + 4, y + 4, makecol(255, 0, 0));
-    rectfill(buffer, x + 2, y + 2, x + 3, y + 3, makecol(0, 255, 0));
+    rectfill(buffer, x_int, y_int, x_int + 5, y_int + 5, makecol(0, 0, 0));
+    rectfill(buffer, x_int + 1, y_int + 1, x_int + 4, y_int + 4,
+             makecol(255, 0, 0));
+    rectfill(buffer, x_int + 2, y_int + 2, x_int + 3, y_int + 3,
+             makecol(0, 255, 0));
   }
 }

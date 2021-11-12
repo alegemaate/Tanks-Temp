@@ -4,8 +4,6 @@
 #include "Init.hpp"
 #include "Menu.hpp"
 
-// State variables
-StateId StateEngine::state_id = StateId::STATE_NULL;
 StateId StateEngine::next_state = StateId::STATE_NULL;
 std::unique_ptr<State> StateEngine::current_state = nullptr;
 
@@ -49,7 +47,6 @@ void StateEngine::changeState() {
   }
 
   // Change the current state ID
-  state_id = next_state;
 
   // NULL the next state ID
   next_state = StateId::STATE_NULL;

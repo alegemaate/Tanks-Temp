@@ -1,6 +1,6 @@
 #include "Init.hpp"
 
-#include "../system/ImageRegistry.h"
+#include "../system/ImageRegistry.hpp"
 #include "StateEngine.hpp"
 
 void Init::update() {
@@ -10,12 +10,12 @@ void Init::update() {
   ImageRegistry::loadImage("cursor", "images/cursor.png");
   ImageRegistry::loadImage("block-box", "images/block_box_1.png");
   ImageRegistry::loadImage("block-stone", "images/block_stone_1.png");
-  ImageRegistry::loadImage("powerup-health", "images/powerup_health.png");
-  ImageRegistry::loadImage("powerup-tank-speed",
+  ImageRegistry::loadImage("power-up-health", "images/powerup_health.png");
+  ImageRegistry::loadImage("power-up-tank-speed",
                            "images/powerup_tank_speed.png");
-  ImageRegistry::loadImage("powerup-bullet-speed",
+  ImageRegistry::loadImage("power-up-bullet-speed",
                            "images/powerup_bullet_speed.png");
-  ImageRegistry::loadImage("powerup-bullet-delay",
+  ImageRegistry::loadImage("power-up-bullet-delay",
                            "images/powerup_bullet_delay.png");
   ImageRegistry::loadImage("tank-treads", "images/tank_treads.png");
   ImageRegistry::loadImage("tank-dead", "images/tank_dead.png");

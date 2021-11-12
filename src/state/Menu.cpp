@@ -1,9 +1,9 @@
 #include "Menu.hpp"
 
-#include "../system/ImageRegistry.h"
+#include "../system/ImageRegistry.hpp"
 #include "StateEngine.hpp"
 
-// Initilizer
+// Initializer
 Menu::Menu() {
   // Background image
   background = ImageRegistry::getImage("menu-background");

@@ -1,7 +1,5 @@
 #include "Random.hpp"
 
-#include <chrono>
-
 // Init generator
 std::mt19937 Random::rng = std::mt19937(std::random_device{}());
 
@@ -12,7 +10,7 @@ float Random::randomFloat(const float min, const float max) {
 }
 
 // Random Int
-int Random::randomInt(const int min, const int max) {
+int Random::random(const int min, const int max) {
   std::uniform_int_distribution<int> int_dist{min, max};
   return int_dist(rng);
 }

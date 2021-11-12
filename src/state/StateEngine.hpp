@@ -3,7 +3,7 @@
 #define SRC_STATE_STATE_ENGINE_HPP_
 
 #include <memory>
-#include "state.h"
+#include "State.h"
 
 // Game states
 enum class StateId {
@@ -26,7 +26,6 @@ class StateEngine {
   static void changeState();
 
  private:
-  static StateId state_id;
   static StateId next_state;
   static std::unique_ptr<State> current_state;
 };

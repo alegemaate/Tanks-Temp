@@ -6,7 +6,7 @@ unsigned char MouseListener::mouse_released = 0;
 unsigned char MouseListener::mouse_old = 0;
 
 // Check those buttons!
-void MouseListener::update() const {
+void MouseListener::update() {
   // Check button just pressed
   for (int i = 0; i < MAX_MOUSE_BUTTONS; i++) {
     // Clear old values
