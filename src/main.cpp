@@ -2,13 +2,13 @@
 
 #include <array>
 
-#include "./input/keyListener.h"
-#include "./input/mouseListener.h"
+#include "./input/KeyListener.hpp"
+#include "./input/MouseListener.hpp"
 
-#include "./state/game.h"
-#include "./state/init.h"
-#include "./state/menu.h"
-#include "./state/state-engine.hpp"
+#include "./state/Game.hpp"
+#include "./state/Init.hpp"
+#include "./state/Menu.hpp"
+#include "./state/StateEngine.hpp"
 #include "./state/state.h"
 
 // Input listener classes

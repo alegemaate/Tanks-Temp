@@ -3,7 +3,7 @@
 #include <loadpng.h>
 #include <cmath>
 
-#include "random.h"
+#include "Random.hpp"
 
 // Collision
 bool collisionAny(float xMin1,
