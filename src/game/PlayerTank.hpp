@@ -13,7 +13,7 @@ class PlayerTank : public Tank {
              int fireDelay,
              float speed);
 
-  void update() override;
+  void update(const double deltaTime) override;
 };
 
 #endif  // SRC_GAME_PLAYER_TANK_H_

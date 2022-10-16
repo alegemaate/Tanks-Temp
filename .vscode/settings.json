@@ -72,6 +72,9 @@
     "variant": "cpp",
     "numbers": "cpp",
     "semaphore": "cpp",
-    "*.ipp": "cpp"
+    "*.ipp": "cpp",
+    "any": "cpp",
+    "codecvt": "cpp",
+    "future": "cpp"
   }
 }

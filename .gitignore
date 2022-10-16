@@ -54,3 +54,4 @@ cmake_install.cmake
 Makefile
 .cmake
 Testing
+*.ninja*

@@ -33,8 +33,8 @@ AiTank::AiTank(World* world,
 }
 
 // Update
-void AiTank::update() {
-  Tank::update();
+void AiTank::update(const double deltaTime) {
+  Tank::update(deltaTime);
 
   if (dead) {
     return;

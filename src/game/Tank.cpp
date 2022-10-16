@@ -164,7 +164,7 @@ void Tank::shoot(float rotation, float targetX, float targetY) {
 }
 
 // Update
-void Tank::update() {
+void Tank::update(const double deltaTime) {
   // Just died
   if (!dead && (health < 1)) {
     explode();

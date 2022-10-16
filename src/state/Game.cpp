@@ -155,7 +155,7 @@ Game::~Game() {
   destroy_bitmap(map_buffer);
 }
 
-void Game::update() {
+void Game::update(const double deltaTime) {
   // Get joystick input
   poll_joystick();
 
@@ -181,7 +181,7 @@ void Game::update() {
     enemy->checkCollision(power_ups);
 
     // Update tanks
-    enemy->update();
+    enemy->update(deltaTime);
   }
 
   for (auto* const& player : player_tanks) {
@@ -202,7 +202,7 @@ void Game::update() {
     player->checkCollision(power_ups);
 
     // Update tanks
-    player->update();
+    player->update(deltaTime);
   }
 
   // Remove broken barriers

@@ -23,8 +23,8 @@ PlayerTank::PlayerTank(World* world,
 }
 
 // Update
-void PlayerTank::update() {
-  Tank::update();
+void PlayerTank::update(const double deltaTime) {
+  Tank::update(deltaTime);
 
   if (dead) {
     return;

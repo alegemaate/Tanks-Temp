@@ -19,7 +19,7 @@ class StateEngine {
  public:
   static void setNextState(StateId state_id);
 
-  static void update();
+  static void update(const double deltaTime);
 
   static void draw();
 

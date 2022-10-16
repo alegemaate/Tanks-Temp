@@ -3,7 +3,7 @@
 #include "../system/ImageRegistry.hpp"
 #include "StateEngine.hpp"
 
-void Init::update() {
+void Init::update(const double deltaTime) {
   // Load images
   ImageRegistry::loadImage("menu-background", "images/menu.png");
   ImageRegistry::loadImage("game-background", "images/background.png");

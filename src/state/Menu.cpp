@@ -1,15 +1,19 @@
 #include "Menu.hpp"
 
+#include "../components/Sprite.hpp"
+#include "../components/Transform.hpp"
 #include "../system/ImageRegistry.hpp"
 #include "StateEngine.hpp"
 
 // Initializer
 Menu::Menu() {
-  // Background image
-  background = ImageRegistry::getImage("menu-background");
-
   // Buffer
   buffer = create_bitmap(SCREEN_W, SCREEN_H);
+
+  // Entity
+  const auto background = m_registry.create();
+  m_registry.emplace<Sprite>(background, "menu-background");
+  m_registry.emplace<Transform>(background, 0.0, 0.0);
 
   // Buttons
   friends_up = Button(90, 275, "/\\", font);
@@ -26,7 +30,7 @@ Menu::Menu() {
 }
 
 // Update routine
-void Menu::update() {
+void Menu::update(const double deltaTime) {
   // Update buttons
   enemies_up.update();
   enemies_down.update();
@@ -80,8 +84,8 @@ void Menu::update() {
 
 // Drawing routine
 void Menu::draw() {
-  // Background
-  draw_sprite(buffer, background, 0, 0);
+  // Render system
+  m_render_system.render(buffer, m_registry);
 
   // Buttons
   enemies_up.draw(buffer);

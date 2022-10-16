@@ -23,8 +23,8 @@ class Barrier {
   float getWidth() const;
   float getHeight() const;
 
-  void makeIndestructible(bool isIndestructable) {
-    indestructible = isIndestructable;
+  void makeIndestructible(bool indestructible) {
+    this->indestructible = indestructible;
   }
 
   bool getDead() const;

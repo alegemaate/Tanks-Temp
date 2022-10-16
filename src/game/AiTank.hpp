@@ -14,7 +14,7 @@ class AiTank : public Tank {
          float speed,
          bool enemy);
 
-  void update() override;
+  void update(const double deltaTime) override;
 
  private:
   float destination_x;

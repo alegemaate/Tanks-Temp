@@ -31,7 +31,7 @@ class Game : public State {
   Game();
   ~Game() override;
 
-  void update() override;
+  void update(const double deltaTime) override;
   void draw() override;
 
   // Map stuff

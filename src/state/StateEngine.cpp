@@ -12,8 +12,8 @@ void StateEngine::setNextState(StateId state_id) {
   next_state = state_id;
 }
 
-void StateEngine::update() {
-  current_state->update();
+void StateEngine::update(const double deltaTime) {
+  current_state->update(deltaTime);
 }
 
 void StateEngine::draw() {

@@ -27,7 +27,7 @@ class Tank {
 
   virtual std::vector<Bullet*>* getBullets();
 
-  virtual void update();
+  virtual void update(const double deltaTime);
   virtual void draw(BITMAP* buffer);
   virtual void putDecal(BITMAP* buffer);
 

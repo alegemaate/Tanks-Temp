@@ -8,7 +8,7 @@
       "type": "shell",
       "detail": "Build and run",
       "windows": {
-        "command": "make -j24 && cd build && Tanks.exe"
+        "command": "ninja && cd build && Tanks.exe"
       },
       "group": "build",
       "problemMatcher": "$gcc"

@@ -3,8 +3,8 @@
  * Allan Legemaate
  * 09/05/2017
  **/
-#ifndef SRC_STATE_INIT_H_
-#define SRC_STATE_INIT_H_
+#ifndef TANKS_INIT_HPP
+#define TANKS_INIT_HPP
 
 #include <allegro.h>
 
@@ -12,10 +12,10 @@
 
 class Init : public State {
  public:
-  void update() override;
+  void update(double deltaTime) override;
   void draw() override {
     // No draw method
   }
 };
 
-#endif  // SRC_STATE_INIT_H_
+#endif  // TANKS_INIT_HPP

@@ -16,7 +16,7 @@ class State {
   virtual void draw() = 0;
 
   // Update logic
-  virtual void update() = 0;
+  virtual void update(const double deltaTime) = 0;
 };
 
 #endif  // SRC_STATE_STATE_H_
