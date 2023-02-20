@@ -2,18 +2,11 @@
 
 #include <array>
 
-#include "./input/keyListener.h"
-#include "./input/mouseListener.h"
+#include "./input/KeyListener.hpp"
+#include "./input/MouseListener.hpp"
 
-#include "./state/game.h"
-#include "./state/init.h"
-#include "./state/menu.h"
-#include "./state/state-engine.hpp"
-#include "./state/state.h"
-
-// Input listener classes
-const MouseListener m_listener;
-const KeyListener k_listener;
+#include "./state/Game.hpp"
+#include "./state/StateEngine.hpp"
 
 // Are we closing?
 bool closing = false;
@@ -39,7 +32,7 @@ void game_time_ticker() {
 END_OF_FUNCTION(game_time_ticker)
 
 // Close button handler
-void close_button_handler(void) {
+void close_button_handler() {
   closing = true;
 }
 END_OF_FUNCTION(close_button_handler)
@@ -80,7 +73,7 @@ void setup() {
     install_joystick(JOY_TYPE_AUTODETECT);
     if (!calibrateJoystick()) {
       abort_on_error("Could not configure joystick");
-    };
+    }
   }
 
   set_color_depth(32);
@@ -93,12 +86,12 @@ void setup() {
   set_window_title("Tanks!");
 
   // Setup for FPS system
-  LOCK_VARIABLE(ticks);
-  LOCK_FUNCTION(ticker);
+  LOCK_VARIABLE(ticks)
+  LOCK_FUNCTION(ticker)
   install_int_ex(ticker, BPS_TO_TIMER(updates_per_second));
 
-  LOCK_VARIABLE(game_time);
-  LOCK_FUNCTION(game_time_ticker);
+  LOCK_VARIABLE(game_time)
+  LOCK_FUNCTION(game_time_ticker)
   install_int_ex(game_time_ticker, BPS_TO_TIMER(10));
 
   // FPS STUFF
@@ -107,7 +100,7 @@ void setup() {
   }
 
   // Close button
-  LOCK_FUNCTION(close_button_handler);
+  LOCK_FUNCTION(close_button_handler)
   set_close_button_callback(close_button_handler);
 
   // Set the current state ID
@@ -119,8 +112,8 @@ void update() {
   StateEngine::changeState();
 
   // Update listeners
-  m_listener.update();
-  k_listener.update();
+  MouseListener::update();
+  KeyListener::update();
 
   // Update state
   StateEngine::update();
