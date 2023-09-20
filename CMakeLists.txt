@@ -1,8 +1,11 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.24)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+include(FetchContent)
 
 project(Tanks)
 
@@ -19,10 +22,20 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
 
+FetchContent_Declare(
+  EnTT
+  GIT_REPOSITORY https://github.com/skypjack/entt.git
+  GIT_TAG        344e03ac64a1f78424ab1150e2d4778e8df8431d
+)
+FetchContent_MakeAvailable(EnTT)
+
 # Link Libs
 if (MINGW)
-    target_link_libraries(${PROJECT_NAME} -lmingw32)
+  target_link_libraries(${PROJECT_NAME} -lmingw32)
 endif (MINGW)
+
 target_link_libraries(${PROJECT_NAME} ${ALLEGRO_LIBRARY})
 target_link_libraries(${PROJECT_NAME} ${ALLEGRO_PNG_LIBRARY})
-target_link_libraries(${PROJECT_NAME} -static-libgcc -static-libstdc++ -lm)
+target_link_libraries(${PROJECT_NAME} -static-libgcc -static-libstdc++ EnTT::EnTT)
+
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/assets/ DESTINATION ${CMAKE_BINARY_DIR}/build/assets/)

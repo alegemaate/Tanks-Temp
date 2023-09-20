@@ -3,6 +3,8 @@
 #include "../system/ImageRegistry.hpp"
 #include "../util/Random.hpp"
 
+#include <iostream>
+
 // Init
 AiTank::AiTank(World* world,
                float x,
@@ -85,11 +87,16 @@ void AiTank::find_enemy_target() {
 void AiTank::update_target() {
   float distanceToTarget =
       find_distance(getCenterX(), getCenterY(), destination_x, destination_y);
-  bool cantMove = !canMoveX && !canMoveY;
 
-  if (distanceToTarget < 10 || cantMove) {
+  bool cantMove = !canMoveX && !canMoveY;
+  float deltaDistance = std::abs(last_distance - distanceToTarget);
+
+  if (distanceToTarget < 10.0f || cantMove || deltaDistance < speed / 2.0f) {
     destination_x = static_cast<float>(Random::random(0, map_width));
     destination_y = static_cast<float>(Random::random(0, map_height));
+    last_distance = 0.0f;
+  } else {
+    last_distance = distanceToTarget;
   }
 }
 

@@ -75,6 +75,13 @@
     "*.ipp": "cpp",
     "any": "cpp",
     "codecvt": "cpp",
-    "future": "cpp"
-  }
+    "future": "cpp",
+    "charconv": "cpp",
+    "forward_list": "cpp",
+    "source_location": "cpp",
+    "format": "cpp",
+    "span": "cpp",
+    "stdfloat": "cpp"
+  },
+  "sonarlint.pathToCompileCommands": "${workspaceFolder}/compile_commands.json"
 }

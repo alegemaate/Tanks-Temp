@@ -32,7 +32,7 @@ Tank::Tank(World* worldPointer,
   map_width = SCREEN_W;
   map_height = SCREEN_H;
 
-  sample_shot = load_sample_ex("sfx/fire.wav");
+  sample_shot = load_sample_ex("assets/sfx/fire.wav");
 }
 
 // Check dead

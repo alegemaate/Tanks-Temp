@@ -17,8 +17,9 @@ class AiTank : public Tank {
   void update(const double deltaTime) override;
 
  private:
-  float destination_x;
-  float destination_y;
+  float destination_x{0.0f};
+  float destination_y{0.0f};
+  float last_distance{0.0f};
 
   void update_target();
   void find_enemy_target();

@@ -18,7 +18,7 @@ Barrier::Barrier(World* world, const Vec2<float>& position, BarrierType type)
 
   this->width = static_cast<float>(this->image->w);
   this->height = static_cast<float>(this->image->h);
-  this->sample_explode = load_sample_ex("sfx/explode.wav");
+  this->sample_explode = load_sample_ex("assets/sfx/explode.wav");
 }
 
 Barrier::~Barrier() {

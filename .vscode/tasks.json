@@ -7,8 +7,9 @@
       "label": "Build",
       "type": "shell",
       "detail": "Build and run",
+      "command": "cmake --build . && cd build && ./Tanks",
       "windows": {
-        "command": "ninja && cd build && Tanks.exe"
+        "command": "cmake --build . && cd build && Tanks.exe"
       },
       "group": "build",
       "problemMatcher": "$gcc"
