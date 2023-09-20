@@ -20,9 +20,9 @@ void World::update() {
 }
 
 // Draw world
-void World::draw(BITMAP* buffer) const {
+void World::draw() const {
   // Draw particles
   for (auto* const& particle : particles) {
-    particle->draw(buffer);
+    particle->draw();
   }
 }

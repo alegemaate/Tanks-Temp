@@ -8,7 +8,7 @@
 class World {
  public:
   void update();
-  void draw(BITMAP* buffer) const;
+  void draw() const;
 
   void addParticle(Particle* particle);
 

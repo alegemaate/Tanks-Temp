@@ -30,8 +30,9 @@ AiTank::AiTank(World* world,
   this->destination_x = x;
   this->destination_y = y;
 
-  this->width = static_cast<float>(image_base->w);
-  this->height = static_cast<float>(image_base->h);
+  auto imageSize = asw::util::getTextureSize(image_base);
+  this->width = static_cast<float>(imageSize.x);
+  this->height = static_cast<float>(imageSize.y);
 }
 
 // Update

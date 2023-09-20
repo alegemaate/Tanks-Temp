@@ -21,7 +21,7 @@ PowerUp::PowerUp(float x, float y, PowerUpType type) : x(x), y(y), type(type) {
   }
 }
 
-void PowerUp::draw(BITMAP* buffer) const {
-  BITMAP* image = ImageRegistry::getImage(imageKey);
-  draw_sprite(buffer, image, static_cast<int>(x), static_cast<int>(y));
+void PowerUp::draw() const {
+  asw::Texture image = ImageRegistry::getImage(imageKey);
+  asw::draw::sprite(image, static_cast<int>(x), static_cast<int>(y));
 }

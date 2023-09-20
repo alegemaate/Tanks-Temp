@@ -29,10 +29,11 @@ Tank::Tank(World* worldPointer,
       image_treads(nullptr),
       worldPointer(worldPointer) {
   // Map size
-  map_width = SCREEN_W;
-  map_height = SCREEN_H;
+  auto screenSize = asw::display::getSize();
+  map_width = screenSize.x;
+  map_height = screenSize.y;
 
-  sample_shot = load_sample_ex("assets/sfx/fire.wav");
+  sample_shot = asw::assets::loadSample("assets/sfx/fire.wav");
 }
 
 // Check dead
@@ -44,9 +45,9 @@ bool Tank::isDead() {
 void Tank::explode() {
   for (int i = 0; i < 200; i++) {
     auto* particle = new Particle(
-        getCenterX(), getCenterY(), makecol(255, Random::random(0, 255), 0),
-        -10.0f, 10.0f, -10.0f, 10.0f, 1, ParticleType::CIRCLE, 20,
-        ParticleBehaviour::EXPLODE);
+        getCenterX(), getCenterY(),
+        asw::util::makeColor(255, Random::random(0, 255), 0), -10.0f, 10.0f,
+        -10.0f, 10.0f, 1, ParticleType::CIRCLE, 20, ParticleBehaviour::EXPLODE);
     worldPointer->addParticle(particle);
   }
 }
@@ -154,7 +155,7 @@ void Tank::update_bullets() {
 // Shoot
 void Tank::shoot(float rotation, float targetX, float targetY) {
   if (bullet_delay > fire_delay_rate) {
-    play_sample(sample_shot, 255, 127, Random::random(800, 1200), 0);
+    asw::sound::play(sample_shot, 255, 127, 0);
 
     auto* bullet = new Bullet(worldPointer, targetX, targetY, rotation,
                               fire_speed, 1 + num_bullet_bounces);
@@ -168,7 +169,7 @@ void Tank::update(const double deltaTime) {
   // Just died
   if (!dead && (health < 1)) {
     explode();
-    play_sample(sample_shot, 255, 127, 500, 0);
+    asw::sound::play(sample_shot, 255, 127, 0);
     dead = true;
   }
 
@@ -178,30 +179,44 @@ void Tank::update(const double deltaTime) {
 }
 
 // Draw bullets
-void Tank::drawBullets(BITMAP* buffer) const {
+void Tank::drawBullets() const {
   for (auto* const& bullet : bullets) {
-    bullet->draw(buffer);
+    bullet->draw();
   }
 }
 
 // Draw Tank
-void Tank::drawTankBase(BITMAP* buffer) {
+void Tank::drawTankBase() {
   // Hurt image for player
   if (dead) {
-    rotate_sprite(buffer, image_hurt, x, y, radToFix(rotation_body));
+    //   rotate_sprite(image_hurt, x, y, radToFix(rotation_body));
+
+    SDL_Point size = asw::util::getTextureSize(image_hurt);
+    SDL_Rect dest = {static_cast<int>(x), static_cast<int>(y), size.x, size.y};
+    SDL_RenderCopyEx(asw::display::renderer, image_hurt.get(), nullptr, &dest,
+                     rad_to_deg(rotation_body), nullptr, SDL_FLIP_NONE);
   } else {
-    rotate_sprite(buffer, image_base, x, y, radToFix(rotation_body));
+    // rotate_sprite(image_base, x, y, radToFix(rotation_body));
+
+    SDL_Point size = asw::util::getTextureSize(image_base);
+    SDL_Rect dest = {static_cast<int>(x), static_cast<int>(y), size.x, size.y};
+    SDL_RenderCopyEx(asw::display::renderer, image_base.get(), nullptr, &dest,
+                     rad_to_deg(rotation_body), nullptr, SDL_FLIP_NONE);
   }
 }
 
 // Draw turret
-void Tank::drawTankTurret(BITMAP* buffer) {
-  rotate_sprite(buffer, image_top, x, y, radToFix(rotation_turret));
+void Tank::drawTankTurret() {
+  // rotate_sprite(image_top, x, y, radToFix(rotation_turret)); TODO
+
+  SDL_Point size = asw::util::getTextureSize(image_top);
+  SDL_Rect dest = {static_cast<int>(x), static_cast<int>(y), size.x, size.y};
+  SDL_RenderCopyEx(asw::display::renderer, image_top.get(), nullptr, &dest,
+                   rad_to_deg(rotation_turret), nullptr, SDL_FLIP_NONE);
 }
 
 // Draw health
-void Tank::drawHealthBar(BITMAP* buffer,
-                         float x,
+void Tank::drawHealthBar(float x,
                          float y,
                          int width,
                          int height,
@@ -209,37 +224,41 @@ void Tank::drawHealthBar(BITMAP* buffer,
   float healthPercent =
       static_cast<float>(health) / static_cast<float>(initialHealth);
 
-  rectfill(buffer, x, y, x + width, y + height, makecol(0, 0, 0));
-  rectfill(buffer, x + border, y + border, x + width - border,
-           y + height - border, makecol(255, 0, 0));
-  rectfill(buffer, x + border, y + border, x + (healthPercent * width) - border,
-           y + height - border, makecol(0, 255, 0));
+  asw::draw::rectFill(x, y, width, height, asw::util::makeColor(0, 0, 0));
+  asw::draw::rectFill(x + border, y + border, width - border, height - border,
+                      asw::util::makeColor(255, 0, 0));
+  asw::draw::rectFill(x + border, y + border, (healthPercent * width) - border,
+                      height - border, asw::util::makeColor(0, 255, 0));
 }
 
 // Draw
-void Tank::draw(BITMAP* buffer) {
+void Tank::draw() {
   // Tank
-  drawTankBase(buffer);
+  drawTankBase();
 
   // Bullets
-  drawBullets(buffer);
+  drawBullets();
 
   // Turret
   if (!isDead()) {
-    drawTankTurret(buffer);
+    drawTankTurret();
 
     // Health bar
     if (health < initialHealth) {
-      drawHealthBar(buffer, x - 5, y - 10, 50, 6, 1);
+      drawHealthBar(x - 5, y - 10, 50, 6, 1);
     }
   }
 }
 
 // Put decals
-void Tank::putDecal(BITMAP* buffer) {
+void Tank::putDecal() {
   if (!dead && speed > 0) {
-    rotate_sprite(buffer, image_treads, getCenterX(), y,
-                  radToFix(rotation_body));
+    // rotate_sprite(image_treads, getCenterX(), y, radToFix(rotation_body));
+    SDL_Point size = asw::util::getTextureSize(image_treads);
+    SDL_Rect dest = {static_cast<int>(getCenterX()), static_cast<int>(y),
+                     size.x, size.y};
+    SDL_RenderCopyEx(asw::display::renderer, image_treads.get(), nullptr, &dest,
+                     rad_to_deg(rotation_body), nullptr, SDL_FLIP_NONE);
   }
 }
 

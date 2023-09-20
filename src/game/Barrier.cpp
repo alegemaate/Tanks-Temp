@@ -16,13 +16,11 @@ Barrier::Barrier(World* world, const Vec2<float>& position, BarrierType type)
       break;
   }
 
-  this->width = static_cast<float>(this->image->w);
-  this->height = static_cast<float>(this->image->h);
-  this->sample_explode = load_sample_ex("assets/sfx/explode.wav");
-}
+  auto size = asw::util::getTextureSize(this->image);
 
-Barrier::~Barrier() {
-  destroy_sample(sample_explode);
+  this->width = static_cast<float>(size.x);
+  this->height = static_cast<float>(size.y);
+  this->sample_explode = asw::assets::loadSample("assets/sfx/explode.wav");
 }
 
 // Update
@@ -74,10 +72,10 @@ void Barrier::update(const std::vector<Bullet*>* bullets) {
 }
 
 // Draw image
-void Barrier::draw(BITMAP* buffer) {
+void Barrier::draw() {
   if (health > 0) {
-    draw_sprite(buffer, image, static_cast<int>(position.x),
-                static_cast<int>(position.y));
+    asw::draw::sprite(image, static_cast<int>(position.x),
+                      static_cast<int>(position.y));
   }
 }
 
@@ -103,20 +101,20 @@ Vec2<float> Barrier::getPosition() const {
 // Explode
 void Barrier::explode() {
   // Explode
-  play_sample(sample_explode, 255, 127, 1000, 0);
+  asw::sound::play(sample_explode, 255, 127, 0);
 
   for (int i = 0; i < 100; i++) {
-    int color;
+    asw::Color color = asw::util::makeColor(255, Random::random(0, 255), 0);
 
     // Make sure not transparent (they show as white)
-    do {
-      // position of colour
-      int randomY = Random::random(0, static_cast<int>(height));
-      int randomX = Random::random(0, static_cast<int>(width));
+    // do { TODO
+    //   // position of colour
+    //   int randomY = Random::random(0, static_cast<int>(height));
+    //   int randomX = Random::random(0, static_cast<int>(width));
 
-      // New colour
-      color = getpixel(image, randomY, randomX);
-    } while (getr(color) == 255 && getg(color) == 255 && getb(color) == 255);
+    //   // New colour
+    //   color = getpixel(image, randomY, randomX);
+    // } while (getr(color) == 255 && getg(color) == 255 && getb(color) == 255);
 
     // Make particle
     auto* particle = new Particle(

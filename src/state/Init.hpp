@@ -6,15 +6,24 @@
 #ifndef TANKS_INIT_HPP
 #define TANKS_INIT_HPP
 
-#include <allegro.h>
+#include <asw/asw.h>
 
-#include "./State.h"
+#include "./State.hpp"
 
 class Init : public State {
  public:
-  void update(double deltaTime) override;
+  explicit Init(StateEngine& engine) : State(engine) {}
+
+  void init() override;
+  void update(double deltaTime) override {
+    // Goto menu
+    this->setNextState(ProgramState::Menu);
+  }
   void draw() override {
     // No draw method
+  }
+  void cleanup() override {
+    // No cleanup
   }
 };
 

@@ -21,7 +21,7 @@ class Bullet {
 
   bool getErase() const;
   void update();
-  void draw(BITMAP* buffer) const;
+  void draw() const;
 
   float getX() const;
   float getY() const;

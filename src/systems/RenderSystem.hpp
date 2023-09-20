@@ -3,7 +3,7 @@
 #ifndef SRC_SYSTEMS_RENDER_HPP_
 #define SRC_SYSTEMS_RENDER_HPP_
 
-#include <allegro.h>
+#include <asw/asw.h>
 #include <entt/fwd.hpp>
 
 class RenderSystem final {
@@ -12,7 +12,7 @@ class RenderSystem final {
 
   ~RenderSystem() = default;
 
-  void render(BITMAP* buffer, entt::registry& registry);
+  void render(entt::registry& registry);
 };
 
 #endif  // SRC_SYSTEMS_RENDER_HPP_

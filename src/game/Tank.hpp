@@ -1,7 +1,7 @@
 #ifndef SRC_GAME_TANK_H_
 #define SRC_GAME_TANK_H_
 
-#include <allegro.h>
+#include <asw/asw.h>
 #include <memory>
 #include <vector>
 
@@ -28,8 +28,8 @@ class Tank {
   virtual std::vector<Bullet*>* getBullets();
 
   virtual void update(const double deltaTime);
-  virtual void draw(BITMAP* buffer);
-  virtual void putDecal(BITMAP* buffer);
+  virtual void draw();
+  virtual void putDecal();
 
   virtual float getX() { return x; }
   virtual float getY() { return y; }
@@ -66,10 +66,10 @@ class Tank {
   float max_speed;
   float speed = 0;
 
-  BITMAP* image_base;
-  BITMAP* image_hurt;
-  BITMAP* image_top;
-  BITMAP* image_treads;
+  asw::Texture image_base;
+  asw::Texture image_hurt;
+  asw::Texture image_top;
+  asw::Texture image_treads;
 
   World* worldPointer;
 
@@ -102,22 +102,17 @@ class Tank {
  private:
   std::vector<Bullet*> bullets;
 
-  SAMPLE* sample_shot;
+  asw::Sample sample_shot;
 
   // Update
   void update_bullets();
   void explode();
 
   // Draw
-  void drawBullets(BITMAP* buffer) const;
-  void drawTankBase(BITMAP* buffer);
-  void drawTankTurret(BITMAP* buffer);
-  void drawHealthBar(BITMAP* buffer,
-                     float x,
-                     float y,
-                     int width,
-                     int height,
-                     int border) const;
+  void drawBullets() const;
+  void drawTankBase();
+  void drawTankTurret();
+  void drawHealthBar(float x, float y, int width, int height, int border) const;
 };
 
 #endif  // SRC_GAME_TANK_H_

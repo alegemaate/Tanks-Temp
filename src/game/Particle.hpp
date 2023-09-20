@@ -1,7 +1,7 @@
 #ifndef SRC_GAME_PARTICLE_H_
 #define SRC_GAME_PARTICLE_H_
 
-#include <allegro.h>
+#include <asw/asw.h>
 #include "../util/tools.h"
 
 enum class ParticleType {
@@ -19,7 +19,7 @@ class Particle {
  public:
   Particle(float x,
            float y,
-           int color,
+           asw::Color color,
            float xVelocityMin,
            float xMax,
            float yMin,
@@ -31,17 +31,17 @@ class Particle {
 
   void logic();
 
-  void draw(BITMAP* buffer) const;
+  void draw() const;
 
   bool getDead() const;
 
  private:
-  void drawRandom(BITMAP* buffer) const;
+  void drawRandom() const;
 
   float x;
   float y;
 
-  int color;
+  asw::Color color;
 
   int size;
   ParticleType type;

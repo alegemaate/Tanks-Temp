@@ -1,7 +1,7 @@
 #ifndef SRC_UTIL_TOOLS_H_
 #define SRC_UTIL_TOOLS_H_
 
-#include <allegro.h>
+#include <asw/asw.h>
 #include <string>
 
 // Collision
@@ -22,12 +22,6 @@ extern bool collisionLeft(float xMin1, float xMax1, float xMin2);
 extern float find_angle(float x_1, float y_1, float x_2, float y_2);
 extern float find_distance(float x_1, float y_1, float x_2, float y_2);
 
-// Error reporting
-extern void abort_on_error(const std::string& message);
-
-// Load and error check sounds
-extern SAMPLE* load_sample_ex(const std::string& path);
-
-int radToFix(float radians);
+extern float rad_to_deg(float radians);
 
 #endif  // SRC_UTIL_TOOLS_H_

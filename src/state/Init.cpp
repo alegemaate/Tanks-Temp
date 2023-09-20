@@ -1,9 +1,15 @@
 #include "Init.hpp"
 
 #include "../system/ImageRegistry.hpp"
-#include "StateEngine.hpp"
 
-void Init::update(const double deltaTime) {
+#include <iostream>
+
+void Init::init() {
+  std::cout << "Setting up" << std::endl;
+
+  // Window Title
+  asw::display::setTitle("Tanks!");
+
   // Load images
   ImageRegistry::loadImage("menu-background", "assets/images/menu.png");
   ImageRegistry::loadImage("game-background", "assets/images/background.png");
@@ -32,6 +38,5 @@ void Init::update(const double deltaTime) {
   ImageRegistry::loadImage("tank-base-blue",
                            "assets/images/tank_base_blue.png");
 
-  // Goto menu
-  StateEngine::setNextState(StateId::STATE_MENU);
+  std::cout << "Loaded images." << std::endl;
 }

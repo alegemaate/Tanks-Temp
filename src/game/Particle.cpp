@@ -4,7 +4,7 @@
 // Constructor
 Particle::Particle(float x,
                    float y,
-                   int color,
+                   asw::Color color,
                    float xVelocityMin,
                    float xVelocityMax,
                    float yVelocityMin,
@@ -57,37 +57,39 @@ bool Particle::getDead() const {
 }
 
 // Draw
-void Particle::draw(BITMAP* buffer) const {
+void Particle::draw() const {
   switch (type) {
     case ParticleType::PIXEL:
-      putpixel(buffer, static_cast<int>(x), static_cast<int>(y), color);
+      asw::draw::point(static_cast<int>(x), static_cast<int>(y), color);
       break;
     case ParticleType::SQUARE:
-      rectfill(buffer, static_cast<int>(x), static_cast<int>(y),
-               static_cast<int>(x) + size, static_cast<int>(y) + size, color);
+      asw::draw::rectFill(static_cast<int>(x), static_cast<int>(y), size, size,
+                          color);
       break;
     case ParticleType::CIRCLE:
-      circlefill(buffer, static_cast<int>(x), static_cast<int>(y), size, color);
+      asw::draw::circleFill(static_cast<int>(x), static_cast<int>(y), size,
+                            color);
       break;
     case ParticleType::RANDOM:
-      drawRandom(buffer);
+      drawRandom();
       break;
     default:
       break;
   }
 }
 
-void Particle::drawRandom(BITMAP* buffer) const {
+void Particle::drawRandom() const {
   switch (Random::random(0, 3)) {
     case 0:
-      putpixel(buffer, static_cast<int>(x), static_cast<int>(y), color);
+      asw::draw::point(static_cast<int>(x), static_cast<int>(y), color);
       break;
     case 1:
-      circlefill(buffer, static_cast<int>(x), static_cast<int>(y), size, color);
+      asw::draw::circleFill(static_cast<int>(x), static_cast<int>(y), size,
+                            color);
       break;
     case 2:
-      rectfill(buffer, static_cast<int>(x), static_cast<int>(y),
-               static_cast<int>(x) + size, static_cast<int>(y) + size, color);
+      asw::draw::rectFill(static_cast<int>(x), static_cast<int>(y), size, size,
+                          color);
       break;
     default:
       break;

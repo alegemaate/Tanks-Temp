@@ -57,27 +57,7 @@ float find_distance(float x_1, float y_1, float x_2, float y_2) {
   return hypotf(x_1 - x_2, y_1 - y_2);
 }
 
-// ERROR REPORTING
-__attribute__((noreturn)) void abort_on_error(const std::string& message) {
-  if (screen != nullptr) {
-    set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-  }
-  allegro_message("%s.\n %s\n", message.c_str(), allegro_error);
-  exit(-1);
-}
-
-// Load and error check sounds
-SAMPLE* load_sample_ex(const std::string& path) {
-  SAMPLE* sample = load_sample(path.c_str());
-  if (!sample) {
-    abort_on_error("Cannot find sound " + path +
-                   "\nPlease check your files and try again");
-  }
-
-  return sample;
-}
-
-int radToFix(float radians) {
-  auto i_rad = static_cast<int>(radians * 40.5845104792);
-  return itofix(i_rad);
+// Convert radians to degrees
+float rad_to_deg(float radians) {
+  return radians * 180.0f / M_PI;
 }

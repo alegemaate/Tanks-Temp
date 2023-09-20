@@ -18,8 +18,9 @@ PlayerTank::PlayerTank(World* world,
   this->image_top = ImageRegistry::getImage("tank-turret-green");
   this->image_base = ImageRegistry::getImage("tank-base-green");
 
-  this->width = static_cast<float>(image_base->w);
-  this->height = static_cast<float>(image_base->h);
+  auto imageSize = asw::util::getTextureSize(image_base);
+  this->width = static_cast<float>(imageSize.x);
+  this->height = static_cast<float>(imageSize.y);
 }
 
 // Update
@@ -30,45 +31,56 @@ void PlayerTank::update(const double deltaTime) {
     return;
   }
 
+  // Screen size
+  auto screenSize = asw::display::getSize();
+
   // Shoot
-  rotation_turret = find_angle(
-      static_cast<float>(SCREEN_W) / 2.0f, static_cast<float>(SCREEN_H) / 2.0f,
-      static_cast<float>(mouse_x), static_cast<float>(mouse_y));
+  rotation_turret = find_angle(static_cast<float>(screenSize.x) / 2.0f,
+                               static_cast<float>(screenSize.y) / 2.0f,
+                               static_cast<float>(asw::input::mouse.x),
+                               static_cast<float>(asw::input::mouse.y));
 
-  if (joy[0].stick[0].axis[0].pos != 0 || joy[0].stick[0].axis[1].pos != 0) {
-    rotation_turret = find_angle(
-        getCenterX() - 2.0f, getCenterY() - 2.0f,
-        static_cast<float>(joy[0].stick[0].axis[0].pos) + (getCenterX() - 2.0f),
-        static_cast<float>(joy[0].stick[0].axis[1].pos) +
-            (getCenterY() - 2.0f));
-  }
+  // if (joy[0].stick[0].axis[0].pos != 0 || joy[0].stick[0].axis[1].pos != 0) {
+  // TODO
+  //   rotation_turret = find_angle(
+  //       getCenterX() - 2.0f, getCenterY() - 2.0f,
+  //       static_cast<float>(joy[0].stick[0].axis[0].pos) + (getCenterX()
+  //       - 2.0f), static_cast<float>(joy[0].stick[0].axis[1].pos) +
+  //           (getCenterY() - 2.0f));
+  // }
 
-  if (key[KEY_SPACE] || mouse_b & 1 || joy[0].button[1].b) {
+  if (asw::input::keyboard.down[SDL_SCANCODE_SPACE] ||
+      asw::input::mouse.down[1]) {  // || joy[0].button[1].b TODO
     shoot(rotation_turret, getCenterX() - 2, getCenterY() - 2);
   }
 
   // Rotate with keys
-  if (key[KEY_A] || key[KEY_LEFT]) {
+  if (asw::input::keyboard.down[SDL_SCANCODE_A] ||
+      asw::input::keyboard.down[SDL_SCANCODE_LEFT]) {
     rotation_body -= 0.03f;
   }
 
-  if (key[KEY_D] || key[KEY_RIGHT]) {
+  if (asw::input::keyboard.down[SDL_SCANCODE_D] ||
+      asw::input::keyboard.down[SDL_SCANCODE_RIGHT]) {
     rotation_body += 0.03f;
   }
 
   // Drive
-  if (mouse_b & 2) {
+  if (asw::input::mouse.down[3]) {
     rotation_body = rotation_turret;
-  } else if (joy[0].button[0].b) {
-    rotation_body = find_angle(
-        getCenterX(), getCenterY(),
-        static_cast<float>(joy[0].stick[0].axis[0].pos) + getCenterX(),
-        static_cast<float>(joy[0].stick[0].axis[1].pos) + getCenterY());
   }
+  // else if (joy[0].button[0].b) { TODO
+  //   rotation_body = find_angle(
+  //       getCenterX(), getCenterY(),
+  //       static_cast<float>(joy[0].stick[0].axis[0].pos) + getCenterX(),
+  //       static_cast<float>(joy[0].stick[0].axis[1].pos) + getCenterY());
+  // }
 
   drive(rotation_body);
 
-  accelerate(mouse_b & 2 || joy[0].button[0].b || key[KEY_W] || key[KEY_UP]);
+  accelerate(asw::input::mouse.down[3] || /* TODO joy[0].button[0].b || */
+             asw::input::keyboard.down[SDL_SCANCODE_W] ||
+             asw::input::keyboard.down[SDL_SCANCODE_UP]);
 }
 
 // Feed AI player positions
