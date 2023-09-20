@@ -1,9 +1,8 @@
 #include "tools.h"
 
-#include <loadpng.h>
 #include <cmath>
 
-#include "random.h"
+#include "Random.hpp"
 
 // Collision
 bool collisionAny(float xMin1,
@@ -20,42 +19,32 @@ bool collisionAny(float xMin1,
   return false;
 }
 
-bool collisionBottom(float yMin1, float yMax1, float yMin2, float yMax2) {
+bool collisionBottom(float yMin1, float yMax1, float yMax2) {
   if (yMax1 > yMax2 && yMin1 < yMax2) {
     return true;
   }
   return false;
 }
 
-bool collisionTop(float yMin1, float yMax1, float yMin2, float yMax2) {
+bool collisionTop(float yMin1, float yMax1, float yMin2) {
   if (yMax1 > yMin2 && yMin1 < yMin2) {
     return true;
   }
   return false;
 }
 
-bool collisionLeft(float xMin1, float xMax1, float xMin2, float xMax2) {
+bool collisionLeft(float xMin1, float xMax1, float xMin2) {
   if (xMax1 > xMin2 && xMin1 < xMin2) {
     return true;
   }
   return false;
 }
 
-bool collisionRight(float xMin1, float xMax1, float xMin2, float xMax2) {
+bool collisionRight(float xMin1, float xMax1, float xMax2) {
   if (xMax1 > xMax2 && xMin1 < xMax2) {
     return true;
   }
   return false;
-}
-
-// Random number generator
-int random(int min, int max) {
-  return Random::randomInt(min, max);
-}
-
-// Random float
-float randomf(float min, float max) {
-  return Random::randomFloat(min, max);
 }
 
 // Finds angle of point 2 relative to point 1

@@ -2,44 +2,24 @@
 
 #include <array>
 
-#include "./input/keyListener.h"
-#include "./input/mouseListener.h"
+#include "./input/KeyListener.hpp"
+#include "./input/MouseListener.hpp"
 
-#include "./state/game.h"
-#include "./state/init.h"
-#include "./state/menu.h"
-#include "./state/state-engine.hpp"
-#include "./state/state.h"
-
-// Input listener classes
-const MouseListener m_listener;
-const KeyListener k_listener;
+#include "./state/Game.hpp"
+#include "./state/StateEngine.hpp"
 
 // Are we closing?
 bool closing = false;
 
 // FPS Tickers
 volatile int ticks = 0;
-int fps;
-int frames_done;
-int old_time;
-const int updates_per_second = 120;
-std::array<int, 10> frames_array;
-unsigned int frame_index = 0;
-
 void ticker() {
   ticks += 1;
 }
 END_OF_FUNCTION(ticker)
 
-volatile int game_time = 0;
-void game_time_ticker() {
-  game_time += 1;
-}
-END_OF_FUNCTION(game_time_ticker)
-
 // Close button handler
-void close_button_handler(void) {
+void close_button_handler() {
   closing = true;
 }
 END_OF_FUNCTION(close_button_handler)
@@ -80,7 +60,7 @@ void setup() {
     install_joystick(JOY_TYPE_AUTODETECT);
     if (!calibrateJoystick()) {
       abort_on_error("Could not configure joystick");
-    };
+    }
   }
 
   set_color_depth(32);
@@ -93,66 +73,59 @@ void setup() {
   set_window_title("Tanks!");
 
   // Setup for FPS system
-  LOCK_VARIABLE(ticks);
-  LOCK_FUNCTION(ticker);
-  install_int_ex(ticker, BPS_TO_TIMER(updates_per_second));
-
-  LOCK_VARIABLE(game_time);
-  LOCK_FUNCTION(game_time_ticker);
-  install_int_ex(game_time_ticker, BPS_TO_TIMER(10));
-
-  // FPS STUFF
-  for (unsigned long i = 0; i < 10; i++) {
-    frames_array[i] = 0;
-  }
+  LOCK_VARIABLE(ticks)
+  LOCK_FUNCTION(ticker)
+  install_int_ex(ticker, BPS_TO_TIMER(1000));
 
   // Close button
-  LOCK_FUNCTION(close_button_handler);
+  LOCK_FUNCTION(close_button_handler)
   set_close_button_callback(close_button_handler);
 
   // Set the current state ID
   StateEngine::setNextState(StateId::STATE_INIT);
+  StateEngine::changeState();
 }
 
-void update() {
+void update(const double deltaTime) {
   // Change state (if needed)
   StateEngine::changeState();
 
   // Update listeners
-  m_listener.update();
-  k_listener.update();
+  MouseListener::update();
+  KeyListener::update();
 
   // Update state
-  StateEngine::update();
+  StateEngine::update(deltaTime);
 }
 
 int main() {
   // Setup
   setup();
 
-  // FPS Counter
-  while (!key[KEY_ESC] && !closing && !joy[0].button[7].b) {
-    while (ticks == 0) {
-      rest(1);
+  // 120 Updates per second
+  const constexpr double dt = 1000.0 / 120.0;
+
+  double time = 0.0;
+  double accumulator = 0.0;
+  double current_time = ticks;
+  double new_time = 0.0;
+  double frame_time = 0.0;
+
+  while (!key[KEY_ESC] && !closing) {
+    new_time = ticks;
+    frame_time = new_time - current_time;
+    current_time = new_time;
+
+    accumulator += frame_time;
+
+    while (accumulator >= dt) {
+      update(accumulator);
+
+      accumulator -= dt;
+      time += dt;
     }
-    while (ticks > 0) {
-      int old_ticks = ticks;
-      update();
-      ticks -= 1;
-      if (old_ticks <= ticks) {
-        break;
-      }
-    }
-    if (game_time >= old_time + 1) {
-      fps -= frames_array[frame_index];
-      frames_array[frame_index] = frames_done;
-      fps += frames_done;
-      frame_index = (frame_index + 1) % 10;
-      frames_done = 0;
-      old_time += 1;
-    }
+
     StateEngine::draw();
-    frames_done++;
   }
 
   // Exit allegro
