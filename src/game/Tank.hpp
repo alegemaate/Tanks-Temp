@@ -102,7 +102,7 @@ class Tank {
  private:
   std::vector<Bullet*> bullets;
 
-  asw::Sample sample_shot;
+  static asw::Sample sample_shot;
 
   // Update
   void update_bullets();

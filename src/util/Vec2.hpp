@@ -4,10 +4,6 @@
 template <typename T>
 class Vec2 {
  public:
-  Vec2() = default;
-
-  ~Vec2() = default;
-
   Vec2(T x, T y) : x(x), y(y){};
 
   Vec2(const Vec2<T>& vector) : x(vector.x), y(vector.y){};

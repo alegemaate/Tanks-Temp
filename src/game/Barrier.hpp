@@ -41,9 +41,9 @@ class Barrier {
   float width;
   float height;
 
-  asw::Sample sample_explode;
+  static asw::Sample sample_explode;
 
-  asw::Texture image;
+   asw::Texture image;
 
   void explode();
 };

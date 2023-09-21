@@ -244,6 +244,10 @@ void Game::update(const double deltaTime) {
     this->setNextState(ProgramState::Menu);
   }
 
+  if (asw::input::keyboard.pressed[SDL_SCANCODE_M]) {
+    this->setNextState(ProgramState::Menu);
+  }
+
   // Scroll map
   if (!player_tanks.empty()) {
     auto screenSize = asw::display::getSize();

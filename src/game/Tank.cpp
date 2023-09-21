@@ -8,6 +8,7 @@
 #include "../util/Random.hpp"
 
 unsigned char Tank::num_bullet_bounces = 0;
+asw::Sample Tank::sample_shot;
 
 Tank::Tank(World* worldPointer,
            float x,
@@ -33,7 +34,9 @@ Tank::Tank(World* worldPointer,
   map_width = screenSize.x;
   map_height = screenSize.y;
 
-  sample_shot = asw::assets::loadSample("assets/sfx/fire.wav");
+  if (Tank::sample_shot == nullptr) {
+    Tank::sample_shot = asw::assets::loadSample("assets/sfx/fire.wav");
+  }
 }
 
 // Check dead
@@ -44,7 +47,7 @@ bool Tank::isDead() {
 // Explode
 void Tank::explode() {
   for (int i = 0; i < 200; i++) {
-    auto* particle = new Particle(
+    auto particle = std::make_shared<Particle>(
         getCenterX(), getCenterY(),
         asw::util::makeColor(255, Random::random(0, 255), 0), -10.0f, 10.0f,
         -10.0f, 10.0f, 1, ParticleType::CIRCLE, 20, ParticleBehaviour::EXPLODE);

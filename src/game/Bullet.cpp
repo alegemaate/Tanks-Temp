@@ -63,33 +63,39 @@ void Bullet::destroy() {
 
   // Make explosion
   for (int i = 0; i < 100; i++) {
-    Particle* particle;
     auto color = asw::util::makeColor(255, Random::random(0, 255), 0);
 
     switch (incidenceDirection) {
-      case BounceDirection::BOTTOM:
-        particle =
-            new Particle(x, y, color, -5, 5, 0, 3, 1, ParticleType::CIRCLE, 10,
-                         ParticleBehaviour::EXPLODE);
-        break;
-      case BounceDirection::TOP:
-        particle =
-            new Particle(x, y, color, -5, 5, -3, 0, 1, ParticleType::CIRCLE, 10,
-                         ParticleBehaviour::EXPLODE);
-        break;
-      case BounceDirection::LEFT:
-        particle =
-            new Particle(x, y, color, -3, 0, -5, 5, 1, ParticleType::CIRCLE, 10,
-                         ParticleBehaviour::EXPLODE);
-        break;
-      default:
-        particle =
-            new Particle(x, y, color, 0, 3, -5, 5, 1, ParticleType::CIRCLE, 10,
-                         ParticleBehaviour::EXPLODE);
-        break;
-    }
+      case BounceDirection::BOTTOM: {
+        auto particle = std::make_shared<Particle>(x, y, color, -5, 5, 0, 3, 1,
+                                                   ParticleType::CIRCLE, 10,
+                                                   ParticleBehaviour::EXPLODE);
 
-    worldPointer->addParticle(particle);
+        worldPointer->addParticle(particle);
+        break;
+      }
+      case BounceDirection::TOP: {
+        auto particle = std::make_shared<Particle>(x, y, color, -5, 5, -3, 0, 1,
+                                                   ParticleType::CIRCLE, 10,
+                                                   ParticleBehaviour::EXPLODE);
+        worldPointer->addParticle(particle);
+        break;
+      }
+      case BounceDirection::LEFT: {
+        auto particle = std::make_shared<Particle>(x, y, color, -3, 0, -5, 5, 1,
+                                                   ParticleType::CIRCLE, 10,
+                                                   ParticleBehaviour::EXPLODE);
+        worldPointer->addParticle(particle);
+        break;
+      }
+      default: {
+        auto particle = std::make_shared<Particle>(x, y, color, 0, 3, -5, 5, 1,
+                                                   ParticleType::CIRCLE, 10,
+                                                   ParticleBehaviour::EXPLODE);
+        worldPointer->addParticle(particle);
+        break;
+      }
+    }
   }
 }
 

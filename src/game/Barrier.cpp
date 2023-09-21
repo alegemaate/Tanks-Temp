@@ -1,7 +1,11 @@
 #include "Barrier.hpp"
 
+#include <memory>
+
 #include "../system/ImageRegistry.hpp"
 #include "../util/Random.hpp"
+
+asw::Sample Barrier::sample_explode;
 
 Barrier::Barrier(World* world, const Vec2<float>& position, BarrierType type)
     : position(position), worldPointer(world) {
@@ -20,7 +24,10 @@ Barrier::Barrier(World* world, const Vec2<float>& position, BarrierType type)
 
   this->width = static_cast<float>(size.x);
   this->height = static_cast<float>(size.y);
-  this->sample_explode = asw::assets::loadSample("assets/sfx/explode.wav");
+
+  if (Barrier::sample_explode == nullptr) {
+    Barrier::sample_explode = asw::assets::loadSample("assets/sfx/explode.wav");
+  }
 }
 
 // Update
@@ -117,7 +124,7 @@ void Barrier::explode() {
     // } while (getr(color) == 255 && getg(color) == 255 && getb(color) == 255);
 
     // Make particle
-    auto* particle = new Particle(
+    auto particle = std::make_shared<Particle>(
         position.x + width / 2.0f, position.y + height / 2.0f, color, -6.0, 6.0,
         -6.0, 6.0, 1, ParticleType::CIRCLE, 30, ParticleBehaviour::EXPLODE);
 
