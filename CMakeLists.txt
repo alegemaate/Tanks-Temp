@@ -31,14 +31,14 @@ endif(NOT EMSCRIPTEN)
 FetchContent_Declare(
   EnTT
   GIT_REPOSITORY https://github.com/skypjack/entt.git
-  GIT_TAG        344e03ac64a1f78424ab1150e2d4778e8df8431d
+  GIT_TAG 344e03ac64a1f78424ab1150e2d4778e8df8431d
 )
 FetchContent_MakeAvailable(EnTT)
 
 FetchContent_Declare(
   asw
   GIT_REPOSITORY https://github.com/adsgames/asw.git
-  GIT_TAG        d7adc6a5b82929378e44c394b8be62b6d70398f7
+  GIT_TAG 27816a28d782e277117efe0fd27f68d902c701bf
 )
 FetchContent_MakeAvailable(asw)
 
@@ -48,24 +48,24 @@ if(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX ".html")
   target_compile_options(
     ${PROJECT_NAME}
-    PRIVATE  
-    -sUSE_SDL=2 
-    -sUSE_SDL_IMAGE=2 
-    -sUSE_SDL_TTF=2 
-    -sUSE_SDL_MIXER=2 
-    -sUSE_SDL_GFX=2 
+    PRIVATE
+    -sUSE_SDL=2
+    -sUSE_SDL_IMAGE=2
+    -sUSE_SDL_TTF=2
+    -sUSE_SDL_MIXER=2
+    -sUSE_SDL_GFX=2
     -sSDL2_IMAGE_FORMATS=["png"]
     -sSTACK_SIZE=128MB
   )
   target_link_libraries(
-    ${PROJECT_NAME} 
-    -sWASM=1 
-    -sUSE_SDL=2 
-    -sUSE_SDL_IMAGE=2 
-    -sUSE_SDL_TTF=2 
-    -sUSE_SDL_MIXER=2 
-    -sUSE_SDL_GFX=2 
-    -sSDL2_IMAGE_FORMATS=["png"] 
+    ${PROJECT_NAME}
+    -sWASM=1
+    -sUSE_SDL=2
+    -sUSE_SDL_IMAGE=2
+    -sUSE_SDL_TTF=2
+    -sUSE_SDL_MIXER=2
+    -sUSE_SDL_GFX=2
+    -sSDL2_IMAGE_FORMATS=["png"]
     -sDEMANGLE_SUPPORT=1
     -sTOTAL_MEMORY=512MB
     -sSTACK_SIZE=128MB
@@ -73,8 +73,8 @@ if(EMSCRIPTEN)
     EnTT::EnTT
   )
   set_target_properties(
-    ${PROJECT_NAME} 
-    PROPERTIES 
+    ${PROJECT_NAME}
+    PROPERTIES
     LINK_FLAGS
     "--preload-file ${CMAKE_CURRENT_LIST_DIR}/assets@/assets --use-preload-plugins --shell-file ${CMAKE_CURRENT_LIST_DIR}/index.html"
   )
@@ -82,12 +82,13 @@ if(EMSCRIPTEN)
 # Run of the mill executable
 else(EMSCRIPTEN)
   # Link Libs
-  if (MINGW)
+  if(MINGW)
     target_link_libraries(${PROJECT_NAME} -lmingw32)
-  endif (MINGW)
+  endif(MINGW)
+
   target_link_libraries(
     ${PROJECT_NAME}
-    -lm 
+    -lm
     ${SDL_MAIN_LIBRARY}
     ${SDL_LIBRARY}
     ${SDL_MIXER_LIBRARY}

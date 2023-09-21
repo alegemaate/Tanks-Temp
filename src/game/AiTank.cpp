@@ -3,8 +3,6 @@
 #include "../system/ImageRegistry.hpp"
 #include "../util/Random.hpp"
 
-#include <iostream>
-
 // Init
 AiTank::AiTank(World* world,
                float x,
@@ -45,7 +43,7 @@ void AiTank::update(const double deltaTime) {
 
   find_enemy_target();
   update_target();
-  ai_drive();
+  ai_drive(deltaTime);
 }
 
 void AiTank::find_enemy_target() {
@@ -101,8 +99,8 @@ void AiTank::update_target() {
   }
 }
 
-void AiTank::ai_drive() {
+void AiTank::ai_drive(const double deltaTime) {
   rotation_body = find_angle(x + 25, y + 25, destination_x, destination_y);
-  accelerate(true);
-  drive(rotation_body);
+  accelerate(true, deltaTime);
+  drive(rotation_body, deltaTime);
 }

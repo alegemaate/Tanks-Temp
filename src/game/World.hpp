@@ -8,7 +8,7 @@
 
 class World {
  public:
-  void update();
+  void update(const float deltaTime);
   void draw() const;
 
   void addParticle(std::shared_ptr<Particle> particle);

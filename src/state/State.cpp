@@ -14,12 +14,12 @@
 void StateEngine::draw() {
   if (state) {
     // Clear screen
-    SDL_RenderClear(asw::display::renderer);
+    asw::display::clear();
 
     state->draw();
 
     // Update screen
-    SDL_RenderPresent(asw::display::renderer);
+    asw::display::present();
   }
 }
 

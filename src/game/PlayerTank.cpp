@@ -49,24 +49,25 @@ void PlayerTank::update(const double deltaTime) {
   //           (getCenterY() - 2.0f));
   // }
 
-  if (asw::input::keyboard.down[SDL_SCANCODE_SPACE] ||
-      asw::input::mouse.down[1]) {  // || joy[0].button[1].b TODO
+  if (asw::input::isKeyDown(asw::input::Key::SPACE) ||
+      asw::input::isButtonDown(
+          asw::input::MouseButton::LEFT)) {  // || joy[0].button[1].b TODO
     shoot(rotation_turret, getCenterX() - 2, getCenterY() - 2);
   }
 
   // Rotate with keys
-  if (asw::input::keyboard.down[SDL_SCANCODE_A] ||
-      asw::input::keyboard.down[SDL_SCANCODE_LEFT]) {
-    rotation_body -= 0.03f;
+  if (asw::input::isKeyDown(asw::input::Key::A) ||
+      asw::input::isKeyDown(asw::input::Key::LEFT)) {
+    rotation_body -= 0.03f * (deltaTime / 8.0f);
   }
 
-  if (asw::input::keyboard.down[SDL_SCANCODE_D] ||
-      asw::input::keyboard.down[SDL_SCANCODE_RIGHT]) {
-    rotation_body += 0.03f;
+  if (asw::input::isKeyDown(asw::input::Key::D) ||
+      asw::input::isKeyDown(asw::input::Key::RIGHT)) {
+    rotation_body += 0.03f * (deltaTime / 8.0f);
   }
 
   // Drive
-  if (asw::input::mouse.down[3]) {
+  if (asw::input::isButtonDown(asw::input::MouseButton::RIGHT)) {
     rotation_body = rotation_turret;
   }
   // else if (joy[0].button[0].b) { TODO
@@ -76,11 +77,14 @@ void PlayerTank::update(const double deltaTime) {
   //       static_cast<float>(joy[0].stick[0].axis[1].pos) + getCenterY());
   // }
 
-  drive(rotation_body);
+  drive(rotation_body, deltaTime);
 
-  accelerate(asw::input::mouse.down[3] || /* TODO joy[0].button[0].b || */
-             asw::input::keyboard.down[SDL_SCANCODE_W] ||
-             asw::input::keyboard.down[SDL_SCANCODE_UP]);
+  accelerate(
+      asw::input::isButtonDown(
+          asw::input::MouseButton::RIGHT) || /* TODO joy[0].button[0].b || */
+          asw::input::isKeyDown(asw::input::Key::W) ||
+          asw::input::isKeyDown(asw::input::Key::UP),
+      deltaTime);
 }
 
 // Feed AI player positions

@@ -1,4 +1,5 @@
 #include "Particle.hpp"
+#include <iostream>
 #include "../util/Random.hpp"
 
 // Constructor
@@ -33,20 +34,23 @@ Particle::Particle(float x,
 }
 
 // Logic
-void Particle::logic() {
+void Particle::update(const float deltaTime) {
+  float deltaXVelocity = xVelocity * (deltaTime / 8.0f);
+  float deltaYVelocity = yVelocity * (deltaTime / 8.0f);
+
   // Behaviour
   if (behaviour == ParticleBehaviour::EXPLODE) {
-    x += xVelocity;
-    y += yVelocity;
-    xVelocity -= xVelocity / 10;
-    yVelocity -= yVelocity / 10;
+    x += deltaXVelocity;
+    y += deltaYVelocity;
+    xVelocity -= deltaXVelocity / 10.0f;
+    yVelocity -= deltaYVelocity / 10.0f;
   } else {
-    x += Random::randomFloat(-xVelocity, xVelocity);
-    y += Random::randomFloat(-yVelocity, yVelocity);
+    x += Random::randomFloat(-deltaXVelocity, deltaXVelocity);
+    y += Random::randomFloat(-deltaYVelocity, deltaYVelocity);
   }
 
   // Die
-  if (Random::random(0, life) == 0) {
+  if (Random::random(0, life) < (deltaTime / 8.0f)) {
     dead = true;
   }
 }

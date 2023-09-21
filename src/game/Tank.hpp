@@ -42,11 +42,14 @@ class Tank {
     map_height = mHeight;
   }
 
-  virtual void checkCollision(std::vector<Bullet*>* enemyBullets);
+  virtual void checkCollision(std::vector<Bullet*>* enemyBullets,
+                              const float deltaTime);
   virtual void checkCollision(
-      const std::vector<std::unique_ptr<Barrier>>& barriers);
+      const std::vector<std::unique_ptr<Barrier>>& barriers,
+      const float deltaTime);
   virtual void checkCollision(
-      const std::vector<std::unique_ptr<PowerUp>>& power_ups);
+      const std::vector<std::unique_ptr<PowerUp>>& power_ups,
+      const float deltaTime);
 
   virtual void process_enemies(std::vector<Tank*>* otherTanks);
 
@@ -86,18 +89,15 @@ class Tank {
   int map_width;
   int map_height;
 
-  float vector_x = 0;
-  float vector_y = 0;
-
   bool canMoveX = true;
   bool canMoveY = true;
 
   std::vector<Tank*>* otherTanks;
 
   // Update
-  void drive(float rotation);
+  void drive(float rotation, const float deltaTime);
   void shoot(float rotation, float targetX, float targetY);
-  void accelerate(bool moving);
+  void accelerate(bool moving, const float deltaTime);
 
  private:
   std::vector<Bullet*> bullets;
@@ -105,7 +105,7 @@ class Tank {
   static asw::Sample sample_shot;
 
   // Update
-  void update_bullets();
+  void update_bullets(const float deltaTime);
   void explode();
 
   // Draw

@@ -50,23 +50,23 @@ void Tank::explode() {
     auto particle = std::make_shared<Particle>(
         getCenterX(), getCenterY(),
         asw::util::makeColor(255, Random::random(0, 255), 0), -10.0f, 10.0f,
-        -10.0f, 10.0f, 1, ParticleType::CIRCLE, 20, ParticleBehaviour::EXPLODE);
+        -10.0f, 10.0f, 2, ParticleType::SQUARE, 20, ParticleBehaviour::EXPLODE);
     worldPointer->addParticle(particle);
   }
 }
 
-void Tank::accelerate(bool moving) {
+void Tank::accelerate(bool moving, const float deltaTime) {
   if (moving) {
     if (speed < 0.1f) {
       speed = 0.2f;
     } else if (speed < max_speed) {
-      speed *= (max_speed * 1.03f);
+      speed *= (max_speed * 1.03f) * (deltaTime / 8.0f);
     } else {
       speed = max_speed;
     }
   } else {
     if (speed > 0.1f) {
-      speed *= 0.95f;
+      speed /= 1.05f * (deltaTime / 8.0f);
     } else {
       speed = 0;
     }
@@ -79,21 +79,25 @@ std::vector<Bullet*>* Tank::getBullets() {
 }
 
 // Check collision
-void Tank::checkCollision(std::vector<Bullet*>* enemyBullets) {
+void Tank::checkCollision(std::vector<Bullet*>* enemyBullets,
+                          const float deltaTime) {
   for (auto* const& bullet : *enemyBullets) {
-    if (collisionAny(x, x + 50, bullet->getX(),
-                     bullet->getX() + bullet->getXVelocity(), y, y + 50,
-                     bullet->getY(), bullet->getY() + bullet->getYVelocity())) {
+    if (collisionAny(
+            x, x + 50, bullet->getX(),
+            bullet->getX() + bullet->getXVelocity() * (deltaTime / 8.0f), y,
+            y + 50, bullet->getY(),
+            bullet->getY() + bullet->getYVelocity() * (deltaTime / 8.0f))) {
       health -= 10;
       bullet->destroy();
     }
   }
 }
 
-void Tank::checkCollision(
-    const std::vector<std::unique_ptr<Barrier>>& barriers) {
-  float guess_vector_x = -speed * cosf(rotation_body);
-  float guess_vector_y = -speed * sinf(rotation_body);
+void Tank::checkCollision(const std::vector<std::unique_ptr<Barrier>>& barriers,
+                          const float deltaTime) {
+  float delta_speed = speed * (deltaTime / 8.0f);
+  float guess_vector_x = -delta_speed * cosf(rotation_body);
+  float guess_vector_y = -delta_speed * sinf(rotation_body);
 
   canMoveX = true;
   canMoveY = true;
@@ -117,7 +121,8 @@ void Tank::checkCollision(
 }
 
 void Tank::checkCollision(
-    const std::vector<std::unique_ptr<PowerUp>>& power_ups) {
+    const std::vector<std::unique_ptr<PowerUp>>& power_ups,
+    const float deltaTime) {
   for (auto const& power_up : power_ups) {
     if (collisionAny(x, x + 50, power_up->getX(),
                      power_up->getX() + power_up->getWidth(), y, y + 50,
@@ -130,22 +135,22 @@ void Tank::checkCollision(
 }
 
 // Move around
-void Tank::drive(float rotation) {
+void Tank::drive(float rotation, const float deltaTime) {
+  float deltaSpeed = speed * (deltaTime / 8.0f);
+
   if (canMoveX) {
-    vector_x = -speed * cosf(rotation);
-    x += vector_x;
+    x += -deltaSpeed * cosf(rotation);
   }
   if (canMoveY) {
-    vector_y = -speed * sinf(rotation);
-    y += vector_y;
+    y += -deltaSpeed * sinf(rotation);
   }
 }
 
 // Update bullets
-void Tank::update_bullets() {
+void Tank::update_bullets(const float deltaTime) {
   // Update bullets
   for (auto* const& bullet : bullets) {
-    bullet->update();
+    bullet->update(deltaTime);
   }
 
   // Erase bullets
@@ -163,7 +168,7 @@ void Tank::shoot(float rotation, float targetX, float targetY) {
     auto* bullet = new Bullet(worldPointer, targetX, targetY, rotation,
                               fire_speed, 1 + num_bullet_bounces);
     bullets.push_back(bullet);
-    bullet_delay = 0;
+    bullet_delay -= fire_delay_rate;
   }
 }
 
@@ -176,9 +181,9 @@ void Tank::update(const double deltaTime) {
     dead = true;
   }
 
-  bullet_delay++;
+  bullet_delay += deltaTime;
 
-  update_bullets();
+  update_bullets(deltaTime);
 }
 
 // Draw bullets
@@ -192,30 +197,15 @@ void Tank::drawBullets() const {
 void Tank::drawTankBase() {
   // Hurt image for player
   if (dead) {
-    //   rotate_sprite(image_hurt, x, y, radToFix(rotation_body));
-
-    SDL_Point size = asw::util::getTextureSize(image_hurt);
-    SDL_Rect dest = {static_cast<int>(x), static_cast<int>(y), size.x, size.y};
-    SDL_RenderCopyEx(asw::display::renderer, image_hurt.get(), nullptr, &dest,
-                     rad_to_deg(rotation_body), nullptr, SDL_FLIP_NONE);
+    asw::draw::rotateSprite(image_hurt, x, y, rad_to_deg(rotation_body));
   } else {
-    // rotate_sprite(image_base, x, y, radToFix(rotation_body));
-
-    SDL_Point size = asw::util::getTextureSize(image_base);
-    SDL_Rect dest = {static_cast<int>(x), static_cast<int>(y), size.x, size.y};
-    SDL_RenderCopyEx(asw::display::renderer, image_base.get(), nullptr, &dest,
-                     rad_to_deg(rotation_body), nullptr, SDL_FLIP_NONE);
+    asw::draw::rotateSprite(image_base, x, y, rad_to_deg(rotation_body));
   }
 }
 
 // Draw turret
 void Tank::drawTankTurret() {
-  // rotate_sprite(image_top, x, y, radToFix(rotation_turret)); TODO
-
-  SDL_Point size = asw::util::getTextureSize(image_top);
-  SDL_Rect dest = {static_cast<int>(x), static_cast<int>(y), size.x, size.y};
-  SDL_RenderCopyEx(asw::display::renderer, image_top.get(), nullptr, &dest,
-                   rad_to_deg(rotation_turret), nullptr, SDL_FLIP_NONE);
+  asw::draw::rotateSprite(image_top, x, y, rad_to_deg(rotation_turret));
 }
 
 // Draw health
@@ -256,12 +246,8 @@ void Tank::draw() {
 // Put decals
 void Tank::putDecal() {
   if (!dead && speed > 0) {
-    // rotate_sprite(image_treads, getCenterX(), y, radToFix(rotation_body));
-    SDL_Point size = asw::util::getTextureSize(image_treads);
-    SDL_Rect dest = {static_cast<int>(getCenterX()), static_cast<int>(y),
-                     size.x, size.y};
-    SDL_RenderCopyEx(asw::display::renderer, image_treads.get(), nullptr, &dest,
-                     rad_to_deg(rotation_body), nullptr, SDL_FLIP_NONE);
+    asw::draw::rotateSprite(image_treads, getCenterX(), y,
+                            rad_to_deg(rotation_turret));
   }
 }
 

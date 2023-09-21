@@ -126,7 +126,7 @@ void Barrier::explode() {
     // Make particle
     auto particle = std::make_shared<Particle>(
         position.x + width / 2.0f, position.y + height / 2.0f, color, -6.0, 6.0,
-        -6.0, 6.0, 1, ParticleType::CIRCLE, 30, ParticleBehaviour::EXPLODE);
+        -6.0, 6.0, 2, ParticleType::SQUARE, 30, ParticleBehaviour::EXPLODE);
 
     worldPointer->addParticle(particle);
   }

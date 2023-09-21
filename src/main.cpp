@@ -1,5 +1,6 @@
 #include <asw/asw.h>
 #include <chrono>
+#include <iostream>
 #include <memory>
 
 #ifdef __EMSCRIPTEN__
@@ -12,7 +13,7 @@
 
 using namespace std::chrono_literals;
 using namespace std::chrono;
-constexpr nanoseconds timestep(8ms);
+constexpr nanoseconds timestep(16ms);
 
 // State engine
 std::unique_ptr<StateEngine> game_state;
@@ -89,8 +90,11 @@ auto main(int argc, char* argv[]) -> int {
   using clock = high_resolution_clock;
   nanoseconds lag(0ns);
   auto time_start = clock::now();
+  auto last_second = clock::now();
+  int frames = 0;
+  int fps = 0;
 
-  while (!asw::input::keyboard.down[SDL_SCANCODE_ESCAPE] && !asw::core::exit) {
+  while (!asw::input::isKeyDown(asw::input::Key::ESCAPE) && !asw::core::exit) {
     auto delta_time = clock::now() - time_start;
     time_start = clock::now();
     lag += duration_cast<nanoseconds>(delta_time);
@@ -101,6 +105,14 @@ auto main(int argc, char* argv[]) -> int {
     }
 
     draw();
+    frames++;
+
+    if (clock::now() - last_second >= 1s) {
+      fps = frames;
+      frames = 0;
+      last_second = last_second + 1s;
+      asw::display::setTitle("Tanks - FPS: " + std::to_string(fps));
+    }
   }
 
 #endif

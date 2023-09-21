@@ -9,9 +9,9 @@ void World::addParticle(std::shared_ptr<Particle> particle) {
 }
 
 // Updates world
-void World::update() {
+void World::update(const float deltaTime) {
   for (auto const& particle : particles) {
-    particle->logic();
+    particle->update(deltaTime);
   }
 
   particles.erase(

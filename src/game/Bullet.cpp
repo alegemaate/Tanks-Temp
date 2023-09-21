@@ -67,30 +67,30 @@ void Bullet::destroy() {
 
     switch (incidenceDirection) {
       case BounceDirection::BOTTOM: {
-        auto particle = std::make_shared<Particle>(x, y, color, -5, 5, 0, 3, 1,
-                                                   ParticleType::CIRCLE, 10,
+        auto particle = std::make_shared<Particle>(x, y, color, -5, 5, 0, 3, 2,
+                                                   ParticleType::SQUARE, 10,
                                                    ParticleBehaviour::EXPLODE);
 
         worldPointer->addParticle(particle);
         break;
       }
       case BounceDirection::TOP: {
-        auto particle = std::make_shared<Particle>(x, y, color, -5, 5, -3, 0, 1,
-                                                   ParticleType::CIRCLE, 10,
+        auto particle = std::make_shared<Particle>(x, y, color, -5, 5, -3, 0, 2,
+                                                   ParticleType::SQUARE, 10,
                                                    ParticleBehaviour::EXPLODE);
         worldPointer->addParticle(particle);
         break;
       }
       case BounceDirection::LEFT: {
-        auto particle = std::make_shared<Particle>(x, y, color, -3, 0, -5, 5, 1,
-                                                   ParticleType::CIRCLE, 10,
+        auto particle = std::make_shared<Particle>(x, y, color, -3, 0, -5, 5, 2,
+                                                   ParticleType::SQUARE, 10,
                                                    ParticleBehaviour::EXPLODE);
         worldPointer->addParticle(particle);
         break;
       }
       default: {
-        auto particle = std::make_shared<Particle>(x, y, color, 0, 3, -5, 5, 1,
-                                                   ParticleType::CIRCLE, 10,
+        auto particle = std::make_shared<Particle>(x, y, color, 0, 3, -5, 5, 2,
+                                                   ParticleType::SQUARE, 10,
                                                    ParticleBehaviour::EXPLODE);
         worldPointer->addParticle(particle);
         break;
@@ -109,11 +109,11 @@ float Bullet::getYVelocity() const {
 }
 
 // Update bullets
-void Bullet::update() {
+void Bullet::update(const float deltaTime) {
   if (health > 0) {
     // Move
-    x += vector_x;
-    y += vector_y;
+    x += vector_x * (deltaTime / 8.0f);
+    y += vector_y * (deltaTime / 8.0f);
 
     // Off screen
     if (x < 0 || x > 10000 || y < 0 || y > 10000) {

@@ -1,6 +1,6 @@
 #include "Button.hpp"
 
-#include <iostream>
+using namespace asw::input;
 
 // Constructor
 Button::Button(int x, int y, const std::string& text, asw::Font button_font)
@@ -28,7 +28,8 @@ void Button::update() {
 
 // True if clicked
 bool Button::clicked() const {
-  return hovering && asw::input::mouse.pressed[1];
+  return hovering &&
+         asw::input::wasButtonPressed(asw::input::MouseButton::LEFT);
 }
 
 // Draw

@@ -19,13 +19,13 @@ void Game::init() {
   // Create buffers
   decal_buffer = asw::assets::createTexture(map_width * 40, map_height * 40);
 
-  SDL_SetRenderTarget(asw::display::renderer, decal_buffer.get());
+  asw::display::setRenderTarget(decal_buffer);
   asw::draw::clearColor(asw::util::makeColor(0, 0, 0, 255));
-  SDL_SetRenderTarget(asw::display::renderer, nullptr);
-  SDL_SetTextureBlendMode(decal_buffer.get(), SDL_BLENDMODE_ADD);
+  asw::display::resetRenderTarget();
+  asw::draw::setBlendMode(decal_buffer, asw::BlendMode::ADD);
 
   vision_buffer = asw::assets::createTexture(map_width * 40, map_height * 40);
-  SDL_SetTextureBlendMode(vision_buffer.get(), SDL_BLENDMODE_ADD);
+  asw::draw::setBlendMode(vision_buffer, asw::BlendMode::ADD);
 
   map_buffer = asw::assets::createTexture(map_width * 40, map_height * 40);
 
@@ -117,7 +117,7 @@ void Game::init() {
     Vec2<float> startLocation = startLocations.at(
         Random::random(0, static_cast<int>(startLocations.size()) - 1));
     auto* tank = new PlayerTank(&game_world, startLocation.x, startLocation.y,
-                                100, 4, 20, 1);
+                                100, 4, 1000, 1);
 
     tank->process_enemies(&enemy_tanks);
     tank->set_map_dimensions(map_width * 40, map_height * 40);
@@ -130,7 +130,7 @@ void Game::init() {
         Random::random(0, static_cast<int>(startLocations.size()) - 1));
     auto* tank = new AiTank(&game_world, startLocation.x, startLocation.y,
                             Random::random(50, 150), Random::random(1, 8),
-                            Random::random(50, 300), 1, true);
+                            Random::random(500, 1500), 1, true);
 
     tank->process_enemies(&player_tanks);
     tank->set_map_dimensions(map_width * 40, map_height * 40);
@@ -142,7 +142,7 @@ void Game::init() {
     Vec2<float> startLocation = startLocations.at(
         Random::random(0, static_cast<int>(startLocations.size()) - 1));
     auto* tank = new AiTank(&game_world, startLocation.x, startLocation.y, 100,
-                            4, 150, 1, false);
+                            4, 1000, 1, false);
 
     tank->process_enemies(&enemy_tanks);
     tank->set_map_dimensions(map_width * 40, map_height * 40);
@@ -155,7 +155,7 @@ void Game::update(const double deltaTime) {
   // poll_joystick(); TODO
 
   // Update world
-  game_world.update();
+  game_world.update(deltaTime);
 
   // Move
   for (auto* const& enemy : enemy_tanks) {
@@ -166,14 +166,14 @@ void Game::update(const double deltaTime) {
 
     // Update bullets
     for (auto* const& player : player_tanks) {
-      player->checkCollision(enemy->getBullets());
+      player->checkCollision(enemy->getBullets(), deltaTime);
     }
 
     // Collision with barrier
-    enemy->checkCollision(barriers);
+    enemy->checkCollision(barriers, deltaTime);
 
     // Collision with power ups
-    enemy->checkCollision(power_ups);
+    enemy->checkCollision(power_ups, deltaTime);
 
     // Update tanks
     enemy->update(deltaTime);
@@ -187,14 +187,14 @@ void Game::update(const double deltaTime) {
 
     // Update bullets
     for (auto* const& enemy : enemy_tanks) {
-      enemy->checkCollision(player->getBullets());
+      enemy->checkCollision(player->getBullets(), deltaTime);
     }
 
     // Collision with barrier
-    player->checkCollision(barriers);
+    player->checkCollision(barriers, deltaTime);
 
     // Collision with power ups
-    player->checkCollision(power_ups);
+    player->checkCollision(power_ups, deltaTime);
 
     // Update tanks
     player->update(deltaTime);
@@ -239,7 +239,7 @@ void Game::update(const double deltaTime) {
       power_ups.end());
 
   // Game over
-  if (asw::input::keyboard.pressed[SDL_SCANCODE_SPACE] &&
+  if (asw::input::wasKeyPressed(asw::input::Key::SPACE) &&
       (player_tanks.empty() || enemy_tanks.empty())) {
     this->setNextState(ProgramState::Menu);
   }
@@ -263,7 +263,7 @@ void Game::draw() {
   asw::draw::sprite(background, 0, 0);
 
   // Draw decals
-  SDL_SetRenderTarget(asw::display::renderer, decal_buffer.get());
+  asw::display::setRenderTarget(decal_buffer);
 
   for (auto* const& enemy : enemy_tanks) {
     enemy->putDecal();
@@ -274,7 +274,7 @@ void Game::draw() {
   }
 
   // Blank map map_buffer
-  SDL_SetRenderTarget(asw::display::renderer, map_buffer.get());
+  asw::display::setRenderTarget(map_buffer);
   asw::draw::clearColor(asw::util::makeColor(0, 88, 0, 0));
 
   // Decal to buffer
@@ -303,7 +303,7 @@ void Game::draw() {
   }
 
   // Map to buffer
-  SDL_SetRenderTarget(asw::display::renderer, nullptr);
+  asw::display::resetRenderTarget();
   asw::draw::sprite(map_buffer, -map_x, -map_y);
 
   // Text

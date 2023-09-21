@@ -23,7 +23,7 @@ class AiTank : public Tank {
 
   void update_target();
   void find_enemy_target();
-  void ai_drive();
+  void ai_drive(const double deltaTime);
 };
 
 #endif  // SRC_GAME_AI_TANK_H_
