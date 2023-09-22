@@ -6,7 +6,7 @@
 #ifndef SRC_STATE_GAME_H_
 #define SRC_STATE_GAME_H_
 
-#include <allegro.h>
+#include <asw/asw.h>
 #include <array>
 #include <memory>
 #include <vector>
@@ -20,7 +20,7 @@
 #include "../util/Vec2.hpp"
 #include "../util/tools.h"
 
-#include "./State.h"
+#include "./State.hpp"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846264338327
@@ -28,11 +28,14 @@
 
 class Game : public State {
  public:
-  Game();
-  ~Game() override;
+  explicit Game(StateEngine& engine) : State(engine) {}
 
-  void update(const double deltaTime) override;
+  void init() override;
+  void update(const float deltaTime) override;
   void draw() override;
+  void cleanup() override {
+    // No cleanup
+  }
 
   // Map stuff
   static unsigned char map_width;
@@ -43,12 +46,14 @@ class Game : public State {
 
  private:
   // Images
-  BITMAP* buffer;
-  BITMAP* map_buffer;
-  BITMAP* decal_buffer;
-  BITMAP* vision_buffer;
-  BITMAP* background;
-  BITMAP* cursor;
+  asw::Texture map_buffer;
+  asw::Texture decal_buffer;
+  asw::Texture vision_buffer;
+  asw::Texture background;
+  asw::Texture cursor;
+
+  // Fonts
+  asw::Font font;
 
   // World
   World game_world;

@@ -1,17 +1,20 @@
 #include "Button.hpp"
 
+using namespace asw::input;
+
 // Constructor
-Button::Button(int x, int y, const std::string& text, FONT* button_font)
+Button::Button(int x, int y, const std::string& text, asw::Font button_font)
     : x(x), y(y), text(text) {
   setFont(button_font);
 }
 
 // Set new font
-bool Button::setFont(FONT* font) {
+bool Button::setFont(asw::Font font) {
   this->button_font = font;
   if (button_font != nullptr) {
-    this->width = text_length(button_font, text.c_str());
-    this->height = text_height(button_font);
+    auto textSize = asw::util::getTextSize(button_font, text);
+    this->width = textSize.x;
+    this->height = textSize.y;
     return true;
   }
   return false;
@@ -19,31 +22,33 @@ bool Button::setFont(FONT* font) {
 
 // Update
 void Button::update() {
-  hovering = mouse_x > x && mouse_x < x + getWidth() && mouse_y > y &&
-             mouse_y < y + getHeight();
+  hovering = asw::input::mouse.x > x && asw::input::mouse.x < x + getWidth() &&
+             asw::input::mouse.y > y && asw::input::mouse.y < y + getHeight();
 }
 
 // True if clicked
 bool Button::clicked() const {
-  return hovering && MouseListener::mouse_pressed & 1;
+  return hovering &&
+         asw::input::wasButtonPressed(asw::input::MouseButton::LEFT);
 }
 
 // Draw
-void Button::draw(BITMAP* tempBitmap) const {
-  if (visible) {
-    // Backdrop
-    const int c_element = hovering ? 220 : 200;
+void Button::draw() const {
+  if (!visible) {
+    return;
+  }
 
-    rectfill(tempBitmap, x, y, x + width + padding_x * 2,
-             y + height + padding_y * 2,
-             makecol(c_element, c_element, c_element));
-    rect(tempBitmap, x, y, x + width + padding_x * 2,
-         y + height + padding_y * 2, makecol(0, 0, 0));
+  // Backdrop
+  const int c_element = hovering ? 220 : 200;
 
-    // Text
-    if (button_font != nullptr) {
-      textprintf_ex(tempBitmap, button_font, x + padding_x, y + padding_y,
-                    makecol(0, 0, 0), -1, text.c_str());
-    }
+  asw::draw::rectFill(x, y, width + padding_x * 2, height + padding_y * 2,
+                      asw::util::makeColor(c_element, c_element, c_element));
+  asw::draw::rect(x, y, width + padding_x * 2, height + padding_y * 2,
+                  asw::util::makeColor(0, 0, 0));
+
+  // Text
+  if (button_font != nullptr) {
+    asw::draw::text(button_font, text, x + padding_x, y + padding_y,
+                    asw::util::makeColor(0, 0, 0));
   }
 }

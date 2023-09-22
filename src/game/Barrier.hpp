@@ -15,17 +15,14 @@ enum class BarrierType {
 class Barrier {
  public:
   Barrier(World* world, const Vec2<float>& position, BarrierType type);
-  ~Barrier();
 
   void update(const std::vector<Bullet*>* bullets);
-  void draw(BITMAP* image);
+  void draw();
 
   float getWidth() const;
   float getHeight() const;
 
-  void makeIndestructible(bool indestructible) {
-    this->indestructible = indestructible;
-  }
+  void makeIndestructible(bool i) { this->indestructible = i; }
 
   bool getDead() const;
 
@@ -44,9 +41,9 @@ class Barrier {
   float width;
   float height;
 
-  SAMPLE* sample_explode;
+  static asw::Sample sample_explode;
 
-  BITMAP* image;
+   asw::Texture image;
 
   void explode();
 };

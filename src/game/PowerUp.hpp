@@ -1,7 +1,7 @@
 #ifndef SRC_GAME_POWERUP_H_
 #define SRC_GAME_POWERUP_H_
 
-#include <allegro.h>
+#include <asw/asw.h>
 #include <string>
 
 enum class PowerUpType { HEALTH, SPEED, FIRE_SPEED, FIRE_DELAY };
@@ -20,7 +20,7 @@ class PowerUp {
 
   void pickup() { dead = true; }
 
-  void draw(BITMAP* buffer) const;
+  void draw() const;
 
  private:
   float x;

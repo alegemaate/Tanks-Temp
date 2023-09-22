@@ -3,17 +3,16 @@
 #include "../components/Sprite.hpp"
 #include "../components/Transform.hpp"
 #include "../system/ImageRegistry.hpp"
-#include "StateEngine.hpp"
 
 // Initializer
-Menu::Menu() {
-  // Buffer
-  buffer = create_bitmap(SCREEN_W, SCREEN_H);
-
+void Menu::init() {
   // Entity
   const auto background = m_registry.create();
   m_registry.emplace<Sprite>(background, "menu-background");
   m_registry.emplace<Transform>(background, 0.0, 0.0);
+
+  // Font
+  font = asw::assets::loadFont("assets/fonts/ariblk.ttf", 12);
 
   // Buttons
   friends_up = Button(90, 275, "/\\", font);
@@ -30,7 +29,7 @@ Menu::Menu() {
 }
 
 // Update routine
-void Menu::update(const double deltaTime) {
+void Menu::update(const float deltaTime) {
   // Update buttons
   enemies_up.update();
   enemies_down.update();
@@ -78,44 +77,41 @@ void Menu::update(const double deltaTime) {
 
   // Start game
   if (start.clicked()) {
-    StateEngine::setNextState(StateId::STATE_GAME);
+    this->setNextState(ProgramState::Game);
   }
 }
 
 // Drawing routine
 void Menu::draw() {
   // Render system
-  m_render_system.render(buffer, m_registry);
+  m_render_system.render(m_registry);
 
   // Buttons
-  enemies_up.draw(buffer);
-  enemies_down.draw(buffer);
-  friends_up.draw(buffer);
-  friends_down.draw(buffer);
-  width_up.draw(buffer);
-  width_down.draw(buffer);
-  height_up.draw(buffer);
-  height_down.draw(buffer);
-  bounce_up.draw(buffer);
-  bounce_down.draw(buffer);
-  start.draw(buffer);
+  enemies_up.draw();
+  enemies_down.draw();
+  friends_up.draw();
+  friends_down.draw();
+  width_up.draw();
+  width_down.draw();
+  height_up.draw();
+  height_down.draw();
+  bounce_up.draw();
+  bounce_down.draw();
+  start.draw();
 
   // Player nums
-  textprintf_centre_ex(buffer, font, 109, 315, makecol(0, 0, 0), -1, "%i",
-                       Game::num_friends);
-  textprintf_centre_ex(buffer, font, 229, 315, makecol(0, 0, 0), -1, "%i",
-                       Game::num_enemies);
-  textprintf_centre_ex(buffer, font, 349, 315, makecol(0, 0, 0), -1, "%i",
-                       Game::map_width);
-  textprintf_centre_ex(buffer, font, 469, 315, makecol(0, 0, 0), -1, "%i",
-                       Game::map_height);
-  textprintf_centre_ex(buffer, font, 589, 315, makecol(0, 0, 0), -1, "%i",
-                       Tank::num_bullet_bounces);
+  asw::draw::textCenter(font, std::to_string(Game::num_friends), 109, 315,
+                        asw::util::makeColor(0, 0, 0));
+  asw::draw::textCenter(font, std::to_string(Game::num_enemies), 229, 315,
+                        asw::util::makeColor(0, 0, 0));
+  asw::draw::textCenter(font, std::to_string(Game::map_width), 349, 315,
+                        asw::util::makeColor(0, 0, 0));
+  asw::draw::textCenter(font, std::to_string(Game::map_height), 469, 315,
+                        asw::util::makeColor(0, 0, 0));
+  asw::draw::textCenter(font, std::to_string(Tank::num_bullet_bounces), 589,
+                        315, asw::util::makeColor(0, 0, 0));
 
   // Mouse
-  rectfill(buffer, mouse_x, mouse_y, mouse_x + 4, mouse_y + 4,
-           makecol(255, 255, 255));
-
-  // Draw to screen
-  draw_sprite(screen, buffer, 0, 0);
+  asw::draw::rectFill(asw::input::mouse.x, asw::input::mouse.y, 4, 4,
+                      asw::util::makeColor(255, 255, 255));
 }

@@ -1,19 +1,20 @@
 #ifndef SRC_GAME_WORLD_H_
 #define SRC_GAME_WORLD_H_
 
+#include <memory>
 #include <vector>
 
 #include "Particle.hpp"
 
 class World {
  public:
-  void update();
-  void draw(BITMAP* buffer) const;
+  void update(const float deltaTime);
+  void draw() const;
 
-  void addParticle(Particle* particle);
+  void addParticle(std::shared_ptr<Particle> particle);
 
  private:
-  std::vector<Particle*> particles;
+  std::vector<std::shared_ptr<Particle>> particles;
 };
 
 #endif  // SRC_GAME_WORLD_H_

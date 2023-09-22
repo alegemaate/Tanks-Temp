@@ -8,11 +8,11 @@
 
 #include "RenderSystem.hpp"
 
-void RenderSystem::render(BITMAP* buffer, entt::registry& registry) {
+void RenderSystem::render(entt::registry& registry) {
   auto view = registry.view<Sprite, Transform>();
 
   view.each([&](const auto& spr, auto& pos) {
-    auto* bitmap = ImageRegistry::getImage(spr.key);
-    draw_sprite(buffer, bitmap, pos.x, pos.y);
+    auto bitmap = ImageRegistry::getImage(spr.key);
+    asw::draw::sprite(bitmap, pos.x, pos.y);
   });
 }

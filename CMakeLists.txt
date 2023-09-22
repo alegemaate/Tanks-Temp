@@ -9,10 +9,6 @@ include(FetchContent)
 
 project(Tanks)
 
-# Find libs
-find_library(ALLEGRO_LIBRARY NAMES liballeg44.dll.a liballeg.dll.a liballeg.so liballeg.dylib)
-find_library(ALLEGRO_PNG_LIBRARY NAMES libloadpng.dll.a libloadpng.so libloadpng.dylib)
-
 # Source code
 file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 file(GLOB_RECURSE HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp)
@@ -22,20 +18,86 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
 
+# Find libs
+if(NOT EMSCRIPTEN)
+  find_library(SDL_LIBRARY NAMES SDL2 REQUIRED)
+  find_library(SDL_MIXER_LIBRARY NAMES SDL2_mixer REQUIRED)
+  find_library(SDL_IMAGE_LIBRARY NAMES SDL2_image REQUIRED)
+  find_library(SDL_TTF_LIBRARY NAMES SDL2_ttf REQUIRED)
+  find_library(SDL_GFX_LIBRARY NAMES SDL2_gfx REQUIRED)
+  find_library(SDL_MAIN_LIBRARY NAMES SDL2main REQUIRED)
+endif(NOT EMSCRIPTEN)
+
 FetchContent_Declare(
   EnTT
   GIT_REPOSITORY https://github.com/skypjack/entt.git
-  GIT_TAG        344e03ac64a1f78424ab1150e2d4778e8df8431d
+  GIT_TAG 344e03ac64a1f78424ab1150e2d4778e8df8431d
 )
 FetchContent_MakeAvailable(EnTT)
 
-# Link Libs
-if (MINGW)
-  target_link_libraries(${PROJECT_NAME} -lmingw32)
-endif (MINGW)
+FetchContent_Declare(
+  asw
+  GIT_REPOSITORY https://github.com/adsgames/asw.git
+  GIT_TAG        7bfb57c73e19ef5b7f15b5eba7af5a74dcf64930
+)
+FetchContent_MakeAvailable(asw)
 
-target_link_libraries(${PROJECT_NAME} ${ALLEGRO_LIBRARY})
-target_link_libraries(${PROJECT_NAME} ${ALLEGRO_PNG_LIBRARY})
-target_link_libraries(${PROJECT_NAME} -static-libgcc -static-libstdc++ EnTT::EnTT)
+# Emscripten support
+if(EMSCRIPTEN)
+  set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "index")
+  set(CMAKE_EXECUTABLE_SUFFIX ".html")
+  target_compile_options(
+    ${PROJECT_NAME}
+    PRIVATE
+    -sUSE_SDL=2
+    -sUSE_SDL_IMAGE=2
+    -sUSE_SDL_TTF=2
+    -sUSE_SDL_MIXER=2
+    -sUSE_SDL_GFX=2
+    -sSDL2_IMAGE_FORMATS=["png"]
+    -sSTACK_SIZE=128MB
+  )
+  target_link_libraries(
+    ${PROJECT_NAME}
+    -sWASM=1
+    -sUSE_SDL=2
+    -sUSE_SDL_IMAGE=2
+    -sUSE_SDL_TTF=2
+    -sUSE_SDL_MIXER=2
+    -sUSE_SDL_GFX=2
+    -sSDL2_IMAGE_FORMATS=["png"]
+    -sDEMANGLE_SUPPORT=1
+    -sTOTAL_MEMORY=512MB
+    -sSTACK_SIZE=128MB
+    asw
+    EnTT::EnTT
+  )
+  set_target_properties(
+    ${PROJECT_NAME}
+    PROPERTIES
+    LINK_FLAGS
+    "--preload-file ${CMAKE_CURRENT_LIST_DIR}/assets@/assets --use-preload-plugins --shell-file ${CMAKE_CURRENT_LIST_DIR}/index.html"
+  )
+
+# Run of the mill executable
+else(EMSCRIPTEN)
+  # Link Libs
+  if(MINGW)
+    target_link_libraries(${PROJECT_NAME} -lmingw32)
+  endif(MINGW)
+
+  target_link_libraries(
+    ${PROJECT_NAME}
+    -lm
+    ${SDL_MAIN_LIBRARY}
+    ${SDL_LIBRARY}
+    ${SDL_MIXER_LIBRARY}
+    ${SDL_IMAGE_LIBRARY}
+    ${SDL_TTF_LIBRARY}
+    ${SDL_GFX_LIBRARY}
+    asw
+    EnTT::EnTT
+  )
+endif(EMSCRIPTEN)
 
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/assets/ DESTINATION ${CMAKE_BINARY_DIR}/build/assets/)

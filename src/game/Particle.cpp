@@ -1,10 +1,11 @@
 #include "Particle.hpp"
+#include <iostream>
 #include "../util/Random.hpp"
 
 // Constructor
 Particle::Particle(float x,
                    float y,
-                   int color,
+                   asw::Color color,
                    float xVelocityMin,
                    float xVelocityMax,
                    float yVelocityMin,
@@ -33,20 +34,23 @@ Particle::Particle(float x,
 }
 
 // Logic
-void Particle::logic() {
+void Particle::update(const float deltaTime) {
+  float deltaXVelocity = xVelocity * (deltaTime / 8.0f);
+  float deltaYVelocity = yVelocity * (deltaTime / 8.0f);
+
   // Behaviour
   if (behaviour == ParticleBehaviour::EXPLODE) {
-    x += xVelocity;
-    y += yVelocity;
-    xVelocity -= xVelocity / 10;
-    yVelocity -= yVelocity / 10;
+    x += deltaXVelocity;
+    y += deltaYVelocity;
+    xVelocity -= deltaXVelocity / 10.0f;
+    yVelocity -= deltaYVelocity / 10.0f;
   } else {
-    x += Random::randomFloat(-xVelocity, xVelocity);
-    y += Random::randomFloat(-yVelocity, yVelocity);
+    x += Random::randomFloat(-deltaXVelocity, deltaXVelocity);
+    y += Random::randomFloat(-deltaYVelocity, deltaYVelocity);
   }
 
   // Die
-  if (Random::random(0, life) == 0) {
+  if (Random::random(0, life) < (deltaTime / 8.0f)) {
     dead = true;
   }
 }
@@ -57,37 +61,39 @@ bool Particle::getDead() const {
 }
 
 // Draw
-void Particle::draw(BITMAP* buffer) const {
+void Particle::draw() const {
   switch (type) {
     case ParticleType::PIXEL:
-      putpixel(buffer, static_cast<int>(x), static_cast<int>(y), color);
+      asw::draw::point(static_cast<int>(x), static_cast<int>(y), color);
       break;
     case ParticleType::SQUARE:
-      rectfill(buffer, static_cast<int>(x), static_cast<int>(y),
-               static_cast<int>(x) + size, static_cast<int>(y) + size, color);
+      asw::draw::rectFill(static_cast<int>(x), static_cast<int>(y), size, size,
+                          color);
       break;
     case ParticleType::CIRCLE:
-      circlefill(buffer, static_cast<int>(x), static_cast<int>(y), size, color);
+      asw::draw::circleFill(static_cast<int>(x), static_cast<int>(y), size,
+                            color);
       break;
     case ParticleType::RANDOM:
-      drawRandom(buffer);
+      drawRandom();
       break;
     default:
       break;
   }
 }
 
-void Particle::drawRandom(BITMAP* buffer) const {
+void Particle::drawRandom() const {
   switch (Random::random(0, 3)) {
     case 0:
-      putpixel(buffer, static_cast<int>(x), static_cast<int>(y), color);
+      asw::draw::point(static_cast<int>(x), static_cast<int>(y), color);
       break;
     case 1:
-      circlefill(buffer, static_cast<int>(x), static_cast<int>(y), size, color);
+      asw::draw::circleFill(static_cast<int>(x), static_cast<int>(y), size,
+                            color);
       break;
     case 2:
-      rectfill(buffer, static_cast<int>(x), static_cast<int>(y),
-               static_cast<int>(x) + size, static_cast<int>(y) + size, color);
+      asw::draw::rectFill(static_cast<int>(x), static_cast<int>(y), size, size,
+                          color);
       break;
     default:
       break;

@@ -4,7 +4,6 @@
 
 #include "../system/ImageRegistry.hpp"
 #include "../util/Random.hpp"
-#include "StateEngine.hpp"
 
 unsigned char Game::map_width = 20;
 unsigned char Game::map_height = 20;
@@ -16,22 +15,26 @@ const unsigned char max_map_width = 255;
 const unsigned char max_map_height = 255;
 
 // Init state (and Game)
-Game::Game() {
+void Game::init() {
   // Create buffers
-  buffer = create_bitmap(SCREEN_W, SCREEN_H);
+  decal_buffer = asw::assets::createTexture(map_width * 40, map_height * 40);
 
-  decal_buffer = create_bitmap(map_width * 40, map_height * 40);
-  clear_to_color(decal_buffer, 0xFF00FF);
+  asw::display::setRenderTarget(decal_buffer);
+  asw::draw::clearColor(asw::util::makeColor(0, 0, 0, 255));
+  asw::display::resetRenderTarget();
+  asw::draw::setBlendMode(decal_buffer, asw::BlendMode::ADD);
 
-  vision_buffer = create_bitmap(map_width * 40, map_height * 40);
-  clear_to_color(vision_buffer, 0x000000);
+  vision_buffer = asw::assets::createTexture(map_width * 40, map_height * 40);
+  asw::draw::setBlendMode(vision_buffer, asw::BlendMode::ADD);
 
-  map_buffer = create_bitmap(map_width * 40, map_height * 40);
-  clear_to_color(map_buffer, 0x000000);
+  map_buffer = asw::assets::createTexture(map_width * 40, map_height * 40);
 
   // Load images
   background = ImageRegistry::getImage("game-background");
   cursor = ImageRegistry::getImage("cursor");
+
+  // Font
+  font = asw::assets::loadFont("assets/fonts/ariblk.ttf", 12);
 
   // Make a map
   std::array<std::array<BarrierType, max_map_height>, max_map_width> map_temp{};
@@ -114,7 +117,7 @@ Game::Game() {
     Vec2<float> startLocation = startLocations.at(
         Random::random(0, static_cast<int>(startLocations.size()) - 1));
     auto* tank = new PlayerTank(&game_world, startLocation.x, startLocation.y,
-                                100, 4, 20, 1);
+                                100, 4, 700, 1);
 
     tank->process_enemies(&enemy_tanks);
     tank->set_map_dimensions(map_width * 40, map_height * 40);
@@ -127,7 +130,7 @@ Game::Game() {
         Random::random(0, static_cast<int>(startLocations.size()) - 1));
     auto* tank = new AiTank(&game_world, startLocation.x, startLocation.y,
                             Random::random(50, 150), Random::random(1, 8),
-                            Random::random(50, 300), 1, true);
+                            Random::random(500, 1500), 1, true);
 
     tank->process_enemies(&player_tanks);
     tank->set_map_dimensions(map_width * 40, map_height * 40);
@@ -139,7 +142,7 @@ Game::Game() {
     Vec2<float> startLocation = startLocations.at(
         Random::random(0, static_cast<int>(startLocations.size()) - 1));
     auto* tank = new AiTank(&game_world, startLocation.x, startLocation.y, 100,
-                            4, 150, 1, false);
+                            4, 1000, 1, false);
 
     tank->process_enemies(&enemy_tanks);
     tank->set_map_dimensions(map_width * 40, map_height * 40);
@@ -147,20 +150,9 @@ Game::Game() {
   }
 }
 
-// Clean up
-Game::~Game() {
-  destroy_bitmap(buffer);
-  destroy_bitmap(decal_buffer);
-  destroy_bitmap(vision_buffer);
-  destroy_bitmap(map_buffer);
-}
-
-void Game::update(const double deltaTime) {
-  // Get joystick input
-  poll_joystick();
-
+void Game::update(const float deltaTime) {
   // Update world
-  game_world.update();
+  game_world.update(deltaTime);
 
   // Move
   for (auto* const& enemy : enemy_tanks) {
@@ -171,14 +163,14 @@ void Game::update(const double deltaTime) {
 
     // Update bullets
     for (auto* const& player : player_tanks) {
-      player->checkCollision(enemy->getBullets());
+      player->checkCollision(enemy->getBullets(), deltaTime);
     }
 
     // Collision with barrier
-    enemy->checkCollision(barriers);
+    enemy->checkCollision(barriers, deltaTime);
 
     // Collision with power ups
-    enemy->checkCollision(power_ups);
+    enemy->checkCollision(power_ups, deltaTime);
 
     // Update tanks
     enemy->update(deltaTime);
@@ -192,14 +184,14 @@ void Game::update(const double deltaTime) {
 
     // Update bullets
     for (auto* const& enemy : enemy_tanks) {
-      enemy->checkCollision(player->getBullets());
+      enemy->checkCollision(player->getBullets(), deltaTime);
     }
 
     // Collision with barrier
-    player->checkCollision(barriers);
+    player->checkCollision(barriers, deltaTime);
 
     // Collision with power ups
-    player->checkCollision(power_ups);
+    player->checkCollision(power_ups, deltaTime);
 
     // Update tanks
     player->update(deltaTime);
@@ -244,67 +236,81 @@ void Game::update(const double deltaTime) {
       power_ups.end());
 
   // Game over
-  if (key[KEY_SPACE] && (player_tanks.empty() || enemy_tanks.empty())) {
-    StateEngine::setNextState(StateId::STATE_MENU);
+  if (asw::input::wasKeyPressed(asw::input::Key::SPACE) &&
+      (player_tanks.empty() || enemy_tanks.empty())) {
+    this->setNextState(ProgramState::Menu);
+  }
+
+  if (asw::input::keyboard.pressed[SDL_SCANCODE_M]) {
+    this->setNextState(ProgramState::Menu);
   }
 
   // Scroll map
   if (!player_tanks.empty()) {
-    map_x =
-        player_tanks.at(0)->getCenterX() - static_cast<float>(buffer->w) / 2.0f;
-    map_y =
-        player_tanks.at(0)->getCenterY() - static_cast<float>(buffer->h) / 2.0f;
+    auto screenSize = asw::display::getSize();
+    map_x = player_tanks.at(0)->getCenterX() -
+            static_cast<float>(screenSize.x) / 2.0f;
+    map_y = player_tanks.at(0)->getCenterY() -
+            static_cast<float>(screenSize.y) / 2.0f;
   }
 }
 
 void Game::draw() {
   // Draw background
-  draw_sprite(buffer, background, 0, 0);
+  asw::draw::sprite(background, 0, 0);
 
-  // Blank map map_buffer
-  rectfill(map_buffer, 0, 0, map_buffer->w, map_buffer->h, makecol(0, 88, 0));
+  // Draw decals
+  asw::display::setRenderTarget(decal_buffer);
 
-  // Decal to buffer
-  draw_sprite(map_buffer, decal_buffer, 0, 0);
-
-  // Draw tanks
   for (auto* const& enemy : enemy_tanks) {
-    enemy->draw(map_buffer);
-    enemy->putDecal(decal_buffer);
+    enemy->putDecal();
   }
 
   for (auto* const& player : player_tanks) {
-    player->draw(map_buffer);
-    player->putDecal(decal_buffer);
+    player->putDecal();
+  }
+
+  // Blank map map_buffer
+  asw::display::setRenderTarget(map_buffer);
+  asw::draw::clearColor(asw::util::makeColor(0, 88, 0, 0));
+
+  // Decal to buffer
+  asw::draw::sprite(decal_buffer, 0, 0);
+
+  // Draw tanks
+  for (auto* const& enemy : enemy_tanks) {
+    enemy->draw();
+  }
+
+  for (auto* const& player : player_tanks) {
+    player->draw();
   }
 
   // Draw world
-  game_world.draw(map_buffer);
+  game_world.draw();
 
   // Draw barriers
   for (auto const& barrier : barriers) {
-    barrier->draw(map_buffer);
+    barrier->draw();
   }
 
   // Draw power_ups
   for (auto const& power_up : power_ups) {
-    power_up->draw(map_buffer);
+    power_up->draw();
   }
 
   // Map to buffer
-  blit(map_buffer, buffer, map_x, map_y, 0, 0, buffer->w, buffer->h);
+  asw::display::resetRenderTarget();
+  asw::draw::sprite(map_buffer, -map_x, -map_y);
 
   // Text
-  textprintf_ex(buffer, font, 20, 20, makecol(0, 0, 0), makecol(255, 255, 255),
-                "Round: %i", currentRound);
-  textprintf_ex(buffer, font, 20, 35, makecol(0, 0, 0), makecol(255, 255, 255),
-                "Team BLUE: %u", player_tanks.size());
-  textprintf_ex(buffer, font, 20, 50, makecol(0, 0, 0), makecol(255, 255, 255),
-                "Team RED: %u", enemy_tanks.size());
+  asw::draw::text(font, "Round: " + std::to_string(currentRound), 20, 20,
+                  asw::util::makeColor(255, 255, 255));
+  asw::draw::text(font, "Team BLUE: " + std::to_string(player_tanks.size()), 20,
+                  35, asw::util::makeColor(255, 255, 255));
+  asw::draw::text(font, "Team RED: " + std::to_string(enemy_tanks.size()), 20,
+                  50, asw::util::makeColor(255, 255, 255));
 
   // Cursor
-  draw_sprite(buffer, cursor, mouse_x - 10, mouse_y - 10);
-
-  // Buffer to screen
-  draw_sprite(screen, buffer, 0, 0);
+  asw::draw::sprite(cursor, asw::input::mouse.x - 10, asw::input::mouse.y - 10);
 }

@@ -1,136 +1,98 @@
-#include <allegro.h>
+#include <asw/asw.h>
+#include <chrono>
+#include <iostream>
+#include <memory>
 
-#include <array>
-
-#include "./input/KeyListener.hpp"
-#include "./input/MouseListener.hpp"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/html5.h>
+#endif
 
 #include "./state/Game.hpp"
-#include "./state/StateEngine.hpp"
+#include "./state/State.hpp"
 
-// Are we closing?
-bool closing = false;
+using namespace std::chrono_literals;
+using namespace std::chrono;
+constexpr nanoseconds timestep(8ms);
 
-// FPS Tickers
-volatile int ticks = 0;
-void ticker() {
-  ticks += 1;
-}
-END_OF_FUNCTION(ticker)
-
-// Close button handler
-void close_button_handler() {
-  closing = true;
-}
-END_OF_FUNCTION(close_button_handler)
-
-// Calibrate joystick
-bool calibrateJoystick() {
-  for (int i = 0; i < num_joysticks; i++) {
-    while (joy[i].flags & JOYFLAG_CALIBRATE) {
-      if ((readkey() & 0xFF) == 27) {
-        return false;
-      }
-
-      if (calibrate_joystick(i) != 0) {
-        return false;
-      }
-    }
-    if (!(joy[i].stick[0].flags & JOYFLAG_ANALOGUE)) {
-      allegro_message(
-          "This game only supports analogue joysticks, please unplug and try "
-          "again. \n");
-    }
-  }
-
-  save_joystick_data("joy_config.dat");
-  return true;
-}
+// State engine
+std::unique_ptr<StateEngine> game_state;
 
 // Setup game
 void setup() {
-  // Init Allegro
-  allegro_init();
-  install_timer();
-  install_keyboard();
-  install_mouse();
+  // Load asw library
+  asw::core::init(800, 600);
 
-  // Setup joystick
-  if (!load_joystick_data("joy_config.dat")) {
-    install_joystick(JOY_TYPE_AUTODETECT);
-    if (!calibrateJoystick()) {
-      abort_on_error("Could not configure joystick");
-    }
-  }
-
-  set_color_depth(32);
-
-  // Setup screen
-  set_gfx_mode(GFX_AUTODETECT_WINDOWED, 800, 600, 0, 0);
-  install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, ".");
-
-  // Window Title
-  set_window_title("Tanks!");
-
-  // Setup for FPS system
-  LOCK_VARIABLE(ticks)
-  LOCK_FUNCTION(ticker)
-  install_int_ex(ticker, BPS_TO_TIMER(1000));
-
-  // Close button
-  LOCK_FUNCTION(close_button_handler)
-  set_close_button_callback(close_button_handler);
+  game_state = std::make_unique<StateEngine>();
 
   // Set the current state ID
-  StateEngine::setNextState(StateId::STATE_INIT);
-  StateEngine::changeState();
+  game_state->setNextState(ProgramState::Init);
 }
 
-void update(const double deltaTime) {
-  // Change state (if needed)
-  StateEngine::changeState();
-
+void update(const float deltaTime) {
   // Update listeners
-  MouseListener::update();
-  KeyListener::update();
+  asw::core::update();
 
-  // Update state
-  StateEngine::update(deltaTime);
+  // Do state logic
+game_state->update(deltaTime);
+
+  // Handle exit
+  if (game_state->getStateId() == ProgramState::Exit) {
+    asw::core::exit = true;
+  }
 }
 
-int main() {
-  // Setup
+// Do state rendering
+void draw() {
+  game_state->draw();
+}
+
+// Loop (emscripten compatibility)
+#ifdef __EMSCRIPTEN__
+void loop() {
+  update(timestep / 1ms);
+  draw();
+}
+#endif
+
+// Main function*/
+auto main(int argc, char* argv[]) -> int {
+  // Setup basic functionality
   setup();
 
-  // 120 Updates per second
-  const constexpr double dt = 1000.0 / 120.0;
+#ifdef __EMSCRIPTEN__
+  emscripten_set_main_loop(loop, 0, 1);
+#else
 
-  double time = 0.0;
-  double accumulator = 0.0;
-  double current_time = ticks;
-  double new_time = 0.0;
-  double frame_time = 0.0;
+  using clock = high_resolution_clock;
+  nanoseconds lag(0ns);
+  auto time_start = clock::now();
+  auto last_second = clock::now();
+  int frames = 0;
+  int fps = 0;
 
-  while (!key[KEY_ESC] && !closing) {
-    new_time = ticks;
-    frame_time = new_time - current_time;
-    current_time = new_time;
+  while (!asw::input::isKeyDown(asw::input::Key::ESCAPE) && !asw::core::exit) {
+    auto delta_time = clock::now() - time_start;
+    time_start = clock::now();
+    lag += duration_cast<nanoseconds>(delta_time);
 
-    accumulator += frame_time;
-
-    while (accumulator >= dt) {
-      update(accumulator);
-
-      accumulator -= dt;
-      time += dt;
+    while (lag >= timestep) {
+      update(timestep / 1ms);
+      lag -= timestep;
     }
 
-    StateEngine::draw();
+    draw();
+    frames++;
+
+    if (clock::now() - last_second >= 1s) {
+      fps = frames;
+      frames = 0;
+      last_second = last_second + 1s;
+      asw::display::setTitle("Tanks - FPS: " + std::to_string(fps));
+    }
   }
 
-  // Exit allegro
-  allegro_exit();
+#endif
 
   return 0;
 }
-END_OF_MAIN()

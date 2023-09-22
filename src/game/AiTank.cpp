@@ -3,8 +3,6 @@
 #include "../system/ImageRegistry.hpp"
 #include "../util/Random.hpp"
 
-#include <iostream>
-
 // Init
 AiTank::AiTank(World* world,
                float x,
@@ -30,12 +28,13 @@ AiTank::AiTank(World* world,
   this->destination_x = x;
   this->destination_y = y;
 
-  this->width = static_cast<float>(image_base->w);
-  this->height = static_cast<float>(image_base->h);
+  auto imageSize = asw::util::getTextureSize(image_base);
+  this->width = static_cast<float>(imageSize.x);
+  this->height = static_cast<float>(imageSize.y);
 }
 
 // Update
-void AiTank::update(const double deltaTime) {
+void AiTank::update(const float deltaTime) {
   Tank::update(deltaTime);
 
   if (dead) {
@@ -44,7 +43,7 @@ void AiTank::update(const double deltaTime) {
 
   find_enemy_target();
   update_target();
-  ai_drive();
+  ai_drive(deltaTime);
 }
 
 void AiTank::find_enemy_target() {
@@ -100,8 +99,8 @@ void AiTank::update_target() {
   }
 }
 
-void AiTank::ai_drive() {
+void AiTank::ai_drive(const float deltaTime) {
   rotation_body = find_angle(x + 25, y + 25, destination_x, destination_y);
-  accelerate(true);
-  drive(rotation_body);
+  accelerate(true, deltaTime);
+  drive(rotation_body, deltaTime);
 }

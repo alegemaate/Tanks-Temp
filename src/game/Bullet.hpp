@@ -20,8 +20,8 @@ class Bullet {
   Bullet(World* world, float x, float y, float angle, float speed, int health);
 
   bool getErase() const;
-  void update();
-  void draw(BITMAP* buffer) const;
+  void update(const float deltaTime);
+  void draw() const;
 
   float getX() const;
   float getY() const;

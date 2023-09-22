@@ -6,20 +6,24 @@
 #ifndef SRC_STATE_MENU_HPP_
 #define SRC_STATE_MENU_HPP_
 
-#include <allegro.h>
+#include <asw/asw.h>
 #include <entt/entt.hpp>
 
 #include "../systems/RenderSystem.hpp"
 #include "../ui/Button.hpp"
 #include "Game.hpp"
-#include "State.h"
+#include "State.hpp"
 
 class Menu : public State {
  public:
-  Menu();
+  explicit Menu(StateEngine& engine) : State(engine) {}
 
-  void update(const double deltaTime) override;
+  void init() override;
+  void update(const float deltaTime) override;
   void draw() override;
+  void cleanup() override {
+    // No cleanup
+  }
 
  private:
   Button enemies_up;
@@ -34,7 +38,7 @@ class Menu : public State {
   Button bounce_down;
   Button start;
 
-  BITMAP* buffer;
+  asw::Font font;
 
   entt::registry m_registry;
 

@@ -1,28 +1,29 @@
 #include "World.hpp"
 
 #include <algorithm>
+#include <iostream>
 
 // Adds particle to global particle handler
-void World::addParticle(Particle* particle) {
-  particles.push_back(particle);
+void World::addParticle(std::shared_ptr<Particle> particle) {
+  particles.emplace_back(particle);
 }
 
 // Updates world
-void World::update() {
-  for (auto* const& particle : particles) {
-    particle->logic();
+void World::update(const float deltaTime) {
+  for (auto const& particle : particles) {
+    particle->update(deltaTime);
   }
 
   particles.erase(
       std::remove_if(particles.begin(), particles.end(),
-                     [](auto* const& particle) { return particle->getDead(); }),
+                     [](auto const& particle) { return particle->getDead(); }),
       particles.end());
 }
 
 // Draw world
-void World::draw(BITMAP* buffer) const {
+void World::draw() const {
   // Draw particles
-  for (auto* const& particle : particles) {
-    particle->draw(buffer);
+  for (auto const& particle : particles) {
+    particle->draw();
   }
 }
