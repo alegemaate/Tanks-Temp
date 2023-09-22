@@ -34,7 +34,7 @@ class StateEngine {
   StateEngine() = default;
 
   // Update
-  void update(const double deltaTime);
+  void update(const float deltaTime);
 
   // Draw
   void draw();
@@ -79,7 +79,7 @@ class State {
   virtual void cleanup() = 0;
 
   // Update logic
-  virtual void update(const double deltaTime) = 0;
+  virtual void update(const float deltaTime) = 0;
 
   // Change state
   void setNextState(ProgramState state);

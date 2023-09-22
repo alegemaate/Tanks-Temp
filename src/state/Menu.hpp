@@ -19,7 +19,7 @@ class Menu : public State {
   explicit Menu(StateEngine& engine) : State(engine) {}
 
   void init() override;
-  void update(const double deltaTime) override;
+  void update(const float deltaTime) override;
   void draw() override;
   void cleanup() override {
     // No cleanup

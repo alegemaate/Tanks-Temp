@@ -29,7 +29,7 @@ void Menu::init() {
 }
 
 // Update routine
-void Menu::update(const double deltaTime) {
+void Menu::update(const float deltaTime) {
   // Update buttons
   enemies_up.update();
   enemies_down.update();

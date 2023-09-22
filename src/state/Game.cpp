@@ -117,7 +117,7 @@ void Game::init() {
     Vec2<float> startLocation = startLocations.at(
         Random::random(0, static_cast<int>(startLocations.size()) - 1));
     auto* tank = new PlayerTank(&game_world, startLocation.x, startLocation.y,
-                                100, 4, 1000, 1);
+                                100, 4, 700, 1);
 
     tank->process_enemies(&enemy_tanks);
     tank->set_map_dimensions(map_width * 40, map_height * 40);
@@ -150,10 +150,7 @@ void Game::init() {
   }
 }
 
-void Game::update(const double deltaTime) {
-  // Get joystick input
-  // poll_joystick(); TODO
-
+void Game::update(const float deltaTime) {
   // Update world
   game_world.update(deltaTime);
 

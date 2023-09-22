@@ -34,7 +34,7 @@ AiTank::AiTank(World* world,
 }
 
 // Update
-void AiTank::update(const double deltaTime) {
+void AiTank::update(const float deltaTime) {
   Tank::update(deltaTime);
 
   if (dead) {
@@ -99,7 +99,7 @@ void AiTank::update_target() {
   }
 }
 
-void AiTank::ai_drive(const double deltaTime) {
+void AiTank::ai_drive(const float deltaTime) {
   rotation_body = find_angle(x + 25, y + 25, destination_x, destination_y);
   accelerate(true, deltaTime);
   drive(rotation_body, deltaTime);

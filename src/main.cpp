@@ -13,33 +13,10 @@
 
 using namespace std::chrono_literals;
 using namespace std::chrono;
-constexpr nanoseconds timestep(16ms);
+constexpr nanoseconds timestep(8ms);
 
 // State engine
 std::unique_ptr<StateEngine> game_state;
-
-// // Calibrate joystick TODO
-// bool calibrateJoystick() {
-//   for (int i = 0; i < num_joysticks; i++) {
-//     while (joy[i].flags & JOYFLAG_CALIBRATE) {
-//       if ((readkey() & 0xFF) == 27) {
-//         return false;
-//       }
-
-//       if (calibrate_joystick(i) != 0) {
-//         return false;
-//       }
-//     }
-//     if (!(joy[i].stick[0].flags & JOYFLAG_ANALOGUE)) {
-//       allegro_message(
-//           "This game only supports analogue joysticks, please unplug and try
-//           " "again. \n");
-//     }
-//   }
-
-//   save_joystick_data("joy_config.dat");
-//   return true;
-// }
 
 // Setup game
 void setup() {
@@ -52,12 +29,12 @@ void setup() {
   game_state->setNextState(ProgramState::Init);
 }
 
-void update(const double deltaTime) {
+void update(const float deltaTime) {
   // Update listeners
   asw::core::update();
 
   // Do state logic
-  game_state->update(deltaTime);
+game_state->update(deltaTime);
 
   // Handle exit
   if (game_state->getStateId() == ProgramState::Exit) {

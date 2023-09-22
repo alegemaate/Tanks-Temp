@@ -38,7 +38,7 @@ FetchContent_MakeAvailable(EnTT)
 FetchContent_Declare(
   asw
   GIT_REPOSITORY https://github.com/adsgames/asw.git
-  GIT_TAG 27816a28d782e277117efe0fd27f68d902c701bf
+  GIT_TAG        7bfb57c73e19ef5b7f15b5eba7af5a74dcf64930
 )
 FetchContent_MakeAvailable(asw)
 

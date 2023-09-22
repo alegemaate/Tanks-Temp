@@ -27,7 +27,7 @@ class Tank {
 
   virtual std::vector<Bullet*>* getBullets();
 
-  virtual void update(const double deltaTime);
+  virtual void update(const float deltaTime);
   virtual void draw();
   virtual void putDecal();
 

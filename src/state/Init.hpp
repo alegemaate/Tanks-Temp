@@ -15,7 +15,7 @@ class Init : public State {
   explicit Init(StateEngine& engine) : State(engine) {}
 
   void init() override;
-  void update(double deltaTime) override {
+  void update(const float deltaTime) override {
     // Goto menu
     this->setNextState(ProgramState::Menu);
   }

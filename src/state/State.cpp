@@ -24,7 +24,7 @@ void StateEngine::draw() {
 }
 
 // Update
-void StateEngine::update(const double deltaTime) {
+void StateEngine::update(const float deltaTime) {
   if (state) {
     state->update(deltaTime);
   }

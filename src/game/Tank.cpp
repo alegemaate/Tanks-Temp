@@ -168,12 +168,12 @@ void Tank::shoot(float rotation, float targetX, float targetY) {
     auto* bullet = new Bullet(worldPointer, targetX, targetY, rotation,
                               fire_speed, 1 + num_bullet_bounces);
     bullets.push_back(bullet);
-    bullet_delay -= fire_delay_rate;
+    bullet_delay = 0;
   }
 }
 
 // Update
-void Tank::update(const double deltaTime) {
+void Tank::update(const float deltaTime) {
   // Just died
   if (!dead && (health < 1)) {
     explode();
@@ -255,21 +255,21 @@ void Tank::putDecal() {
 void Tank::pickupPowerUp(PowerUpType type) {
   switch (type) {
     case PowerUpType::HEALTH:
-      health += 10;
+      health += 25;
       if (health > 100) {
         health = 100;
       }
       break;
     case PowerUpType::SPEED:
-      max_speed += 0.5f;
+      max_speed += 0.25f;
       break;
     case PowerUpType::FIRE_SPEED:
       fire_speed += 1;
       break;
     case PowerUpType::FIRE_DELAY:
-      fire_delay_rate -= 1;
-      if (fire_delay_rate < 0) {
-        fire_delay_rate = 0;
+      fire_delay_rate -= 100;
+      if (fire_delay_rate < 10) {
+        fire_delay_rate = 10;
       }
       break;
     default:
